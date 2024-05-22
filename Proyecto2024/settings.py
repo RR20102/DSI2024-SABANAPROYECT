@@ -76,10 +76,21 @@ WSGI_APPLICATION = 'Proyecto2024.wsgi.application'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+    #'default': {
+       # 'ENGINE': 'django.db.backends.sqlite3',
+        #'NAME': BASE_DIR / 'db.sqlite3',
+    #}
+
+        'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'postgres',
+        'USER': 'admin',
+        'PASSWORD': 'oCjklp6oot10jfJo7Xac1MnGlc7sXi',
+        'HOST': 'us-east-1.76baaa28-8832-4410-9f32-eb126315c70e.aws.ybdb.io',
+        'PORT': '5433',
     }
+
+
 }
 
 

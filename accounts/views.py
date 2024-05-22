@@ -15,3 +15,4 @@ def login_view(request):
         else:
             return HttpResponse('Invalid credentials')
     return render(request, 'accounts/login.html')
+  
