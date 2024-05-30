@@ -3,6 +3,7 @@ from django.shortcuts import render
 #Añadido#
 from django.contrib.auth import authenticate, login
 from django.http import HttpResponse
+from django.contrib import messages
 
 def login_view(request):
     if request.method == 'POST':
@@ -13,6 +14,6 @@ def login_view(request):
             login(request, user)
             return HttpResponse('Login successful')
         else:
-            return HttpResponse('Invalid credentials')
+            messages.error(request, 'Credenciales Invalidas.')
     return render(request, 'accounts/login.html')
   

@@ -1,9 +1,9 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Login</title>
-</head>
-<body>
+{% extends 'base.html' %}
+{% block title %} Login {% endblock %}
+
+{% block content %}
+{% load static %}
+<!--<div class="container-fluid">
     <h2>Login</h2>
     <form method="post">
         {% csrf_token %}
@@ -15,5 +15,42 @@
         <br>
         <button type="submit">Login</button>
     </form>
-</body>
-</html>
+</div> -->
+<div class="container d-flex justify-content-center align-items-center vh-100">
+  <div class="col-md-4">
+
+  
+    <div class="card p-4 shadow-sm">
+      <h2 class="text-center mb-4">Login</h2>
+
+      <div class="text-center mb-4"> 
+        <img src="{% static 'img/logo_log.png' %}" class="img-fluid" alt="Logo" width="200"> 
+      </div>
+
+      {% if messages %}
+        {% for mensaje in messages %}
+          <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            {{ mensaje }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        {% endfor %}
+      {% endif %}
+   
+      <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+          <label for="username" class="form-label">User</label>
+          <input type="User" class="form-control" id="username" name="username" aria-describedby="userHelp" placeholder="Digite Usuario">
+        </div>
+        <div class="mb-3">
+          <label for="password" class="form-label">Password</label>
+          <input type="password" class="form-control" id="password" name="password" placeholder="Digite Contraseña">
+        </div>
+        <div class="d-grid">
+          <button type="submit" class="btn btn-primary">Login</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>   
+{% endblock %}
