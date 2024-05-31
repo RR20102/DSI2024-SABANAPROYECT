@@ -2,6 +2,7 @@
 {% block title %} Login {% endblock %}
 
 {% block content %}
+{% load widget_tweaks %}
 {% load static %}
 <!--<div class="container-fluid">
     <h2>Login</h2>
@@ -38,13 +39,14 @@
    
       <form method="post">
         {% csrf_token %}
+       
         <div class="mb-3">
-          <label for="username" class="form-label">User</label>
-          <input type="User" class="form-control" id="username" name="username" aria-describedby="userHelp" placeholder="Digite Usuario">
+          <label for="{{ form.username.id_for_label }}" class="form-label">Nombre de Usuario</label>
+          {% render_field form.username class="form-control"  %}
         </div>
         <div class="mb-3">
-          <label for="password" class="form-label">Password</label>
-          <input type="password" class="form-control" id="password" name="password" placeholder="Digite Contraseña">
+          <label for="{{ form.password.id_for_label }}" class="form-label">Contraseña</label>
+          {% render_field form.password class="form-control" %}
         </div>
         <div class="d-grid">
           <button type="submit" class="btn btn-primary">Login</button>
