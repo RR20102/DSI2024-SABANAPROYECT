@@ -15,11 +15,15 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-#Añadido#
-from django.urls import path, include
+from accounts import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    #Añadido#
-    path('accounts/', include('accounts.urls')),
-]
+    #Codigo Menu administrador - Agregado por Daniel 
+    path('menuadministrador/', views.menuadministrador, name='menuadministrador'),
+    path('registroestudiante/', views.registroestudiante, name='registroestudiante'),
+    path('registrodocente/', views.registrodocente, name='registrodocente'),
+    path('visualizardatosregistros/', views.visualizarregistro, name='visualizarregistro'),
+    path('administrarasignaciondocente/', views.administrarasignaciondocente, name='administrarasignaciondocente'),
+    path('visualizarasignaciondocente/', views.visualizarasignaciondocente, name='visualizarasignaciondocente',)
+]   

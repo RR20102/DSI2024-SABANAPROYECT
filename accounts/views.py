@@ -1,18 +1,20 @@
 from django.shortcuts import render
 
-#Añadido#
-from django.contrib.auth import authenticate, login
-from django.http import HttpResponse
+#Codigo Menu administrador - Agregado por Daniel 
+def menuadministrador(request):
+    return render(request, 'accounts/menuadministrador.html')
 
-def login_view(request):
-    if request.method == 'POST':
-        username = request.POST['username']
-        password = request.POST['password']
-        user = authenticate(request, username=username, password=password)
-        if user is not None:
-            login(request, user)
-            return HttpResponse('Login successful')
-        else:
-            return HttpResponse('Invalid credentials')
-    return render(request, 'accounts/login.html')
-  
+def registroestudiante(request):
+    return render(request, 'accounts/registroestudiante.html')
+
+def registrodocente(request):
+    return render(request, 'accounts/registrodocente.html')
+
+def visualizarregistro(request):
+    return render(request, 'accounts/visualizardatosregistro.html')
+
+def administrarasignaciondocente(request):
+    return render(request, 'accounts/administrarasignaciondocente.html')
+
+def visualizarasignaciondocente(request):
+    return render(request, 'accounts/visualizarasignaciondocente.html')
