@@ -1,12 +1,39 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Visualizar Registros</title>
-</head>
-<body>
-    <h1>Bienvenido a la visualizacion de la asignacion de docentes a los grados</h1>
-    <a href="{% url 'menuadministrador' %}">Volver al Menú Principal</a>
-</body>
-</html>
+{% extends "accounts/templates/accounts/basedaniel.html" %}
+
+{% block titulo %}
+SABANA PROYECT - Visualización de Asignaciones
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10 text-center">
+        <h1 class="mt-5">Visualización de Asignaciones</h1>
+        <p class="lead">A continuación se muestran las asignaciones de docentes a grados y secciones.</p>
+
+        <table class="table table-striped mt-4">
+            <thead>
+                <tr>
+                    <th>Docente</th>
+                    <th>Grado</th>
+                    <th>Sección</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for asignacion in asignaciones %}
+                    <tr>
+                        <td>{{ asignacion.docente_nombre }}</td>
+                        <td>{{ asignacion.grado_nombre }}</td>
+                        <td>{{ asignacion.seccion_nombre }}</td>
+                        <td>
+                            <a href="{% url 'editarasignacion' asignacion.id %}" class="btn btn-sm btn-warning">Editar</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <a href="{% url 'menuadministrador' %}" class="btn btn-secondary mt-4">Volver</a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends "accounts/templates/accounts/basedaniel.html" %}
+
+{% block titulo %}
+Editar Asignación
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <h1 class="mt-5">Editar Asignación</h1>
+        
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <div class="mt-4">
+                <button type="submit" class="btn btn-primary">Guardar</button>
+                <a href="{% url 'visualizarasignaciondocente' %}" class="btn btn-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -25,5 +25,8 @@ urlpatterns = [
     path('registrodocente/', views.registrodocente, name='registrodocente'),
     path('visualizardatosregistros/', views.visualizarregistro, name='visualizarregistro'),
     path('administrarasignaciondocente/', views.administrarasignaciondocente, name='administrarasignaciondocente'),
-    path('visualizarasignaciondocente/', views.visualizarasignaciondocente, name='visualizarasignaciondocente',)
+    path('visualizarasignaciondocente/', views.visualizarasignaciondocente, name='visualizarasignaciondocente'),
+    path('editarasignacion/<int:id>/', views.editarasignacion, name='editarasignacion'),
+   # path('pruebasdjango/', views.pruebasdjango, name='pruebasdjango'),
+
 ]   

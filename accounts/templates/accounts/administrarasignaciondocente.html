@@ -1,12 +1,123 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Administrar Asignaciones Docente</title>
-</head>
-<body>
-    <h1>Bienvenido a la asignacion de docentes a los grados</h1>
-    <a href="{% url 'menuadministrador' %}">Volver al Menú Principal</a>
-</body>
-</html>
+{% extends "accounts/templates/accounts/basedaniel.html" %}
+
+{% block titulo %}
+SABANA PROYECT
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6 text-center">
+        <h1 class="mt-5">Asignacion de Docentes </h1>
+        <p class="lead">¡Bienvenido a la asignacion de los grados a los docentes!</p>
+        
+        <form method="post">
+            {% csrf_token %}
+            
+            <!-- Combo Box para seleccionar el docente -->
+            <div class="mt-3">
+                <label for="selectDocente">Selecciona el docente:</label>
+                <select class="form-control" id="selectDocente" name="docente">
+                <option value="" selected disabled>-- Selecciona un docente --</option>
+                    {% for docente in docentes %}
+                        <option value="{{ docente.nombre }}">{{ docente.nombre }}</option>
+                    {% endfor %}
+                </select>
+            </div> 
+         
+            <!-- Combo Box para seleccionar el grado -->
+            <div class="mt-3">
+                <label for="selectGrado">Selecciona el grado:</label>
+                <select class="form-control" id="selectGrado" name="grado">
+                <option value="" selected disabled>-- Selecciona un grado --</option>
+                    {% for grado in grados %}
+                        <option value="{{ grado.nombre }}">{{ grado.nombre }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <!-- Combo Box para seleccionar la sección -->
+            <div class="mt-3">
+                <label for="selectSeccion">Selecciona la sección:</label>
+                <select class="form-control" id="selectSeccion" name="seccion">
+                <option value="" selected disabled>-- Selecciona una seccion --</option>
+                    {% for seccion in secciones %}
+                        <option value="{{ seccion.nombre }}">{{ seccion.nombre }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+             <!-- Botones de Guardar y Volver -->
+             <div class="mt-4">
+                <button type="submit" class="btn btn-primary">Guardar</button>
+                <a href="{% url 'menuadministrador' %}" class="btn btn-secondary">Volver</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- SweetAlert2 JS -->
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<!-- <script>
+    {% if messages %}
+        {% for message in messages %}
+            Swal.fire({
+                title: "Aviso",
+                text: "{{ message }}",
+                icon: "success",
+            });
+        {% endfor %}
+    {% endif %}
+</script> -->
+<script>
+    {% if messages %}
+        {% for message in messages %}
+            {% if message.tags == 'success' %}
+                Swal.fire({
+                    title: "Éxito",
+                    text: "{{ message }}",
+                    icon: "success",
+                });
+            {% elif message.tags == 'error' %}
+                Swal.fire({
+                    title: "Error",
+                    text: "{{ message }}",
+                    icon: "error",
+                    customClass: {
+                        title: "text-danger" // Clase de título en rojo para los mensajes de error
+                    }
+                });
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+</script>
+<script>
+    document.getElementById("asignacionForm").addEventListener("submit", function(event) {
+        var docenteSelect = document.getElementById("selectDocente");
+        var gradoSelect = document.getElementById("selectGrado");
+        var seccionSelect = document.getElementById("selectSeccion");
+        
+        if (docenteSelect.value === "" || gradoSelect.value === "" || seccionSelect.value === "") {
+            event.preventDefault(); // Previene el envío del formulario
+            
+            // Muestra un mensaje de error usando SweetAlert2
+            Swal.fire({
+                title: "¡Error!",
+                text: "Debes seleccionar un docente, un grado y una sección primero.",
+                icon: "error"
+            });
+        } else {
+            // Muestra un mensaje de éxito usando SweetAlert2
+            Swal.fire({
+                title: "¡Guardado con éxito!",
+                text: "Los datos han sido guardados correctamente.",
+                icon: "success"
+            }).then(function(result) {
+                // Redirige solo si el usuario confirma el mensaje
+                if (result.isConfirmed) {
+                    window.location.href = "{% url 'menuadministrador' %}";
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

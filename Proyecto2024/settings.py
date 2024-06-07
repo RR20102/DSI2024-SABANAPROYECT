@@ -72,6 +72,17 @@ TEMPLATES = [
 WSGI_APPLICATION = 'Proyecto2024.wsgi.application'
 
 
+# Configuración de mensajes
+from django.contrib.messages import constants as messages
+
+MESSAGE_TAGS = {
+    messages.DEBUG: 'debug',
+    messages.INFO: 'info',
+    messages.SUCCESS: 'success',
+    messages.WARNING: 'warning',
+    messages.ERROR: 'error',
+}
+
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
@@ -85,8 +96,8 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'postgres',
         'USER': 'admin',
-        'PASSWORD': 'oCjklp6oot10jfJo7Xac1MnGlc7sXi',
-        'HOST': 'us-east-1.76baaa28-8832-4410-9f32-eb126315c70e.aws.ybdb.io',
+        'PASSWORD': 'Ra18012002',
+        'HOST': 'us-east-1.abe6426c-c92c-4bd1-9bc0-c60c370a590f.aws.ybdb.io',
         'PORT': '5433',
     }
 
