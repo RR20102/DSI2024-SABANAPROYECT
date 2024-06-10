@@ -15,10 +15,20 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+#Codigo Agregado Daniel 
 from accounts import views
+#Codigo Agregado Christian 
+from django.urls import include
 
 urlpatterns = [
+    #Codigo Christian 
     path('admin/', admin.site.urls),
+    #Añadido
+    #path('accounts/', include('django.contrib.auth.urls')),
+    path('', include('accounts.urls')),
+    
+    
+    #path('admin/', admin.site.urls),
     #Codigo Menu administrador - Agregado por Daniel 
     path('menuadministrador/', views.menuadministrador, name='menuadministrador'),
     path('registroestudiante/', views.registroestudiante, name='registroestudiante'),

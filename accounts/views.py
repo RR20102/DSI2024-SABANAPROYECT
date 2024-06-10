@@ -1,9 +1,40 @@
 from django.shortcuts import render, get_object_or_404, redirect
-#Importacion de modelos de la base de datos
+#Importacion de modelos de la base de datos - Codigo Daniel 
 from .models import Docente, Grado, Seccion, Asignacion
 from .forms import AsignacionForm
 from django.contrib import messages  # Importa messages
 
+#Codigo Christian 
+from django.contrib.auth import authenticate, login, logout
+from django.http import HttpResponse
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from .forms import LoginForm
+
+#Login Codigo Christian 
+def login_view(request):
+    
+    form = LoginForm()
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return redirect('menuadministrador')
+        else:
+            messages.error(request, 'Credenciales Invalidas.')
+            
+    return render(request, 'accounts/login.html', {'form': form})
+
+@login_required 
+def home(request):
+
+    return render(request, 'accounts/home.html')
+
+def exit(request):
+    logout(request)
+    return redirect('home')
 
 
 #Codigo Menu administrador - Agregado por Daniel 
