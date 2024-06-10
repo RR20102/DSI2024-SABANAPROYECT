@@ -3,6 +3,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from .models import Docente, Grado, Seccion, Asignacion
 from .forms import AsignacionForm
 from django.contrib import messages  # Importa messages
+from django.http import JsonResponse
 
 #Codigo Christian 
 from django.contrib.auth import authenticate, login, logout
@@ -101,3 +102,14 @@ def editarasignacion(request, id):
         'form': form,
         'asignacion': asignacion
     })
+
+
+def eliminarasignacion(request, id):
+    asignacion = get_object_or_404(Asignacion, id=id)
+    if request.method == 'POST':
+        asignacion.delete()
+        messages.success(request, 'Asignación eliminada con éxito')
+        # Enviar una respuesta JSON para mostrar el mensaje con SweetAlert2
+        return JsonResponse({'success': True})
+
+    return redirect('editarasignacion', id=id)  # Si no es una solicitud POST, redirecciona a la página de edición

@@ -15,6 +15,7 @@ urlpatterns = [
     path('visualizardatosregistros/', views.visualizarregistro, name='visualizarregistro'),
     path('administrarasignaciondocente/', views.administrarasignaciondocente, name='administrarasignaciondocente'),
     path('visualizarasignaciondocente/', views.visualizarasignaciondocente, name='visualizarasignaciondocente'),
-     path('editarasignacion/<int:id>/', views.editarasignacion, name='editarasignacion'),
+    path('editarasignacion/<int:id>/', views.editarasignacion, name='editarasignacion'),
+    path('eliminarasignacion/<int:id>/', views.eliminarasignacion, name='eliminarasignacion'),  # Nueva ruta para eliminar asignación
    # path('pruebasdjango/', views.pruebasdjango, name='pruebasdjango'),
 ]
