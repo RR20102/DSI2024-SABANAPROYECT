@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 #Importacion de modelos de la base de datos - Codigo Daniel 
 from .models import Docente, Grado, Seccion, Asignacion
-from .forms import AsignacionForm
+#from .forms import AsignacionForm
 from django.contrib import messages  # Importa messages
 from django.http import JsonResponse
 
@@ -22,7 +22,7 @@ def login_view(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            return redirect('menuadministrador')
+            return redirect('home')
         else:
             messages.error(request, 'Credenciales Invalidas.')
             
@@ -58,7 +58,7 @@ def visualizarasignaciondocente(request):
     })
 
 
-def administrarasignaciondocente(request):
+"""def administrarasignaciondocente(request):
     if request.method == 'POST':
         docente_nombre = request.POST.get('docente')
         grado_nombre = request.POST.get('grado')
@@ -84,10 +84,10 @@ def administrarasignaciondocente(request):
         'docentes': docentes, 
         'grados': grados, 
         'secciones': secciones
-    })
+    }) """
 
 
-def editarasignacion(request, id):
+"""def editarasignacion(request, id):
     asignacion = get_object_or_404(Asignacion, id=id)
     if request.method == 'POST':
         form = AsignacionForm(request.POST, instance=asignacion)
@@ -101,10 +101,10 @@ def editarasignacion(request, id):
     return render(request, 'accounts/editarasignacion.html', {
         'form': form,
         'asignacion': asignacion
-    })
+    }) """
 
 
-def eliminarasignacion(request, id):
+"""def eliminarasignacion(request, id):
     asignacion = get_object_or_404(Asignacion, id=id)
     if request.method == 'POST':
         asignacion.delete()
@@ -113,3 +113,4 @@ def eliminarasignacion(request, id):
         return JsonResponse({'success': True})
 
     return redirect('editarasignacion', id=id)  # Si no es una solicitud POST, redirecciona a la página de edición
+    """

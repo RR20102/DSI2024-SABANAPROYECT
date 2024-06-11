@@ -7,10 +7,10 @@ from .models import Asignacion, Docente, Grado, Seccion
 from django.contrib.auth.forms import AuthenticationForm
 
 #Codigo Daniel 
-class AsignacionForm(forms.ModelForm):
+"""class AsignacionForm(forms.ModelForm):
     class Meta:
         model = Asignacion
-        fields = ['docente_nombre', 'grado_nombre', 'seccion_nombre']
+        fields = ['docente_nombre', 'grado_nombre', 'seccion_nombre'] """
 
 
 #Codigo Christian 
