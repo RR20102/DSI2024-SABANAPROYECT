@@ -40,13 +40,16 @@ class Docente(models.Model):
         return self.nombre
 
 class Grado(models.Model):
+    #id_grado = models.AutoField(primary_key= True, unique= True, null= False)
     nombre = models.CharField(max_length=100)
     # Otros campos relevantes para el grado, como nivel, año, etc.
+    #Agregar autoincrementable que sea la llave primaria 
 
     def __str__(self):
         return self.nombre
 
 class Seccion(models.Model):
+    #id_seccion = models.AutoField(primary_key= True, unique= True, null= False)
     nombre = models.CharField(max_length=100)
     # Otros campos relevantes para la sección, como horario, número de estudiantes, etc.
 
@@ -54,7 +57,7 @@ class Seccion(models.Model):
         return self.nombre
 
 class Asignacion(models.Model):
-
+    #id_asignacion = models.AutoField(primary_key= True, unique= True, null= False)
     docente_nombre = models.CharField(max_length=100)  # Cambiar a CharField
     grado_nombre = models.CharField(max_length=100)    # Cambiar a CharField
     seccion_nombre = models.CharField(max_length=100)  # Cambiar a CharField

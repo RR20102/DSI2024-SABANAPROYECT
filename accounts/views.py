@@ -39,25 +39,26 @@ def exit(request):
 
 
 #Codigo Menu administrador - Agregado por Daniel 
+@login_required 
 def menuadministrador(request):
     return render(request, 'accounts/menuadministrador.html')
-
+@login_required 
 def registroestudiante(request):
     return render(request, 'accounts/registroestudiante.html')
-
+@login_required 
 def registrodocente(request):
     return render(request, 'accounts/registrodocente.html')
-
+@login_required 
 def visualizarregistro(request):
     return render(request, 'accounts/visualizardatosregistro.html')
-
+@login_required 
 def visualizarasignaciondocente(request):
     asignaciones = Asignacion.objects.all()
     return render(request, 'accounts/visualizarasignaciondocente.html', {
         'asignaciones': asignaciones
     })
 
-
+@login_required 
 def administrarasignaciondocente(request):
     if request.method == 'POST':
         docente_nombre = request.POST.get('docente')
@@ -86,7 +87,7 @@ def administrarasignaciondocente(request):
         'secciones': secciones
     })
 
-
+@login_required 
 def editarasignacion(request, id):
     asignacion = get_object_or_404(Asignacion, id=id)
     if request.method == 'POST':
@@ -103,7 +104,7 @@ def editarasignacion(request, id):
         'asignacion': asignacion
     })
 
-
+@login_required 
 def eliminarasignacion(request, id):
     asignacion = get_object_or_404(Asignacion, id=id)
     if request.method == 'POST':
