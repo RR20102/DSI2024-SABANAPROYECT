@@ -31,3 +31,5 @@ def home(request):
 def exit(request):
     logout(request)
     return redirect('home')
+
+
