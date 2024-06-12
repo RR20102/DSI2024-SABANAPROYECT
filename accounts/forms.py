@@ -1,7 +1,7 @@
 from django import forms
 
 #Codigo Daniel 
-from .models import Asignacion, Docente, Grado, Seccion
+from .models import Asignacion, Docente, GradoSeccion
 
 #Codigo Christian 
 from django.contrib.auth.forms import AuthenticationForm
@@ -10,8 +10,8 @@ from django.contrib.auth.forms import AuthenticationForm
 class AsignacionForm(forms.ModelForm):
     class Meta:
         model = Asignacion
-        fields = ['docente_nombre', 'grado_nombre', 'seccion_nombre']
-
+        fields = ['docente', 'grado_seccion']
+    
 
 #Codigo Christian 
 class LoginForm(AuthenticationForm):

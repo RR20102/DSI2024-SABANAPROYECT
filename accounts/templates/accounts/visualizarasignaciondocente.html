@@ -1,5 +1,4 @@
 {% extends "accounts/templates/accounts/base.html" %}
-
 {% block title %}
 SABANA PROYECT 
 {% endblock %}
@@ -22,9 +21,9 @@ SABANA PROYECT
             <tbody>
                 {% for asignacion in asignaciones %}
                     <tr>
-                        <td>{{ asignacion.docente_nombre }}</td>
-                        <td>{{ asignacion.grado_nombre }}</td>
-                        <td>{{ asignacion.seccion_nombre }}</td>
+                        <td>{{ asignacion.docente.nombreDocente }}</td>
+                        <td>{{ asignacion.grado_seccion.grado.nombreGrado }}</td>
+                        <td>{{ asignacion.grado_seccion.seccion.nombreSeccion }}</td>
                         <td>
                             <a href="{% url 'editarasignacion' asignacion.id %}" class="btn btn-sm btn-warning">Editar</a>
                         </td>
@@ -33,7 +32,7 @@ SABANA PROYECT
             </tbody>
         </table>
 
-        <a href="{% url 'menuadministrador' %}" class="btn btn-secondary mt-4">Volver</a>
+        <a href="{% url 'home' %}" class="btn btn-secondary mt-4">Volver</a>
     </div>
 </div>
 {% endblock %}

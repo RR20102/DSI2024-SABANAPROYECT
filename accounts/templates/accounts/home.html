@@ -2,7 +2,91 @@
 {% block title %} Sabana - Home {% endblock %}
 
 {% block content %}
+{% load static %}
+<style>
+    body {
+        background-color: rgb(255, 255, 255);
+    }
+    .card {
+        height: 100%;
+    }
+    .card img {
+        max-height: 200px;
+        object-fit: cover;
+    }
+</style>
+<!--Menu del Admin-->
+<body>
 
-<p>Bienvenido!</p>
+    <div class="container my-5">
+        <div class="row">
+          <div class="col-md-6 offset-md-3">
+            <h1 class="display-4 text-center mb-4">¡Bienvenido!</h1>
+            <p class="lead text-center">¿Que haras hoy?</p>
+          </div>
+        </div>
+      </div>
+
+    <div class="container">
+        <div class="jumbotron bg-light p-5">
+
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+                <div class="col d-flex">
+                    <div class="card text-dark bg-light text-center w-100">
+                        <div class="card-header text-white bg-dark">
+                            <h5 class="card-title"> Registro de Estudiantes </h5>
+                        </div>
+                        <div class="card-body d-flex flex-column">
+                            <img src="{% static 'menu/estudiante.png' %}" alt="Registro de Estudiantes" class="img-fluid mb-3" style="object-fit: contain;">
+                            <p class="card-text flex-grow-1">
+                                Gestion de estudiantes del Centro Escolar La Sabana
+                            </p>
+                            <div class="mt-auto">
+                                <a class="btn btn-primary btn-lg" href="" role="button">Administrar</a>
+                                <a class="btn btn-secondary btn-lg" href="#" role="button">Visualizar</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col d-flex">
+                    <div class="card text-dark bg-light text-center w-100">
+                        <div class="card-header text-white bg-dark">
+                            <h5 class="card-title">Registro de Docentes</h5>
+                        </div>
+                        <div class="card-body d-flex flex-column">
+                            <img src="{% static 'menu/docente-icon.png' %}" alt="Registrar Docente" class="img-fluid mb-3" style="object-fit: contain;">
+                            <p class="card-text flex-grow-1">
+                                Gestion de docentes del Centro Escolar La Sabana
+                            </p>
+                            <div class="mt-auto">
+                                <a class="btn btn-primary btn-lg" href="#" role="button">Administrar</a>
+                                <a class="btn btn-secondary btn-lg" href="#" role="button">Visualizar</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col d-flex">
+                    <div class="card text-dark bg-light text-center w-100">
+                        <div class="card-header text-white bg-dark">
+                            <h5 class="card-title"> Asignacion docentes a grados   </h5>
+                        </div>
+                        <div class="card-body d-flex flex-column">
+                            <img src="{% static 'menu/docente-grado.png' %}" alt="Otra Sección" class="img-fluid mb-3" style="object-fit: contain;">
+                            <p class="card-text flex-grow-1">
+                                Gestion de Asignacion de los docentes a cada grado del Centro Escolar La Sabana
+                            </p>
+                            <div class="mt-auto">
+                                <a class="btn btn-primary btn-lg" href="{% url 'administrarasignaciondocente' %}" role="button">Administrar</a>
+                                <a class="btn btn-secondary btn-lg" href="{% url 'visualizarasignaciondocente' %}" role="button">Visualizar</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+<!-------------------->
 
 {% endblock %}

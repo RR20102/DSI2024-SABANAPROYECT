@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 #Importacion de modelos de la base de datos - Codigo Daniel 
-from .models import Docente, Grado, Seccion, Asignacion
+from .models import Docente, Grado, Seccion, GradoSeccion, Asignacion
 from .forms import AsignacionForm
 from django.contrib import messages  # Importa messages
 from django.http import JsonResponse
@@ -22,7 +22,7 @@ def login_view(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            return redirect('menuadministrador')
+            return redirect('home')
         else:
             messages.error(request, 'Credenciales Invalidas.')
             
@@ -51,66 +51,124 @@ def registrodocente(request):
 @login_required 
 def visualizarregistro(request):
     return render(request, 'accounts/visualizardatosregistro.html')
-@login_required 
-def visualizarasignaciondocente(request):
-    asignaciones = Asignacion.objects.all()
-    return render(request, 'accounts/visualizarasignaciondocente.html', {
-        'asignaciones': asignaciones
-    })
 
-@login_required 
 def administrarasignaciondocente(request):
     if request.method == 'POST':
-        docente_nombre = request.POST.get('docente')
-        grado_nombre = request.POST.get('grado')
-        seccion_nombre = request.POST.get('seccion')
-
-        if not (docente_nombre and grado_nombre and seccion_nombre):
-            messages.error(request, 'Debes seleccionar un docente, un grado y una sección.')
-        else:
-            docente = Docente.objects.get(nombre=docente_nombre)
-            grado = Grado.objects.get(nombre=grado_nombre)
-            seccion = Seccion.objects.get(nombre=seccion_nombre)
+        docente_dui = request.POST.get('docente')
+        grado_seccion_id = request.POST.get('grado_seccion')
         
-            Asignacion.objects.create(docente_nombre=docente, grado_nombre=grado, seccion_nombre=seccion)
-            messages.success(request, 'Datos guardados con éxito')
+        if not docente_dui or not grado_seccion_id:
+            messages.error(request, 'Por favor selecciona un docente y un grado y sección antes de guardar.')
+            return redirect('administrarasignaciondocente')
+        
+        # Verifica si el docente ya está asignado a una sección del grado seleccionado
+        docente_asignaciones = Asignacion.objects.filter(docente__dui=docente_dui)
+        grado_seccion = GradoSeccion.objects.get(id=grado_seccion_id)
+        seccion_actual = grado_seccion.seccion
 
-        return redirect('administrarasignaciondocente')  # Redirige a la misma página
+        for asignacion in docente_asignaciones:
+            if asignacion.grado_seccion.seccion == seccion_actual:
+                messages.error(request, 'El docente ya está asignado a una sección del mismo grado.')
+                return redirect('administrarasignaciondocente')
+        
+        # Verificar si el docente ya tiene 2 asignaciones en total
+        if docente_asignaciones.count() >= 2:
+            messages.error(request, 'El docente ya tiene el máximo de asignaciones permitidas.')
+            return redirect('administrarasignaciondocente')
+        
+        # Crear una nueva instancia de Asignacion con los objetos obtenidos
+        docente = Docente.objects.get(dui=docente_dui)
+        Asignacion.objects.create(docente=docente, grado_seccion=grado_seccion)
+        messages.success(request, 'Asignación guardada con éxito')
+        return redirect('administrarasignaciondocente')
 
-    docentes = Docente.objects.all().order_by('id')
-    grados = Grado.objects.all().order_by('id')
-    secciones = Seccion.objects.all().order_by('id')
+    docentes = Docente.objects.all()
+    grados_secciones = GradoSeccion.objects.all()
 
     return render(request, 'accounts/administrarasignaciondocente.html', {
-        'docentes': docentes, 
-        'grados': grados, 
-        'secciones': secciones
+        'docentes': docentes,
+        'grados_secciones': grados_secciones
     })
 
-@login_required 
+
+def visualizarasignaciondocente(request):
+    asignaciones = Asignacion.objects.all()
+    return render(request, 'accounts/visualizarasignaciondocente.html', {'asignaciones': asignaciones})
+
 def editarasignacion(request, id):
     asignacion = get_object_or_404(Asignacion, id=id)
     if request.method == 'POST':
         form = AsignacionForm(request.POST, instance=asignacion)
         if form.is_valid():
-            form.save()
-            messages.success(request, 'Asignación actualizada con éxito')
-            return redirect('visualizarasignaciondocente')
+            # Realizar la validación adicional antes de guardar
+            cleaned_data = form.cleaned_data
+            docente = cleaned_data['docente']
+            grado_seccion = cleaned_data['grado_seccion']
+            if Asignacion.objects.filter(docente=docente, grado_seccion__seccion=grado_seccion.seccion).exclude(id=asignacion.id).exists():
+                # Si el docente ya está asignado a una sección igual, mostrar un mensaje de error
+                return JsonResponse({'success': False, 'message': 'El docente ya está asignado a una sección igual.'})
+            else:
+                # Si la validación pasa, guardar la asignación
+                form.save()
+                return JsonResponse({'success': True, 'message': 'Asignación actualizada con éxito.'})
+        else:
+            # Si el formulario no es válido, devolver errores
+            errors = dict([(field, [error for error in errors]) for field, errors in form.errors.items()])
+            return JsonResponse({'success': False, 'errors': errors})
     else:
         form = AsignacionForm(instance=asignacion)
-    
-    return render(request, 'accounts/editarasignacion.html', {
-        'form': form,
-        'asignacion': asignacion
-    })
 
-@login_required 
+    return render(request, 'accounts/editarasignacion.html', {'form': form, 'asignacion': asignacion})
+    
+# def editarasignacion(request, id):
+#     asignacion = get_object_or_404(Asignacion, id=id)
+#     if request.method == 'POST':
+#         form = AsignacionForm(request.POST, instance=asignacion)
+#         if form.is_valid():
+#             # Realizar la validación adicional antes de guardar
+#             cleaned_data = form.cleaned_data
+#             docente = cleaned_data['docente']
+#             grado_seccion = cleaned_data['grado_seccion']
+#             if Asignacion.objects.filter(docente=docente, grado_seccion__seccion=grado_seccion.seccion).exclude(id=asignacion.id).exists():
+#                 # Si el docente ya está asignado a una sección igual, mostrar un mensaje de error
+#                 messages.error(request, 'El docente ya está asignado a una sección igual.')
+#                 return redirect('editarasignacion', id=id)
+#             else:
+#                 # Si la validación pasa, guardar la asignación
+#                 form.save()
+#                 messages.success(request, 'Asignación actualizada con éxito.')
+#                 return redirect('visualizarasignaciondocente')
+#         else:
+#             # Si el formulario no es válido, mostrar errores
+#             messages.error(request, 'Por favor corrige los errores en el formulario.')
+#     else:
+#         form = AsignacionForm(instance=asignacion)
+
+#     return render(request, 'accounts/editarasignacion.html', {'form': form, 'asignacion': asignacion})
+
+# def editarasignacion(request, id):
+#     asignacion = get_object_or_404(Asignacion, id=id)
+#     if request.method == 'POST':
+#         form = AsignacionForm(request.POST, instance=asignacion)
+#         if form.is_valid():
+#             form.save()
+#             if request.is_ajax():
+#                 return JsonResponse({'success': True})
+#             messages.success(request, 'Asignación actualizada con éxito.')
+#             return redirect('visualizarasignaciondocente')
+#         else:
+#             if request.is_ajax():
+#                 return JsonResponse({'success': False, 'errors': form.errors})
+#     else:
+#         form = AsignacionForm(instance=asignacion)
+
+#     return render(request, 'accounts/editarasignacion.html', {'form': form, 'asignacion': asignacion})
+
+
 def eliminarasignacion(request, id):
     asignacion = get_object_or_404(Asignacion, id=id)
     if request.method == 'POST':
         asignacion.delete()
-        messages.success(request, 'Asignación eliminada con éxito')
-        # Enviar una respuesta JSON para mostrar el mensaje con SweetAlert2
+        messages.success(request, 'Asignación eliminada con éxito.')
         return JsonResponse({'success': True})
-
-    return redirect('editarasignacion', id=id)  # Si no es una solicitud POST, redirecciona a la página de edición
+    return JsonResponse({'success': False})

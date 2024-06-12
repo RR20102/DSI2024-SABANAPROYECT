@@ -1,15 +1,11 @@
 {% extends "accounts/templates/accounts/base.html" %}
-
-{% block title %}
-Editar Asignación
-{% endblock %}
-
+{% block title %}Editar Asignación{% endblock %}
 {% block content %}
 <div class="row justify-content-center">
     <div class="col-md-6">
         <h1 class="mt-5">Editar Asignación</h1>
         
-        <form id="eliminarAsignacionForm" method="post">
+        <form id="editarAsignacionForm" method="post">
             {% csrf_token %}
             {{ form.as_p }}
             <div class="mt-4">
@@ -26,6 +22,7 @@ Editar Asignación
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
 $(document).ready(function() {
+    // Confirmación de eliminación
     $('#eliminarAsignacionBtn').click(function() {
         Swal.fire({
             title: '¿Estás seguro?',
@@ -59,7 +56,41 @@ $(document).ready(function() {
             }
         });
     });
+
+    // Confirmación de cambios guardados
+    $('#editarAsignacionForm').on('submit', function(event) {
+        event.preventDefault(); // Evita el envío del formulario por defecto
+        var form = $(this);
+        $.ajax({
+            type: form.attr('method'),
+            url: form.attr('action'),
+            data: form.serialize(),
+            success: function(response) {
+                if (response.success) {
+                    Swal.fire({
+                        title: '¡Éxito!',
+                        text: response.message,
+                        icon: 'success'
+                    }).then(() => {
+                        window.location.href = '{% url "visualizarasignaciondocente" %}';
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Error',
+                        text: response.message,
+                        icon: 'error'
+                    });
+                }
+            },
+            error: function() {
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Ocurrió un error al guardar los cambios.',
+                    icon: 'error'
+                });
+            }
+        });
+    });
 });
 </script>
-      
 {% endblock %}

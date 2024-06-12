@@ -28,39 +28,42 @@ class Estudiante(models.Model):
     numeroTelefonoResposable = models.CharField(max_length = 8, null = False)
     duiResponsable= models.CharField( max_length=9, null = False, unique= True)
     direccionResponsable = models.TextField(max_length=100, null = False)
-    edadResponsable = models.IntegerField(null=False)       
-
-
-#Codigo Agregado  Daniel 
-class Docente(models.Model):
-    nombre = models.CharField(max_length=100)
-    # Otros campos relevantes para el docente, como edad, asignatura, etc.
+    edadResponsable = models.IntegerField(null=False) 
 
     def __str__(self):
-        return self.nombre
+        return self.nombreAlumno      
 
+
+#Codigo Agregado  Daniel
 class Grado(models.Model):
-    #id_grado = models.AutoField(primary_key= True, unique= True, null= False)
-    nombre = models.CharField(max_length=100)
-    # Otros campos relevantes para el grado, como nivel, año, etc.
-    #Agregar autoincrementable que sea la llave primaria 
+    idGrado = models.AutoField(primary_key=True, unique=True, null=False)
+    nombreGrado = models.CharField(max_length=25)
 
     def __str__(self):
-        return self.nombre
+        return self.nombreGrado
+
 
 class Seccion(models.Model):
-    #id_seccion = models.AutoField(primary_key= True, unique= True, null= False)
-    nombre = models.CharField(max_length=100)
-    # Otros campos relevantes para la sección, como horario, número de estudiantes, etc.
+    idSeccion = models.AutoField(primary_key=True)
+    nombreSeccion = models.CharField(max_length=100)
 
     def __str__(self):
-        return self.nombre
+        return self.nombreSeccion
+
+class GradoSeccion(models.Model):
+    grado = models.ForeignKey(Grado, on_delete=models.CASCADE, related_name='grado_secciones')
+    seccion = models.ForeignKey(Seccion, on_delete=models.CASCADE, related_name='grado_secciones')
+
+    class Meta:
+        unique_together = ('grado', 'seccion')
+
+    def __str__(self):
+        return f"{self.grado.nombreGrado} - {self.seccion.nombreSeccion}"
+
 
 class Asignacion(models.Model):
-    #id_asignacion = models.AutoField(primary_key= True, unique= True, null= False)
-    docente_nombre = models.CharField(max_length=100)  # Cambiar a CharField
-    grado_nombre = models.CharField(max_length=100)    # Cambiar a CharField
-    seccion_nombre = models.CharField(max_length=100)  # Cambiar a CharField
+    docente = models.ForeignKey(Docente, on_delete=models.CASCADE, related_name='asignaciones')
+    grado_seccion = models.ForeignKey(GradoSeccion, on_delete=models.CASCADE, related_name='asignaciones')
 
     def __str__(self):
-        return f"{self.docente} - {self.grado} - {self.seccion}"
+        return f"{self.docente.nombreDocente} - {self.grado_seccion.grado.nombreGrado} - {self.grado_seccion.seccion.nombreSeccion}"
