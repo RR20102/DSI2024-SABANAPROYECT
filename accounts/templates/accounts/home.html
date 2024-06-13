@@ -15,8 +15,10 @@
         object-fit: cover;
     }
 </style>
+{% load tags %}
+{% if es_admin %}
+
 <!--Menu del Admin-->
-<body>
 
     <div class="container my-5">
         <div class="row">
@@ -88,5 +90,77 @@
         </div>
     </div>
 <!-------------------->
+{% endif %}
 
+{% if es_est %}
+<!--Menu del Estudiante------------------------------------------->
+<div class="container my-5">
+    <div class="row">
+      <div class="col-md-6 offset-md-3">
+        <h1 class="display-4 text-center mb-4">¡Bienvenido!</h1>
+        <p class="lead text-center">¿Que haras hoy? Estudiante</p>
+      </div>
+    </div>
+  </div>
+  <body>
+    <div class="container">
+        <div class="container">
+            <div class="row row-cols-1 row-cols-md-2 g-4">
+                <div class="col">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Ver Notas Académicas</h5>
+                            <p class="card-text">Consulta tus calificaciones y desempeño académico.</p>
+                            <a href="#" class="btn btn-primary">Ir a Notas Académicas</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Resumen Académico</h5>
+                            <p class="card-text">Obtén un resumen detallado de tu progreso académico.</p>
+                            <a href="#" class="btn btn-secondary">Ir a Resumen Académico</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Calendario Académico</h5>
+                            <p class="card-text">Consulta las fechas importantes del calendario académico.</p>
+                            <a href="#" class="btn btn-success">Ir a Calendario Académico</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Horario de Clase</h5>
+                            <p class="card-text">Revisa tu horario de clases y asignaturas.</p>
+                            <a href="#" class="btn btn-info">Ir a Horario de Clase</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+<!-------------------->
+{% endif %}
+
+
+{% if es_docente %}
+<!--Menu del Docente------------------------------------------->
+
+<div class="container my-5">
+    <div class="row">
+      <div class="col-md-6 offset-md-3">
+        <h1 class="display-4 text-center mb-4">¡Bienvenido!</h1>
+        <p class="lead text-center">¿Que haras hoy? Docente</p>
+      </div>
+    </div>
+  </div>
+
+  
+<!-------------------->
+{% endif %}
 {% endblock %}

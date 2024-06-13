@@ -1,0 +1,82 @@
+{% extends "accounts/templates/accounts/base.html" %}
+{% block title %} Sabana - Perfil {% endblock %}
+
+{% block content %}
+{% load static %}
+<style>
+    .profile-container {
+        margin-top: 50px;
+    }
+    .profile-image {
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+</style>
+<div class="container rounded bg-white mt-5 mb-5">
+    <div class="row">
+        <div class="col-md-3 border-right">
+            <div class="d-flex flex-column align-items-center text-center p-3 py-5">
+                <img class="rounded-circle mt-5" width="150px" src="https://st3.depositphotos.com/15648834/17930/v/600/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg">
+                <span class="font-weight-bold">Edogaru</span>
+                <span class="text-black-50">edogaru@mail.com.my</span>
+                <span> </span>
+            </div>
+        </div>
+        <div class="col-md-5 border-right">
+            <div class="p-3 py-5">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="text-right">Perfil </h4>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-md-6"><label class="labels">Nombres:</label><span class="form-control-plaintext text-black-50" >Nombre de usuario</span></div>
+                    <div class="col-md-6"><label class="labels">Apellidos:</label><span class="form-control-plaintext text-black-50" >Apellido del usuario</span></div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-12"><label class="labels">Numero de Telefono:</label><span class="form-control-plaintext text-black-50" >+1 555 555 5555</span></div>
+                    <div class="col-md-12"><label class="labels">Dirección:</label><span class="form-control-plaintext text-black-50" >Calle Principal 123</span></div>
+                    <div class="col-md-12"><label class="labels">Edad: </label><span class="form-control-plaintext text-black-50" >45</span></div>
+                    <div class="col-md-12"><label class="labels">Correo Electrónico:</label><span class="form-control-plaintext text-black-50" >usuario@ejemplo.com</span></div>
+                    <!--<div class="col-md-12"><label class="labels">State</label><span class="form-control-plaintext text-black-50" >Estado</span></div>
+                    <div class="col-md-12"><label class="labels">Area</label><span class="form-control-plaintext text-black-50" >Ciudad</span></div>
+                    <div class="col-md-12"><label class="labels">Email ID</label><span class="form-control-plaintext text-black-50" >usuario@ejemplo.com</span></div>
+                    <div class="col-md-12"><label class="labels">Education</label><span class="form-control-plaintext text-black-50" >Ingeniería en Sistemas</span></div> -->
+                </div>
+                <!--<div class="row mt-3">
+                    <div class="col-md-6"><label class="labels">Country</label><span class="form-control-plaintext text-black-50" >País</span></div>
+                    <div class="col-md-6"><label class="labels">State/Region</label><span class="form-control-plaintext text-black-50" >Región/Estado</span></div> 
+                </div>-->
+                <div class="mt-5 text-center"><button class="btn btn-primary profile-button" type="button">Regresar</button></div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="p-3 py-5">
+                <div class="d-flex justify-content-between align-items-center experience">
+                    <span>Experience</span>
+                </div><br>
+                <div class="col-md-12"><label class="labels">Experience in Designing</label><span class="form-control-plaintext text-black-50" >5 años de experiencia en diseño web</span></div> <br>
+                <div class="col-md-12"><label class="labels">Additional Details</label><span class="form-control-plaintext text-black-50" >Experiencia en diseño UX/UI, diseño gráfico y desarrollo frontend.</span></div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+</div>
+<!--<div class="container profile-container">
+    <div class="row">
+        <div class="col-md-4 offset-md-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <img src="https://st3.depositphotos.com/15648834/17930/v/600/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg" alt="Foto de Perfil" class="profile-image">
+                    <h4 class="card-title mt-3">Nombre Completo</h4>
+                    <p class="card-text">Edad: </p>
+                    <p class="card-text"><i class="fa fa-map-marker"></i> Dirección: </p>
+                    <p class="card-text"><i class="fa fa-phone"></i> Teléfono: </p>
+                    <p class="card-text"><i class="fa fa-envelope"></i> Correo Electrónico: </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> -->
+{% endblock %}
