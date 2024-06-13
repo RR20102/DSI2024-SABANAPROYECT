@@ -12,6 +12,7 @@ class AsignacionForm(forms.ModelForm):
         model = Asignacion
         fields = ['docente', 'grado_seccion']
     
+    
 
 #Codigo Christian 
 class LoginForm(AuthenticationForm):
