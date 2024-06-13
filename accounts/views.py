@@ -10,7 +10,10 @@ from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.contrib.sessions.backends.db import SessionStore
 from .forms import LoginForm
+from django.contrib.auth.models import User
+
 
 #Login Codigo Christian 
 def login_view(request):
@@ -22,6 +25,11 @@ def login_view(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
+            if not request.session.session_key: 
+                request.session = SessionStore()
+                request.session.create() 
+
+                request.session['user_id'] = User.objects.filter(username=username).values_list('id', flat=True).first()
             return redirect('home')
         else:
             messages.error(request, 'Credenciales Invalidas.')
@@ -30,13 +38,82 @@ def login_view(request):
 
 @login_required 
 def home(request):
+    """user_id = request.session.get('user_id')
+    grupos = None
+    contexto = {}
+    if user_id:
+        user = get_object_or_404(User, pk=user_id)
+    else:
+        user = None
+    
+    if user is not None:
+        grupos = user.groups
+    
+    if 'Administrador' in grupos:
+        contexto['es_admin'] =True
+    else:
+        contexto['es_admin']=False
+    
+    if 'Docente' in grupos:
+        contexto['es_docente'] =True
+    else:
+        contexto['es_docente']=False
 
-    return render(request, 'accounts/home.html')
+    if 'Estudiante' in grupos:
+        contexto['es_est'] =True
+    else:
+        contexto['es_est']=False
+    if request.user.is_authenticated: 
+        contexto = {}
+        user = request['user']
+        print(user.username)
+        group = user.groups.first()
+        print(group)
+        
+        print(request.user.groups.all())
+        if 'Administrador' in request.user.groups.values_list('name', flat=True):
+            contexto['es_admin'] =True
+        else:
+            contexto['es_admin']=False
+        if user.groups.filter(name='Estudiante').exists():
+            contexto['es_estudiante'] =True
+        else:
+            contexto['es_estudiante']=False
+        if user.groups.filter(name='Docente').exists():
+            contexto['es_docente'] =True
+        else:
+            contexto['es_docente']=False
+        print(contexto) 
+    return render(request, 'accounts/home.html', contexto)"""
+    contexto = {}
+    user = request.user
+    groups = user.groups.all()  # Obtiene todos los grupos a los que pertenece el usuario
+    group_names = [group.name for group in groups]
+    
+
+    if 'Administrador' in group_names:
+        contexto['es_admin'] =True
+    else:
+        contexto['es_admin']=False
+    
+    if 'Docente' in group_names:
+        contexto['es_docente'] =True
+    else:
+        contexto['es_docente']=False
+
+    if 'Estudiante' in group_names:
+        contexto['es_est'] =True
+    else:
+        contexto['es_est']=False
+    return render(request, 'accounts/home.html', contexto)
 
 def exit(request):
     logout(request)
     return redirect('home')
 
+def profile(request):
+
+    return render(request, 'accounts/profile.html')
 
 #Codigo Menu administrador - Agregado por Daniel 
 def menuadministrador(request):

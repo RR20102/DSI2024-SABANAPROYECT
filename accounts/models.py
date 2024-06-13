@@ -1,8 +1,14 @@
 from django.db import models
 from django.contrib.auth.models import User
-
+from django import template
 
 # Create your models here.
+register = template.Library()
+
+@register.filter(name='has_group') 
+def has_group(user, group_name):
+    user.groups.filter(name=group_name).exists()
+    return  
 
 #Codigo Agreado Christian 
 class Docente(models.Model):
@@ -14,6 +20,9 @@ class Docente(models.Model):
     direccionDocente = models.TextField(max_length=100, null = False)
     correoDocente = models.EmailField(unique= True, null = False )
     fechaRegistroDocente = models.DateField(auto_now_add=True, null=False)
+
+    def __str__(self):
+        return f"{self.nombreDocente}   {self.apellidoDocente}"
 
 class Estudiante(models.Model):
     user = models.OneToOneField(User, on_delete= models.CASCADE )
