@@ -10,15 +10,9 @@ urlpatterns = [
     path('accounts/profile/',views.profile,name='profile'),
 
     #Codigo Menu administrador - Agregado por Daniel 
-    path('menuadministrador/', views.menuadministrador, name='menuadministrador'),
     path('registroestudiante/', views.registroestudiante, name='registroestudiante'),
     path('registrodocente/', views.registrodocente, name='registrodocente'),
-    path('visualizardatosregistros/', views.visualizarregistro, name='visualizarregistro'),
-    #path('administrarasignaciondocente/', views.administrarasignaciondocente, name='administrarasignaciondocente'),
-    #path('visualizarasignaciondocente/', views.visualizarasignaciondocente, name='visualizarasignaciondocente'),
-    #path('editarasignacion/<int:id>/', views.editarasignacion, name='editarasignacion'),
-    #path('eliminarasignacion/<int:id>/', views.eliminarasignacion, name='eliminarasignacion'),  # Nueva ruta para eliminar asignación
-    #path('pruebasdjango/', views.pruebasdjango, name='pruebasdjango'),
+    path('ver-docentes/', views.docentes_view, name='docentes'),
     path('administrarasignaciondocente/', views.administrarasignaciondocente, name='administrarasignaciondocente'),
     path('visualizarasignaciondocente/', views.visualizarasignaciondocente, name='visualizarasignaciondocente'),
     path('editarasignacion/<int:id>/', views.editarasignacion, name='editarasignacion'),

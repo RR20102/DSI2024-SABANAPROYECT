@@ -34,7 +34,16 @@ class LoginForm(AuthenticationForm):
         })
 
 #Codigo Gustavo
-class DocenteForm(forms.Form):
+class DocenteForm(forms.ModelForm):
     class Meta:
         model = Docente
-        fields = '__all__'
+        fields = [
+            'nombreDocente', 
+            'apellidoDocente', 
+            'generoDocente', 
+            'edadDocente', 
+            'direccionDocente',
+            'correoDocente',
+            'dui',
+            'numeroTelefono'
+         ]

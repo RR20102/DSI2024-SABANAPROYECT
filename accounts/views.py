@@ -126,22 +126,17 @@ def registroestudiante(request):
 @login_required 
 def registrodocente(request):
     context = {}
+    form = DocenteForm()
     if request.method == 'POST':
         form = DocenteForm(request.POST)
         if form.is_valid():
             form.save()
             return redirect('registrodocente')
-        else:
-            form = DocenteForm()
 
-        context = {
-            'form': form,
-            'docentes': Docente.objects.all()
-        }
-    return render(request, 'accounts/registrodocente.html', context)
+    return render(request, 'accounts/registrodocente.html', {'form':form})
 @login_required 
-def visualizarregistro(request):
-    return render(request, 'accounts/visualizardatosregistro.html')
+def docentes_view(request):
+    return render(request, 'accounts/verdocente.html')
 
 @login_required 
 def administrarasignaciondocente(request):

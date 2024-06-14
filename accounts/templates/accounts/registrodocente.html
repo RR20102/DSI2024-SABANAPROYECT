@@ -4,14 +4,7 @@
 {% block content %}
 {% load widget_tweaks %}
 {% load static %}
-
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Resgitro de Docentes </title>
-    <style>
+   <!-- <style>
         /* Estilos CSS para mejorar la apariencia del formulario */
         body {
             font-family: Arial, sans-serif;
@@ -67,44 +60,58 @@
         input[type="submit"]:hover {
             background-color: #45a049;
         }
-    </style>
-</head>
-<body>
+    </style> -->
     <h1>Bienvenido al registro de docentes</h1>
     <a href="{% url 'home' %}">Volver al Menú Principal</a>
-    <div class="form-container">
-        <div>
-            
-            <label for="nombre">Nombre Completo:</label>
-            <input type="text" id="nombre" name="nombre" placeholder="Nombre completo" required>
 
-            
-            <label for="genero">Género:</label>
+
+    <div class="form-container">
+        <form action="" method="post">
+            <label for="{{ form.nombreDocente.id_for_label }}">Nombre Completo:</label>
+            {% render_field form.nombreDocente class="form-control"  %}
+
+            <label for="{{ form.generoDocente.id_for_label }}">Género:</label>
+            {% render_field form.generoDocente class="form-check"  %}
             <div>
-                <input type="radio" id="masculino" name="genero" value="masculino" required>
+                <input type="radio" id="masculino" name="genero" value="masculino" required class="form-check-inline">
                 <label for="masculino">Masculino</label>
             </div>
             <div>
-                <input type="radio" id="femenino" name="genero" value="femenino" required>
+                <input type="radio" id="femenino" name="genero" value="femenino" required class="form-check-inline">
                 <label for="femenino">Femenino</label>
             </div>
-            
 
             <label for="email">Correo electrónico:</label>
-            <input type="email" id="email" name="email" placeholder="Correo electrónico" required>
-
+            <input type="email" id="email" name="email" placeholder="Correo electrónico" required class="form-control">
+            
             <label for="telefono">Número de teléfono:</label>
-            <input type="text" id="telefono" name="telefono" placeholder="Número de teléfono" maxlength="8" required>
+            <input type="text" id="telefono" name="telefono" placeholder="Número de teléfono" maxlength="8" required >
 
             <label for="dui">DUI:</label>
-            <input type="text" id="dui" name="dui" placeholder="Número de DUI" maxlength="9" required>
-    <input type="file" id="dui" name="dui" accept="image/*">
+            <input type="text" id="dui" name="dui" placeholder="Número de DUI" maxlength="9" required class="form-control">
+
+            <label for="direccion">Dirección:</label>
+            <input type="text" id="direccion" name="direccion" placeholder="Dirección"  required>
+        </form>
+        <div>
+            
+            
+
+            
+            
+            
+
+            
+
+           
+
+            
+   
     
         </div>
         <div>
          
-            <label for="direccion">Dirección:</label>
-            <input type="text" id="direccion" name="direccion" placeholder="Dirección"  required>
+            
 
             <label for="edad">Edad:</label>
             <input type="number" id="edad" name="edad" placeholder="Edad"  required>
@@ -139,6 +146,5 @@
             </div>
         </div>
     </div>
-</body>
-</html> 
+
 {% endblock %} 

@@ -15,7 +15,7 @@ class Docente(models.Model):
     user = models.OneToOneField(User, on_delete= models.CASCADE )
     dui= models.CharField(primary_key=True, max_length=9, null = False, unique= True)
     numeroTelefono = models.TextField(max_length=8, null = False)
-    nombreDocente = models.TextField(max_length=100, null= False)
+    nombreDocente = models.CharField(max_length=100, null= False)
     apellidoDocente = models.TextField(max_length=100, null= False)
     generoDocente = models.CharField(max_length=1, null= False)
     direccionDocente = models.TextField(max_length=100, null = False)
