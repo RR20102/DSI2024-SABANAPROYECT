@@ -1,9 +1,10 @@
 from django.shortcuts import render, get_object_or_404, redirect
 #Importacion de modelos de la base de datos - Codigo Daniel 
-from .models import Docente, Grado, Seccion, Asignacion
+from .models import Docente, Grado, Seccion, Asignacion, Estudiante
 #from .forms import AsignacionForm
 from django.contrib import messages  # Importa messages
 from django.http import JsonResponse
+import json
 
 #Codigo Christian 
 from django.contrib.auth import authenticate, login, logout
@@ -75,9 +76,55 @@ def exit(request):
     logout(request)
     return redirect('home')
 
-def profile(request):
+def get_grupos(request):
+    roles = {}
+    user = request.user
+    groups = user.groups.all()  # Obtiene todos los grupos a los que pertenece el usuario
+    group_names = [group.name for group in groups]
+    
+    if 'Administrador' in group_names:
+        roles['es_admin'] =True
+    else:
+        roles['es_admin']=False
+    
+    if 'Docente' in group_names:
+        roles['es_docente'] =True
+    else:
+        roles['es_docente']=False
 
-    return render(request, 'accounts/profile.html')
+    if 'Estudiante' in group_names:
+        roles['es_est'] =True
+    else:
+        roles['es_est']=False
+    return roles
+
+def profile(request):
+    usuario = request.user
+    contexto = get_grupos(request)
+    persona = None
+    if contexto['es_docente']:
+        persona = usuario.docente
+        usuario = User.objects.get(username=usuario)
+        persona = get_object_or_404(Docente, user=usuario)
+    elif contexto['es_est']:
+        persona = usuario.estudiante
+        usuario = User.objects.get(username=usuario)
+        persona = get_object_or_404(Estudiante, user=usuario)
+   
+    contexto['persona']=persona
+    #contexto2 = json.dumps(contexto)
+
+    
+    return render(request, 'accounts/profile.html',contexto)
+
+    
+     
+    """context = {
+        'usuario': usuario,
+        'docente': docente,
+    }
+
+    return render(request, 'accounts/profile.html', context)"""
 
 #Codigo Menu administrador - Agregado por Daniel 
 def menuadministrador(request):

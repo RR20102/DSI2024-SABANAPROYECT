@@ -30,13 +30,50 @@
                     <h4 class="text-right">Perfil </h4>
                 </div>
                 <div class="row mt-2">
-                    <div class="col-md-6"><label class="labels">Nombres:</label><span class="form-control-plaintext text-black-50" >Nombre de usuario</span></div>
-                    <div class="col-md-6"><label class="labels">Apellidos:</label><span class="form-control-plaintext text-black-50" >Apellido del usuario</span></div>
+                    <div class="col-md-6"><label class="labels">Nombres:</label>
+                        
+                        <span class="form-control-plaintext text-black-50" >
+                            {% if es_docente %}
+                                {{ persona.nombreDocente }}
+                            {% elif es_est %}
+                                {{ persona.nombreAlumno }}
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div class="col-md-6"><label class="labels">Apellidos:</label>
+                        <span class="form-control-plaintext text-black-50" >
+                            {% if es_docente %}
+                                {{ persona.apellidoDocente }}
+                            {% elif es_est %}
+                                {{ persona.apellidoAlumno }}
+                            {% endif %}
+                        </span>
+                    </div>
                 </div>
                 <div class="row mt-3">
-                    <div class="col-md-12"><label class="labels">Numero de Telefono:</label><span class="form-control-plaintext text-black-50" >+1 555 555 5555</span></div>
-                    <div class="col-md-12"><label class="labels">Dirección:</label><span class="form-control-plaintext text-black-50" >Calle Principal 123</span></div>
-                    <div class="col-md-12"><label class="labels">Edad: </label><span class="form-control-plaintext text-black-50" >45</span></div>
+                    <div class="col-md-12"><label class="labels">Numero de Telefono:</label>
+                        <span class="form-control-plaintext text-black-50" >
+                            {% if es_docente %}
+                                {{ persona.telefonoDocente }}
+                            {% elif es_est %}
+                                {{ persona.numeroTelefonoAlumno }}
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div class="col-md-12"><label class="labels">Dirección:</label>
+                        <span class="form-control-plaintext text-black-50" >
+                            {% if es_docente %}
+                                {{ persona.telefonoDocente }}
+                            {% elif es_est %}
+                                {{ persona.numeroTelefonoAlumno }}
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div class="col-md-12"><label class="labels">Edad: </label>
+                        <span class="form-control-plaintext text-black-50" >
+                            
+                        </span>
+                    </div>
                     <div class="col-md-12"><label class="labels">Correo Electrónico:</label><span class="form-control-plaintext text-black-50" >usuario@ejemplo.com</span></div>
                     <!--<div class="col-md-12"><label class="labels">State</label><span class="form-control-plaintext text-black-50" >Estado</span></div>
                     <div class="col-md-12"><label class="labels">Area</label><span class="form-control-plaintext text-black-50" >Ciudad</span></div>
@@ -79,4 +116,11 @@
         </div>
     </div>
 </div> -->
+<script type="text/javascript">
+    // Obtener el contexto JSON y parsearlo a un objeto JavaScript
+    var contexto = JSON.parse('{{ contexto_json|safe }}');
+
+    // Imprimir el objeto en la consola
+    console.log(contexto);
+</script>
 {% endblock %}
