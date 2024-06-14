@@ -13,7 +13,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.sessions.backends.db import SessionStore
 from .forms import LoginForm
 from django.contrib.auth.models import User
-
+from django.core.mail import send_mail
 
 #Login Codigo Christian 
 def login_view(request):
@@ -36,55 +36,19 @@ def login_view(request):
             
     return render(request, 'accounts/login.html', {'form': form})
 
+def envio_correo(request):
+
+    try:
+        to_email = 'christianadonayriveralopez@gmail.com'
+        subject = 'Mensaje de prueba'
+        message = 'este es un mensaje de prueba'
+        send_mail(subject, message, None, [to_email])
+        return HttpResponse('Correo enviado con exito')
+    except Exception as e:
+        error_message = str(e)
+    return HttpResponse(error_message)
 @login_required 
 def home(request):
-    """user_id = request.session.get('user_id')
-    grupos = None
-    contexto = {}
-    if user_id:
-        user = get_object_or_404(User, pk=user_id)
-    else:
-        user = None
-    
-    if user is not None:
-        grupos = user.groups
-    
-    if 'Administrador' in grupos:
-        contexto['es_admin'] =True
-    else:
-        contexto['es_admin']=False
-    
-    if 'Docente' in grupos:
-        contexto['es_docente'] =True
-    else:
-        contexto['es_docente']=False
-
-    if 'Estudiante' in grupos:
-        contexto['es_est'] =True
-    else:
-        contexto['es_est']=False
-    if request.user.is_authenticated: 
-        contexto = {}
-        user = request['user']
-        print(user.username)
-        group = user.groups.first()
-        print(group)
-        
-        print(request.user.groups.all())
-        if 'Administrador' in request.user.groups.values_list('name', flat=True):
-            contexto['es_admin'] =True
-        else:
-            contexto['es_admin']=False
-        if user.groups.filter(name='Estudiante').exists():
-            contexto['es_estudiante'] =True
-        else:
-            contexto['es_estudiante']=False
-        if user.groups.filter(name='Docente').exists():
-            contexto['es_docente'] =True
-        else:
-            contexto['es_docente']=False
-        print(contexto) 
-    return render(request, 'accounts/home.html', contexto)"""
     contexto = {}
     user = request.user
     groups = user.groups.all()  # Obtiene todos los grupos a los que pertenece el usuario

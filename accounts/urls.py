@@ -8,7 +8,7 @@ urlpatterns = [
     path('', views.home, name='home'),
     path('accounts/logout/',views.exit,name='exit'),
     path('accounts/profile/',views.profile,name='profile'),
-
+    path('correo/', views.envio_correo, name='correo'),
     #Codigo Menu administrador - Agregado por Daniel 
     path('menuadministrador/', views.menuadministrador, name='menuadministrador'),
     path('registroestudiante/', views.registroestudiante, name='registroestudiante'),

@@ -153,3 +153,23 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'home'
+
+#configuracion de correo electronico
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+EMAIL_HOST = 'smtp.gmail.com'  # Reemplaza con la dirección de tu servidor SMTP
+EMAIL_PORT = 587  # Puerto común para SMTP con TLS
+EMAIL_HOST_USER = 'escuelasabanaproyectodsi@gmail.com'  # Tu nombre de usuario de correo electrónico
+EMAIL_HOST_PASSWORD = 'aoglkruotwukgacz'  # Tu contraseña de correo electrónico
+EMAIL_USE_TLS = True  # Habilitar seguridad TLS
+
+DEFAULT_FROM_EMAIL = 'Sistema Escuela Sabana <escuelasabanaproyectodsi@gmail.com>'
+
+
+#sesiones
+#SESSION_COOKIE_AGE = 60 * 30  # 30 minutos
+SESSION_SAVE_EVERY_REQUEST = True
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+SESSION_EXPIRE_SECONDS = 600  # 10 minutos
+SESSION_EXPIRE_AFTER_LAST_ACTIVITY = True
+#SESSION_TIMEOUT_REDIRECT = 'login'  # Redireccionar al login
