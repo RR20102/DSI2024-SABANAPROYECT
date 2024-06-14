@@ -1,12 +1,144 @@
+{% extends "accounts/templates/accounts/base.html" %}
+{% block title %} Registro de Docente {% endblock %}
+
+{% block content %}
+{% load widget_tweaks %}
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Resgitro de Docentes </title>
+    <style>
+        /* Estilos CSS para mejorar la apariencia del formulario */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        form {
+            width: 70%; /* Ajusta este valor según sea necesario */
+            border: 1px solid #ccc;
+            padding: 20px;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        .form-container {
+            display: flex;
+            justify-content: space-between;
+        }
+        form:nth-child(odd) {
+            margin-right: 20px; /* Espacio entre columnas */
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+        }
+        input[type="text"], input[type="email"], input[type="number"], input[type="file"], input[type="date"], select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            box-sizing: border-box;
+        }
+        input[type="radio"] {
+            margin-right: 5px;
+        }
+        .form-buttons {
+            margin-top: 20px;
+            text-align: right;
+        }
+        input[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+    </style>
 </head>
 <body>
     <h1>Bienvenido al registro de docentes</h1>
-    <a href="{% url 'menuadministrador' %}">Volver al Menú Principal</a>
+    <a href="{% url 'home' %}">Volver al Menú Principal</a>
+    <div class="form-container">
+        <div>
+            
+            <label for="nombre">Nombre Completo:</label>
+            <input type="text" id="nombre" name="nombre" placeholder="Nombre completo" required>
+
+            
+            <label for="genero">Género:</label>
+            <div>
+                <input type="radio" id="masculino" name="genero" value="masculino" required>
+                <label for="masculino">Masculino</label>
+            </div>
+            <div>
+                <input type="radio" id="femenino" name="genero" value="femenino" required>
+                <label for="femenino">Femenino</label>
+            </div>
+            
+
+            <label for="email">Correo electrónico:</label>
+            <input type="email" id="email" name="email" placeholder="Correo electrónico" required>
+
+            <label for="telefono">Número de teléfono:</label>
+            <input type="text" id="telefono" name="telefono" placeholder="Número de teléfono" maxlength="8" required>
+
+            <label for="dui">DUI:</label>
+            <input type="text" id="dui" name="dui" placeholder="Número de DUI" maxlength="9" required>
+    <input type="file" id="dui" name="dui" accept="image/*">
+    
+        </div>
+        <div>
+         
+            <label for="direccion">Dirección:</label>
+            <input type="text" id="direccion" name="direccion" placeholder="Dirección"  required>
+
+            <label for="edad">Edad:</label>
+            <input type="number" id="edad" name="edad" placeholder="Edad"  required>
+
+            <label for="materia">Grado Asignado:</label>
+            <select id="gradoAsignado" name="gradoAsignado" required>
+                <option value="">Seleccione un Grado</option>
+                <option value="primero">Primer Grado</option>
+                <option value="segundo">Segundo Grado</option>
+                <option value="tercero">Tercer Grado</option>
+                <option value="cuarto">Cuarto Grado</option>
+                <option value="quinto">Quinto Grado</option>
+                <option value="sexto">Sexto Grado</option>
+                <option value="septimo">Septimo Grado</option>
+                <option value="octavo">Octavo Grado</option>
+                <option value="noveno">Noveno Grado</option>
+                <!--Agrega más opciones según sea necesario -->
+            </select>
+
+            <label for="fecha">Fecha de registro:</label>
+            <input type="date" id="fecha" name="fecha"  required>
+
+            <label for="foto">Fotografía:</label>
+            <input type="file" id="foto" name="foto" accept="image/*" required>
+
+            <label for="titulo">Título:</label>
+            <input type="file" id="titulo" name="titulo" accept="image/*" required>
+
+            <div class="form-buttons">
+                <input type="submit" value="Volver">
+                <input type="submit" value="Guardar Registro">
+            </div>
+        </div>
+    </div>
 </body>
-</html>
+</html> 
+{% endblock %} 

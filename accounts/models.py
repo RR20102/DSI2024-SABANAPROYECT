@@ -14,11 +14,27 @@ def has_group(user, group_name):
 class Docente(models.Model):
     user = models.OneToOneField(User, on_delete= models.CASCADE )
     dui= models.CharField(primary_key=True, max_length=9, null = False, unique= True)
+    numeroTelefono = models.TextField(max_length=8, null = False)
     nombreDocente = models.TextField(max_length=100, null= False)
     apellidoDocente = models.TextField(max_length=100, null= False)
     generoDocente = models.CharField(max_length=1, null= False)
     direccionDocente = models.TextField(max_length=100, null = False)
     correoDocente = models.EmailField(unique= True, null = False )
+    edadDocente = models.IntegerField()
+
+    GRADOS_CHOICES = [
+        ('Primer Grado', 'Primer Grado'),
+        ('Segundo Grado', 'Segundo Grado'),
+        ('Tercer Grado', 'Tercer Grado'),
+        ('Cuarto Grado', 'Cuarto Grado'),
+        ('Quinto Grado', 'Quinto Grado'),
+        ('Sexto Grado', 'Sexto Grado'),
+        ('Septimo Grado', 'Septimo Grado'),
+        ('Octavo Grado', 'Octavo Grado'),
+        ('Noveno Grado', 'Noveno Grado'),
+    ]
+
+    gradoAsignado = models.CharField(max_length=25, choices=GRADOS_CHOICES)
     fechaRegistroDocente = models.DateField(auto_now_add=True, null=False)
 
     def __str__(self):

@@ -32,3 +32,9 @@ class LoginForm(AuthenticationForm):
             'name': 'password',
             'placeholder': 'contraseña',
         })
+
+#Codigo Gustavo
+class DocenteForm(forms.Form):
+    class Meta:
+        model = Docente
+        fields = '__all__'

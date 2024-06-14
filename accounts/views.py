@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 #Importacion de modelos de la base de datos - Codigo Daniel 
 from .models import Docente, Grado, Seccion, GradoSeccion, Asignacion
-from .forms import AsignacionForm
+from .forms import AsignacionForm, DocenteForm
 from django.contrib import messages  # Importa messages
 from django.http import JsonResponse
 
@@ -122,9 +122,23 @@ def menuadministrador(request):
 @login_required 
 def registroestudiante(request):
     return render(request, 'accounts/registroestudiante.html')
+#Codigo Gustavo de registros de docentes
 @login_required 
 def registrodocente(request):
-    return render(request, 'accounts/registrodocente.html')
+    context = {}
+    if request.method == 'POST':
+        form = DocenteForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('registrodocente')
+        else:
+            form = DocenteForm()
+
+        context = {
+            'form': form,
+            'docentes': Docente.objects.all()
+        }
+    return render(request, 'accounts/registrodocente.html', context)
 @login_required 
 def visualizarregistro(request):
     return render(request, 'accounts/visualizardatosregistro.html')
