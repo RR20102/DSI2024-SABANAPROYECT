@@ -14,13 +14,30 @@
         object-fit: cover;
     }
 </style>
-<div class="container rounded bg-white mt-5 mb-5">
+ <!--<div class="container rounded bg-white mt-5 mb-5">
     <div class="row">
         <div class="col-md-3 border-right">
             <div class="d-flex flex-column align-items-center text-center p-3 py-5">
                 <img class="rounded-circle mt-5" width="150px" src="https://st3.depositphotos.com/15648834/17930/v/600/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg">
-                <span class="font-weight-bold">Edogaru</span>
-                <span class="text-black-50">edogaru@mail.com.my</span>
+                <span class="font-weight-bold">
+                    {% if es_docente %}
+                        {{ persona.user.username }}
+                    {% elif es_est %}
+                        {{ persona.user.username }}
+                    {% elif es_admin %}
+                        {{ user.username }}
+                    {% endif %}
+                </span>
+                <span class="text-black-50">
+                    {% if es_docente %}
+                        {{ persona.user.email }}
+                    {% elif es_est %}
+                        {{ persona.user.email }}
+                    {% elif es_admin %}
+                        {{ user.email }}
+                    {% endif %}
+                    
+                </span>
                 <span> </span>
             </div>
         </div>
@@ -37,6 +54,8 @@
                                 {{ persona.nombreDocente }}
                             {% elif es_est %}
                                 {{ persona.nombreAlumno }}
+                            {% elif es_admin %}
+                                {{ user.first_name }}
                             {% endif %}
                         </span>
                     </div>
@@ -46,10 +65,13 @@
                                 {{ persona.apellidoDocente }}
                             {% elif es_est %}
                                 {{ persona.apellidoAlumno }}
+                            {% elif es_admin %}
+                                {{ user.last_name }}
                             {% endif %}
                         </span>
                     </div>
                 </div>
+                {% if es_docente or es_est %}
                 <div class="row mt-3">
                     <div class="col-md-12"><label class="labels">Numero de Telefono:</label>
                         <span class="form-control-plaintext text-black-50" >
@@ -63,64 +85,312 @@
                     <div class="col-md-12"><label class="labels">Dirección:</label>
                         <span class="form-control-plaintext text-black-50" >
                             {% if es_docente %}
+                                {{ persona.direccionDocente }}
+                            {% elif es_est %}
+                                {{ persona.direccionResponsable }}
+                            {% endif %}
+                        </span>
+                    </div>
+                
+                    <div class="col-md-12"><label class="labels">Edad: </label>
+                        <span class="form-control-plaintext text-black-50" >
+                            {% if es_docente %}
+                                {{ persona.edadDocente }} 
+                            {% elif es_est %}
+                                {{ persona.edadAlumno }}
+                            {% endif %}
+                        </span>
+                    </div>
+                {% endif %}
+                    <div class="col-md-12"><label class="labels">Correo Electrónico:</label>
+                        <span class="form-control-plaintext text-black-50" >
+                            {% if es_docente %}
+                                {{ persona.correoDocente }}
+                            {% elif es_est %}
+                                {{ persona.user.email }}
+                            {% elif es_admin %}
+                                {{ user.email }}
+                            {% endif %}
+                            
+                        </span>
+                    </div>
+                </div>
+                <div class="mt-5 text-center"><button class="btn btn-primary profile-button" type="button">Regresar</button></div>
+
+            </div>
+        </div>
+       
+        {% if es_docente or es_admin %}
+            <div class="col-md-4">
+                <div class="p-3 py-5">
+                    <div class="accordion" id="accordionExample">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingOne">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                    {% if es_docente %}
+                                        Profesor De la Escuela La Sabana
+                                    {% endif %}
+                                    {% if es_admin %}
+                                        Administrador
+                                    {% endif %}
+                                </button>
+                            </h2>
+                            <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                                <div class="accordion-body">
+                                    {% if es_docente %}
+                                        <strong>Sabemos que ser profesor/a no siempre es fácil,</strong> pero queríamos recordarte lo mucho que valoramos tu dedicación y pasión por la enseñanza.
+                                        Tus clases son un espacio donde el conocimiento cobra vida, donde nos motivas a aprender, a cuestionarnos y a descubrir nuevas perspectivas.
+                                        Gracias por tu paciencia infinita, por tu apoyo constante y por contagiarnos tu entusiasmo por el conocimiento.
+                                    {% endif %}
+                                    {% if es_admin %}
+                                        <strong>El administrador del sistema se encarga de registrar estudiantes y maestros, </strong>asignándolos a sus respectivos grados
+                                        y garantiza el buen funcionamiento y seguridad del sistema, controlando el acceso a la información académica. 
+                                        
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif  %} 
+        {% if es_est %}
+            <div class="col-md-4">
+                <div class="p-3 py-5">
+                    
+                        <div class="d-flex justify-content-between align-items-center experience">
+                            <h4 class="text-right">Datos del Responsable</h4>
+                        </div><br>
+                        <div class="col-md-12"><label class="labels">Nombre del Responsable:</label>
+                            <span class="form-control-plaintext text-black-50" >
+                                {{ persona.nombreResponsable }}
+                            </span>
+                        </div> <br>
+                        <div class="col-md-12"><label class="labels">Apellidos de Responsable:</label>
+                            <span class="form-control-plaintext text-black-50" >
+                                {{ persona.apellidoResposable }}
+                            </span>
+                        </div>
+                        <div class="col-md-12"><label class="labels">Numero de Telefono:</label>
+                            <span class="form-control-plaintext text-black-50" >
+                                {{ persona.numeroTelefonoResposable }}
+                            </span>
+                        </div>
+                        <div class="col-md-12"><label class="labels">DUI del Responsable:</label>
+                            <span class="form-control-plaintext text-black-50" >
+                                {{ persona.duiResponsable }}
+                            </span>
+                        </div>
+                        <div class="col-md-12"><label class="labels">Dirección:</label>
+                            <span class="form-control-plaintext text-black-50" >
+                                {{ persona.direccionResponsable }}
+                            </span>
+                        </div>
+                        <div class="col-md-12"><label class="labels">Edad:</label>
+                            <span class="form-control-plaintext text-black-50" >
+                                {{ persona.edadResponsable }}
+                            </span>
+                        </div>
+                    
+                        
+                </div>
+            </div>
+        {% endif  %}
+    </div>
+    
+</div> -->
+
+<div class="container rounded bg-white mt-5 mb-5">
+    <div class="row">
+        <!-- Primera columna -->
+        <div class="col-md-3 border-right">
+            <div class="d-flex flex-column align-items-center text-center p-3 py-5">
+                <img class="rounded-circle mt-5" width="150px" src="https://st3.depositphotos.com/15648834/17930/v/600/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg">
+                <span class="font-weight-bold">
+                    {% if es_docente %}
+                        {{ persona.user.username }}
+                    {% elif es_est %}
+                        {{ persona.user.username }}
+                    {% elif es_admin %}
+                        {{ user.username }}
+                    {% endif %}
+                </span>
+                <span class="text-black-50">
+                    {% if es_docente %}
+                        {{ persona.user.email }}
+                    {% elif es_est %}
+                        {{ persona.user.email }}
+                    {% elif es_admin %}
+                        {{ user.email }}
+                    {% endif %}
+                </span>
+                <span> </span>
+            </div>
+        </div>
+
+        <!-- Segunda columna -->
+        <div class="col-md-5 border-right">
+            <div class="p-3 py-5">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="text-right">Perfil </h4>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-md-6">
+                        <label class="labels">Nombres:</label>
+                        <span class="form-control-plaintext text-black-50">
+                            {% if es_docente %}
+                                {{ persona.nombreDocente }}
+                            {% elif es_est %}
+                                {{ persona.nombreAlumno }}
+                            {% elif es_admin %}
+                                {{ user.first_name }}
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="labels">Apellidos:</label>
+                        <span class="form-control-plaintext text-black-50">
+                            {% if es_docente %}
+                                {{ persona.apellidoDocente }}
+                            {% elif es_est %}
+                                {{ persona.apellidoAlumno }}
+                            {% elif es_admin %}
+                                {{ user.last_name }}
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+                {% if es_docente or es_est %}
+                <div class="row mt-3">
+                    <div class="col-md-12">
+                        <label class="labels">Numero de Telefono:</label>
+                        <span class="form-control-plaintext text-black-50">
+                            {% if es_docente %}
                                 {{ persona.telefonoDocente }}
                             {% elif es_est %}
                                 {{ persona.numeroTelefonoAlumno }}
                             {% endif %}
                         </span>
                     </div>
-                    <div class="col-md-12"><label class="labels">Edad: </label>
-                        <span class="form-control-plaintext text-black-50" >
-                            
+                    <div class="col-md-12">
+                        <label class="labels">Dirección:</label>
+                        <span class="form-control-plaintext text-black-50">
+                            {% if es_docente %}
+                                {{ persona.direccionDocente }}
+                            {% elif es_est %}
+                                {{ persona.direccionResponsable }}
+                            {% endif %}
                         </span>
                     </div>
-                    <div class="col-md-12"><label class="labels">Correo Electrónico:</label><span class="form-control-plaintext text-black-50" >usuario@ejemplo.com</span></div>
-                    <!--<div class="col-md-12"><label class="labels">State</label><span class="form-control-plaintext text-black-50" >Estado</span></div>
-                    <div class="col-md-12"><label class="labels">Area</label><span class="form-control-plaintext text-black-50" >Ciudad</span></div>
-                    <div class="col-md-12"><label class="labels">Email ID</label><span class="form-control-plaintext text-black-50" >usuario@ejemplo.com</span></div>
-                    <div class="col-md-12"><label class="labels">Education</label><span class="form-control-plaintext text-black-50" >Ingeniería en Sistemas</span></div> -->
+                    <div class="col-md-12">
+                        <label class="labels">Edad:</label>
+                        <span class="form-control-plaintext text-black-50">
+                            {% if es_docente %}
+                                {{ persona.edadDocente }}
+                            {% elif es_est %}
+                                {{ persona.edadAlumno }}
+                            {% endif %}
+                        </span>
+                    </div>
                 </div>
-                <!--<div class="row mt-3">
-                    <div class="col-md-6"><label class="labels">Country</label><span class="form-control-plaintext text-black-50" >País</span></div>
-                    <div class="col-md-6"><label class="labels">State/Region</label><span class="form-control-plaintext text-black-50" >Región/Estado</span></div> 
-                </div>-->
+                {% endif %}
+                <div class="col-md-12">
+                    <label class="labels">Correo Electrónico:</label>
+                    <span class="form-control-plaintext text-black-50">
+                        {% if es_docente %}
+                            {{ persona.correoDocente }}
+                        {% elif es_est %}
+                            {{ persona.user.email }}
+                        {% elif es_admin %}
+                            {{ user.email }}
+                        {% endif %}
+                    </span>
+                </div>
                 <div class="mt-5 text-center"><button class="btn btn-primary profile-button" type="button">Regresar</button></div>
             </div>
         </div>
+
+        <!-- Tercera columna: Docente/Admin/Estudiante -->
+        {% if es_docente or es_admin %}
         <div class="col-md-4">
             <div class="p-3 py-5">
-                <div class="d-flex justify-content-between align-items-center experience">
-                    <span>Experience</span>
-                </div><br>
-                <div class="col-md-12"><label class="labels">Experience in Designing</label><span class="form-control-plaintext text-black-50" >5 años de experiencia en diseño web</span></div> <br>
-                <div class="col-md-12"><label class="labels">Additional Details</label><span class="form-control-plaintext text-black-50" >Experiencia en diseño UX/UI, diseño gráfico y desarrollo frontend.</span></div>
-            </div>
-        </div>
-    </div>
-</div>
-</div>
-</div>
-<!--<div class="container profile-container">
-    <div class="row">
-        <div class="col-md-4 offset-md-4">
-            <div class="card">
-                <div class="card-body text-center">
-                    <img src="https://st3.depositphotos.com/15648834/17930/v/600/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg" alt="Foto de Perfil" class="profile-image">
-                    <h4 class="card-title mt-3">Nombre Completo</h4>
-                    <p class="card-text">Edad: </p>
-                    <p class="card-text"><i class="fa fa-map-marker"></i> Dirección: </p>
-                    <p class="card-text"><i class="fa fa-phone"></i> Teléfono: </p>
-                    <p class="card-text"><i class="fa fa-envelope"></i> Correo Electrónico: </p>
+                <div class="accordion" id="accordionExample">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingOne">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                {% if es_docente %}
+                                    Profesor De la Escuela La Sabana
+                                {% elif es_admin %}
+                                    Administrador
+                                {% endif %}
+                            </button>
+                        </h2>
+                        <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                            <div class="accordion-body">
+                                {% if es_docente %}
+                                    <strong>Sabemos que ser profesor/a no siempre es fácil,</strong> pero queríamos recordarte lo mucho que valoramos tu dedicación y pasión por la enseñanza.
+                                    Tus clases son un espacio donde el conocimiento cobra vida, donde nos motivas a aprender, a cuestionarnos y a descubrir nuevas perspectivas.
+                                    Gracias por tu paciencia infinita, por tu apoyo constante y por contagiarnos tu entusiasmo por el conocimiento.
+                                {% elif es_admin %}
+                                    <strong>El administrador del sistema se encarga de registrar estudiantes y maestros,</strong> asignándolos a sus respectivos grados y garantiza el buen funcionamiento y seguridad del sistema, controlando el acceso a la información académica.
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-</div> -->
-<script type="text/javascript">
-    // Obtener el contexto JSON y parsearlo a un objeto JavaScript
-    var contexto = JSON.parse('{{ contexto_json|safe }}');
+        {% endif %}
 
-    // Imprimir el objeto en la consola
-    console.log(contexto);
-</script>
+        {% if es_est %}
+        <div class="col-md-4">
+            <div class="p-3 py-5">
+                <div class="d-flex justify-content-between align-items-center experience">
+                    <h4 class="text-right">Datos del Responsable</h4>
+                </div><br>
+                <div class="col-md-12">
+                    <label class="labels">Nombre del Responsable:</label>
+                    <span class="form-control-plaintext text-black-50">
+                        {{ persona.nombreResponsable }}
+                    </span>
+                </div><br>
+                <div class="col-md-12">
+                    <label class="labels">Apellidos de Responsable:</label>
+                    <span class="form-control-plaintext text-black-50">
+                        {{ persona.apellidoResposable }}
+                    </span>
+                </div>
+                <div class="col-md-12">
+                    <label class="labels">Numero de Telefono:</label>
+                    <span class="form-control-plaintext text-black-50">
+                        {{ persona.numeroTelefonoResposable }}
+                    </span>
+                </div>
+                <div class="col-md-12">
+                    <label class="labels">DUI del Responsable:</label>
+                    <span class="form-control-plaintext text-black-50">
+                        {{ persona.duiResponsable }}
+                    </span>
+                </div>
+                <div class="col-md-12">
+                    <label class="labels">Dirección:</label>
+                    <span class="form-control-plaintext text-black-50">
+                        {{ persona.direccionResponsable }}
+                    </span>
+                </div>
+                <div class="col-md-12">
+                    <label class="labels">Edad:</label>
+                    <span class="form-control-plaintext text-black-50">
+                        {{ persona.edadResponsable }}
+                    </span>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+
+
+
 {% endblock %}

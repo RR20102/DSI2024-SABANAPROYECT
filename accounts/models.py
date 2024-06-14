@@ -20,6 +20,8 @@ class Docente(models.Model):
     direccionDocente = models.TextField(max_length=100, null = False)
     correoDocente = models.EmailField(unique= True, null = False )
     fechaRegistroDocente = models.DateField(auto_now_add=True, null=False)
+    edadDocente = models.IntegerField(null=False)
+    telefonoDocente = models.CharField(max_length = 8, null = False)
 
     def __str__(self):
         return f"{self.nombreDocente}   {self.apellidoDocente}"

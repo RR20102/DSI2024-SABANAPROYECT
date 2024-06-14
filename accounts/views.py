@@ -15,6 +15,11 @@ from django.contrib.sessions.backends.db import SessionStore
 from .forms import LoginForm
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
+from django.db import IntegrityError
+from django.core.exceptions import ValidationError
+from smtplib import SMTPException
+import random
+import string
 
 #Login Codigo Christian 
 def login_view(request):
@@ -112,19 +117,92 @@ def profile(request):
         persona = get_object_or_404(Estudiante, user=usuario)
    
     contexto['persona']=persona
-    #contexto2 = json.dumps(contexto)
-
+   
+    
     
     return render(request, 'accounts/profile.html',contexto)
 
-    
+def generate_random_password(length=8):
+    """Genera una contraseña aleatoria"""
+    characters = string.ascii_letters + string.digits
+    return ''.join(random.choice(characters) for i in range(length))
      
-    """context = {
-        'usuario': usuario,
-        'docente': docente,
-    }
+def generate_unique_username(nombre, apellidos):
+    """Genera un nombre de usuario único basado en el nombre y apellido"""
+    base_username = f"{nombre.split()[0]}.{apellidos.split()[0]}".lower()
+    username = base_username
+    while User.objects.filter(username=username).exists():
+        username = f"{base_username}{''.join(random.choices(string.digits, k=2))}"
+    return username
 
-    return render(request, 'accounts/profile.html', context)"""
+def registrar_docente(nombre, apellidos, correo_electronico, dui, genero, direccion, edad, telefono):
+    """
+    Registra un docente y crea un usuario asociado.
+
+    Args:
+        nombre (str): Nombre del docente.
+        apellidos (str): Apellidos del docente.
+        correo_electronico (str): Correo electrónico del docente.
+        dui (str): DUI del docente.
+        genero (str): Género del docente.
+        direccion (str): Dirección del docente.
+        edad (int): Edad del docente.
+        telefono (str): Teléfono del docente.
+
+    Returns:
+        dict: Información sobre el registro, incluyendo el username y la contraseña si es exitoso.
+    """
+    try:
+        # Validar que el correo electrónico sea único
+        if User.objects.filter(email=correo_electronico).exists():
+            return {'success': False, 'message': 'El correo electrónico ya está registrado.'}
+        
+        # Generar un nombre de usuario único
+        username = generate_unique_username(nombre, apellidos)
+        
+        # Generar una contraseña aleatoria
+        password = generate_random_password()
+        
+        # Crear el usuario
+        user = User.objects.create_user(username=username, password=password, email=correo_electronico)
+        user.first_name = nombre
+        user.last_name = apellidos
+        user.save()
+        
+        # Crear el docente asociado
+        docente = Docente(
+            user=user, 
+            dui=dui, 
+            nombreDocente=nombre, 
+            apellidoDocente=apellidos, 
+            generoDocente=genero, 
+            direccionDocente=direccion, 
+            correoDocente=correo_electronico,
+            edadDocente=edad, 
+            telefonoDocente=telefono
+        )
+        docente.save()
+        
+        # Enviar el correo electrónico con el username y la contraseña
+        try:
+            # Enviar el correo electrónico con el username y la contraseña
+            send_mail(
+                'No responsa a Este correo - Registro exitoso',
+                f'Escuela La Sabana \n {docente.__str__()} Su usuario ha sido creado exitosamente.\n\nUsername: {username}\nContraseña: {password}',
+                'admin@example.com',  # Debería ser el correo del sistema
+                [correo_electronico],
+                fail_silently=False,
+            )
+        except SMTPException as e:
+            return {'success': False, 'message': 'El usuario fue creado, pero ocurrió un error al enviar el correo electrónico.'}
+        
+        return {'success': True, 'username': username, 'password': password}
+    
+    except IntegrityError as e:
+        return {'success': False, 'message': str(e)}
+    except ValidationError as e:
+        return {'success': False, 'message': str(e)}
+    
 
 #Codigo Menu administrador - Agregado por Daniel 
 def menuadministrador(request):
