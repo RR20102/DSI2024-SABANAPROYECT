@@ -137,7 +137,7 @@ def registrodocente(request):
 
 @login_required 
 def docentes_view(request):
-    
+    #Listar Docentes
     return render(request, 'accounts/verdocente.html')
 
 @login_required 
