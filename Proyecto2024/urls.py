@@ -17,6 +17,7 @@ from django.contrib import admin
 from django.urls import path
 #Codigo Agregado Daniel 
 from accounts import views
+#from accounts import registrar_estudiante
 #Codigo Agregado Christian 
 from django.urls import include
 
@@ -43,5 +44,6 @@ urlpatterns = [
     path('visualizarasignaciondocente/', views.visualizarasignaciondocente, name='visualizarasignaciondocente'),
     path('editarasignacion/<int:id>/', views.editarasignacion, name='editarasignacion'),
     path('eliminarasignacion/<int:id>/', views.eliminarasignacion, name='eliminarasignacion'),
+    #path('registrar_estudiante/', registrar_estudiante, name='registrar_estudiante'),
 
 ]   

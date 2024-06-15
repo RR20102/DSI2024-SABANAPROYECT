@@ -1,0 +1,61 @@
+{% extends "accounts/templates/accounts/base.html" %}
+{% block title %}SABANA PROYECT {% endblock %}
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-center">
+    <h1 class="mt-5">LISTA DE ESTUDIANTES</h1>
+</div>
+    <div class="d-flex justify-content-center">
+    <table class="table table-striped mt-4">
+        <thead>
+            <tr>
+                <th>Usuario</th>
+                <th>Contraseña</th>
+                <th> | </th>
+                <th>Nombre Estudiante</th>
+                <th>Apellido Estudiante</th>
+                <th>Edad Estudiante</th>
+                <th>Teléfono Estudiante</th>
+                <th> | </th>
+                <th>Nombre Responsable</th>
+                <th>Apellido Responsable</th>
+                <th>Teléfono Responsable</th>
+                <th>DUI Responsable</th>
+                <th>Dirección Responsable</th>
+                <th>Edad Responsable</th>
+                <th>Acciones</th> <!--columna para botones de acción -->
+            </tr>
+        </thead>
+        <tbody>
+            {% for estudiante in estudiantes %}
+            <tr>
+                <td>{{ estudiante.user.username }}</td>
+                <td>****</td>
+                <th> | </th>
+                <td>{{ estudiante.nombreAlumno }}</td>
+                <td>{{ estudiante.apellidoAlumno }}</td>
+                <td>{{ estudiante.edadAlumno }}</td>
+                <td>{{ estudiante.numeroTelefonoAlumno }}</td>
+                <th> | </th>
+                <td>{{ estudiante.nombreResponsable }}</td>
+                <td>{{ estudiante.apellidoResposable }}</td>
+                <td>{{ estudiante.numeroTelefonoResposable }}</td>
+                <td>{{ estudiante.duiResponsable }}</td>
+                <td>{{ estudiante.direccionResponsable }}</td>
+                <td>{{ estudiante.edadResponsable }}</td>
+                <td>
+                    <a href="{% url 'editar_estudiante' estudiante.id_alumno %}" class="btn btn-primary btn-sm">Editar</a>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="14"></td> <!-- Ajustar el colspan según el número de columnas -->
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    </div>
+    <div class="mt-4">
+        <a href="{% url 'home' %}" class="btn btn-secondary">Volver</a>
+    </div>
+</div>
+{% endblock %}

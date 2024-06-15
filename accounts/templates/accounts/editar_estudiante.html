@@ -1,0 +1,13 @@
+{% extends "accounts/templates/accounts/base.html" %}
+{% block title %}SABANA PROYECT {% endblock %}
+{% block content %}
+<div class="container">
+    <h1 class="mt-5">EDITAR ESTUDIANTE</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary mt-3">Guardar Cambios</button>
+        <a href="{% url 'listar_estudiantes' %}" class="btn btn-secondary mt-3">Cancelar</a>
+    </form>
+</div>
+{% endblock %}

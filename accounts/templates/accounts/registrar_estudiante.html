@@ -1,0 +1,58 @@
+{% extends "accounts/templates/accounts/base.html" %}
+{% block title %}SABANA PROYECT {% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <h1 class="mt-5">REGISTRAR ESTUDIANTE</h1>
+        
+        <form id="registrarEstudianteForm" method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <div class="mt-4">
+                <button type="submit" class="btn btn-primary">Guardar</button>
+                <a href="{% url 'home' %}" class="btn btn-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function() {
+    $('#registrarEstudianteForm').on('submit', function(event) {
+        event.preventDefault(); // Evita el envío del formulario por defecto
+        var form = $(this);
+        $.ajax({
+            type: form.attr('method'),
+            url: form.attr('action'),
+            data: form.serialize(),
+            success: function(response) {
+                if (response.success) {
+                    Swal.fire({
+                        title: '¡Éxito!',
+                        text: response.message,
+                        icon: 'success'
+                    }).then(() => {
+                        window.location.href = '{% url "registrar_estudiante" %}';
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Error',
+                        text: response.errors,
+                        icon: 'error'
+                    });
+                }
+            },
+            error: function() {
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Ocurrió un error al registrar el estudiante.',
+                    icon: 'error'
+                });
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

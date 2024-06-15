@@ -17,7 +17,7 @@
         <button type="submit">Login</button>
     </form>
 </div> -->
-<div class="container d-flex justify-content-center align-items-center vh-100">
+<div class="container d-flex justify-content-center align-items-center" style="height: 90vh;">
   <div class="col-md-4">
 
   
@@ -37,16 +37,21 @@
         {% endfor %}
       {% endif %}
    
-      <form method="post">
+      <form method="post" class="needs-validation" novalidate>
         {% csrf_token %}
        
         <div class="mb-3">
-          <label for="{{ form.username.id_for_label }}" class="form-label">Nombre de Usuario</label>
-          {% render_field form.username class="form-control"  %}
+          <label for="{{ form.username.id_for_label }}" class="form-label">Nombre de Usuario <span style="color: red;"> *</span></label>
+          {% render_field form.username class="form-control" %}
+          <div class="valid-feedback"></div>
+          <div class="invalid-feedback">introduzca su Usuario</div>
         </div>
         <div class="mb-3">
-          <label for="{{ form.password.id_for_label }}" class="form-label">Contraseña</label>
+          <label for="{{ form.password.id_for_label }}" class="form-label">Contraseña <span style="color: red;"> *</span></label>
+          
           {% render_field form.password class="form-control" %}
+          <div class="valid-feedback"></div>
+          <div class="invalid-feedback">La Contraseña es requerida</div>
         </div>
         <div class="d-grid">
           <button type="submit" class="btn btn-primary">Login</button>
@@ -55,4 +60,26 @@
     </div>
   </div>
 </div>   
+<script type="">
+
+  // Example starter JavaScript for disabling form submissions if there are invalid fields
+  (() => {
+    'use strict'
+
+    // Fetch all the forms we want to apply custom Bootstrap validation styles to
+    const forms = document.querySelectorAll('.needs-validation')
+
+    // Loop over them and prevent submission
+    Array.from(forms).forEach(form => {
+      form.addEventListener('submit', event => {
+        if (!form.checkValidity()) {
+          event.preventDefault()
+          event.stopPropagation()
+        }
+
+        form.classList.add('was-validated')
+      }, false)
+    })
+  })()
+</script>
 {% endblock %}

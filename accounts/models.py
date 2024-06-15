@@ -20,6 +20,8 @@ class Docente(models.Model):
     direccionDocente = models.TextField(max_length=100, null = False)
     correoDocente = models.EmailField(unique= True, null = False )
     fechaRegistroDocente = models.DateField(auto_now_add=True, null=False)
+    edadDocente = models.IntegerField(null=False)
+    telefonoDocente = models.CharField(max_length = 8, null = False)
 
     def __str__(self):
         return f"{self.nombreDocente}   {self.apellidoDocente}"
@@ -27,16 +29,16 @@ class Docente(models.Model):
 class Estudiante(models.Model):
     user = models.OneToOneField(User, on_delete= models.CASCADE )
     id_alumno = models.AutoField(primary_key= True, unique= True, null= False)
-    nombreAlumno = models.TextField(max_length = 100, null= False)
-    apellidoAlumno = models.TextField(max_length = 100, null= False)
+    nombreAlumno = models.CharField(max_length = 100, null= False)
+    apellidoAlumno = models.CharField(max_length = 100, null= False)
     edadAlumno = models.IntegerField(null=False)
     numeroTelefonoAlumno = models.CharField(max_length = 8, null = False)
     fechaRegistroAlumno = models.DateField(auto_now_add=True, null=False)
-    nombreResponsable = models.TextField(max_length = 100, null= False)
-    apellidoResposable = models.TextField(max_length = 100, null= False)
+    nombreResponsable = models.CharField(max_length = 100, null= False)
+    apellidoResposable = models.CharField(max_length = 100, null= False)
     numeroTelefonoResposable = models.CharField(max_length = 8, null = False)
     duiResponsable= models.CharField( max_length=9, null = False, unique= True)
-    direccionResponsable = models.TextField(max_length=100, null = False)
+    direccionResponsable = models.CharField(max_length=100, null = False)
     edadResponsable = models.IntegerField(null=False) 
 
     def __str__(self):
