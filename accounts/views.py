@@ -8,6 +8,7 @@ import json
 
 #Codigo Christian 
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import User, Group
 from django.http import HttpResponse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -182,6 +183,14 @@ def registrar_docente(nombre, apellidos, correo_electronico, dui, genero, direcc
             telefonoDocente=telefono
         )
         docente.save()
+
+         # Agregar el usuario al grupo "Docentes"
+        try:
+            grupo_docentes = Group.objects.get(name='Docente')
+        except Group.DoesNotExist:
+            return {'success': False, 'message': 'El grupo "Docente" no existe.'}
+        
+        user.groups.add(grupo_docentes)
         
         # Enviar el correo electrónico con el username y la contraseña
         try:
