@@ -62,16 +62,18 @@
         }
     </style> -->
     <h1>Bienvenido al registro de docentes</h1>
-    <a href="{% url 'home' %}">Volver al Menú Principal</a>
-
+    <!--<a href="{% url 'home' %}">Volver al Menú Principal</a> -->
 
     <div class="form-container">
         <form action="" method="post">
-            <label for="{{ form.nombreDocente.id_for_label }}">Nombre Completo:</label>
+            <label for="{{ form.nombreDocente.id_for_label }}">Nombres:</label>
             {% render_field form.nombreDocente class="form-control"  %}
 
+            <label for="{{ form.nombreDocente.id_for_label }}">Apellidos:</label>
+            {% render_field form.apellidoDocente class="form-control"  %}
+
             <label for="{{ form.generoDocente.id_for_label }}">Género:</label>
-            {% render_field form.generoDocente class="form-check"  %}
+            <!--{% render_field form.generoDocente class="form-check"  %} -->
             <div>
                 <input type="radio" id="masculino" name="genero" value="masculino" required class="form-check-inline">
                 <label for="masculino">Masculino</label>
@@ -81,42 +83,30 @@
                 <label for="femenino">Femenino</label>
             </div>
 
-            <label for="email">Correo electrónico:</label>
-            <input type="email" id="email" name="email" placeholder="Correo electrónico" required class="form-control">
+            <label for="{{ form.correoDocente.id_for_label }}">Correo electrónico:</label>
+            {% render_field form.correoDocente class="form-control"  %}
             
-            <label for="telefono">Número de teléfono:</label>
-            <input type="text" id="telefono" name="telefono" placeholder="Número de teléfono" maxlength="8" required >
+            <label for="{{ form.numeroTelefono.id_for_label }}">Número de teléfono:</label>
+            <!--{% render_field form.numeroTelefono class="form-control"  %} -->
+            <input type="text" id="numeroTelefono" name="numeroTelefono" placeholder="" maxlength="8" required>
 
+            <br>
             <label for="dui">DUI:</label>
-            <input type="text" id="dui" name="dui" placeholder="Número de DUI" maxlength="9" required class="form-control">
-
-            <label for="direccion">Dirección:</label>
-            <input type="text" id="direccion" name="direccion" placeholder="Dirección"  required>
+            {% render_field form.dui class="form-control"  %}
+            
+            <label for="{{ form.direccionDocente.id_for_label }}">Dirección:</label>
+            <!--{% render_field form.direccionDocente class="form-control"  %} -->
+            <input type="text" id="direccionDocente" name="direccionDocente" placeholder=""  required>
         </form>
         <div>
-            
-            
-
-            
-            
-            
-
-            
-
-           
-
-            
-   
     
         </div>
         <div>
          
-            
-
             <label for="edad">Edad:</label>
-            <input type="number" id="edad" name="edad" placeholder="Edad"  required>
+            {% render_field form.edadDocente class="form-control"  %}
 
-            <label for="materia">Grado Asignado:</label>
+            <!--<label for="materia">Grado Asignado:</label>
             <select id="gradoAsignado" name="gradoAsignado" required>
                 <option value="">Seleccione un Grado</option>
                 <option value="primero">Primer Grado</option>
@@ -127,24 +117,35 @@
                 <option value="sexto">Sexto Grado</option>
                 <option value="septimo">Septimo Grado</option>
                 <option value="octavo">Octavo Grado</option>
-                <option value="noveno">Noveno Grado</option>
+                <option value="noveno">Noveno Grado</option> -->
                 <!--Agrega más opciones según sea necesario -->
-            </select>
+            <!--</select> -->
 
-            <label for="fecha">Fecha de registro:</label>
+            <!--<label for="fecha">Fecha de registro:</label>
             <input type="date" id="fecha" name="fecha"  required>
 
             <label for="foto">Fotografía:</label>
             <input type="file" id="foto" name="foto" accept="image/*" required>
 
             <label for="titulo">Título:</label>
-            <input type="file" id="titulo" name="titulo" accept="image/*" required>
+            <input type="file" id="titulo" name="titulo" accept="image/*" required> -->
 
             <div class="form-buttons">
-                <input type="submit" value="Volver">
+                <a href="{% url 'home' %}" class="btn btn-secondary">Volver</a>
                 <input type="submit" value="Guardar Registro">
             </div>
+
+            <!-- Script de JavaScript -->
+            <!--<script>
+                // Función para redirigir al usuario cuando se presione el botón
+                document.getElementById('botonVolver').addEventListener('click', function() {
+                // Redireccionar a la URL deseada, en este caso a la página principal
+                window.location.href = "{% url 'home' %}";
+            });
+    </script> -->
+
         </div>
     </div>
+
 
 {% endblock %} 

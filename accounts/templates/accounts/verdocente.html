@@ -1,10 +1,49 @@
 {% extends "accounts/templates/accounts/base.html" %}
-{% block title %} Sabana - Docentes {% endblock %}
+{% block title %} Visualizacion de Docentes {% endblock %}
 
 {% block content %}
 {% load static %}
 
-    <h1>Bienvenido a la visualizacion de los registros de docentes</h1>
-    <a href="{% url 'home' %}">Volver al Menú Principal</a>
+    <div class="row justify-content-center">
+        <div class="col-md-10 text-center">
+            <h1>Bienvenido a la visualizacion de los registros de docentes</h1>
+            <p class="lead">A continuación se muestran los docentes.</p>
     
+            <table class="table table-striped mt-4">
+                <thead>
+                    <tr>
+                        <th>Nombres</th>
+                        <th>Apellidos</th>
+                        <th>Género</th>
+                        <th>Edad</th>
+                        <th>Dirección</th>
+                        <th>E-mail</th>
+                        <th>DUI</th>
+                        <th>Número de teléfono</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for docente in docentes %}
+                        <tr>
+                            <td>{{ docente.nombreDocente }}</td>
+                            <td>{{ docente.apellidoDocente }}</td>
+                            <td>{{ docente.generoDocente }}</td>
+                            <td>{{ docente.edadDocente }}</td>
+                            <td>{{ docente.direccionDocente }}</td>
+                            <td>{{ docente.correoDocente }}</td>
+                            <td>{{ docente.dui }}</td>
+                            <td>{{ docente.numeroTelefono }}</td>
+                            <td>
+                                <!--<a href="{% url 'editardocente' docente.id %}" class="btn btn-sm btn-warning">Editar</a> -->
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+    
+            <a href="{% url 'home' %}" class="btn btn-secondary mt-4">Volver</a>
+        </div>
+    </div>
+ 
 {% endblock %}

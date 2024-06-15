@@ -134,8 +134,10 @@ def registrodocente(request):
             return redirect('registrodocente')
 
     return render(request, 'accounts/registrodocente.html', {'form':form})
+
 @login_required 
 def docentes_view(request):
+    
     return render(request, 'accounts/verdocente.html')
 
 @login_required 
