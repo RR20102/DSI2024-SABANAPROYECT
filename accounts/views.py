@@ -13,7 +13,7 @@ from django.http import HttpResponse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.sessions.backends.db import SessionStore
-from .forms import LoginForm
+from .forms import LoginForm, DocenteForm
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.db import IntegrityError
@@ -151,7 +151,7 @@ def registrar_docente(nombre, apellidos, correo_electronico, dui, genero, direcc
         telefono (str): Teléfono del docente.
 
     Returns:
-        dict: Información sobre el registro, incluyendo el username y la contraseña si es exitoso.
+        dict: Información sobre el registro, incluyendo el mensaje si es exitoso.
     """
     try:
         # Validar que el correo electrónico sea único
@@ -160,15 +160,18 @@ def registrar_docente(nombre, apellidos, correo_electronico, dui, genero, direcc
         
         # Generar un nombre de usuario único
         username = generate_unique_username(nombre, apellidos)
-        
+        print(username)
+        if username is None:
+            print('nombre de usuario nulo.')
         # Generar una contraseña aleatoria
         password = generate_random_password()
         
         # Crear el usuario
         user = User.objects.create_user(username=username, password=password, email=correo_electronico)
+        
         user.first_name = nombre
         user.last_name = apellidos
-        user.save()
+        
         
         # Crear el docente asociado
         docente = Docente(
@@ -195,17 +198,14 @@ def registrar_docente(nombre, apellidos, correo_electronico, dui, genero, direcc
         # Enviar el correo electrónico con el username y la contraseña
         try:
             # Enviar el correo electrónico con el username y la contraseña
-            send_mail(
-                'No responsa a Este correo - Registro exitoso',
-                f'Escuela La Sabana \n {docente.__str__()} Su usuario ha sido creado exitosamente.\n\nUsername: {username}\nContraseña: {password}',
-                'admin@example.com',  # Debería ser el correo del sistema
-                [correo_electronico],
-                fail_silently=False,
-            )
+            to_email = correo_electronico
+            subject = 'No responsa a Este correo - Registro exitoso'
+            message = f'Escuela La Sabana \n {docente.__str__()} Su usuario ha sido creado exitosamente.\n\nUsername: {username}\nContraseña: {password}'
+            send_mail(subject, message, None, [to_email], fail_silently=False)
         except SMTPException as e:
             return {'success': False, 'message': 'El usuario fue creado, pero ocurrió un error al enviar el correo electrónico.'}
         
-        return {'success': True, 'username': username, 'password': password}
+        return {'success': True, 'message': 'El Docente fue Registrado con exito.'}
     
     except IntegrityError as e:
         return {'success': False, 'message': str(e)}
@@ -221,7 +221,33 @@ def registroestudiante(request):
     return render(request, 'accounts/registroestudiante.html')
 
 def registrodocente(request):
-    return render(request, 'accounts/registrodocente.html')
+    resultado = None
+    if request.method == 'POST':
+        form = DocenteForm(request.POST)
+        
+        if form.is_valid():
+            resultado = registrar_docente(
+                nombre= form.cleaned_data['nombreDocente'],
+                apellidos= form.cleaned_data['apellidoDocente'],
+                correo_electronico=form.cleaned_data['correoDocente'],
+                dui=form.cleaned_data['dui'],
+                genero=form.cleaned_data['generoDocente'],
+                direccion=form.cleaned_data['direccionDocente'],
+                edad=form.cleaned_data['edadDocente'],
+                telefono= form.cleaned_data['telefonoDocente']                         
+                )
+            if resultado['success']:
+                messages.success(request, resultado['message'])
+                form = DocenteForm()
+                return render(request,'accounts/registrodocente.html', {'form': form})
+            else:
+                messages.error(request, resultado['message'])
+                form = DocenteForm()
+                return render(request,'accounts/registrodocente.html', {'form': form})
+    else:
+        form = DocenteForm()
+
+    return render(request, 'accounts/registrodocente.html',{'form': form})
 
 def visualizarregistro(request):
     return render(request, 'accounts/visualizardatosregistro.html')
@@ -233,59 +259,9 @@ def visualizarasignaciondocente(request):
     })
 
 
-"""def administrarasignaciondocente(request):
-    if request.method == 'POST':
-        docente_nombre = request.POST.get('docente')
-        grado_nombre = request.POST.get('grado')
-        seccion_nombre = request.POST.get('seccion')
-
-        if not (docente_nombre and grado_nombre and seccion_nombre):
-            messages.error(request, 'Debes seleccionar un docente, un grado y una sección.')
-        else:
-            docente = Docente.objects.get(nombre=docente_nombre)
-            grado = Grado.objects.get(nombre=grado_nombre)
-            seccion = Seccion.objects.get(nombre=seccion_nombre)
-        
-            Asignacion.objects.create(docente_nombre=docente, grado_nombre=grado, seccion_nombre=seccion)
-            messages.success(request, 'Datos guardados con éxito')
-
-        return redirect('administrarasignaciondocente')  # Redirige a la misma página
-
-    docentes = Docente.objects.all().order_by('id')
-    grados = Grado.objects.all().order_by('id')
-    secciones = Seccion.objects.all().order_by('id')
-
-    return render(request, 'accounts/administrarasignaciondocente.html', {
-        'docentes': docentes, 
-        'grados': grados, 
-        'secciones': secciones
-    }) """
 
 
-"""def editarasignacion(request, id):
-    asignacion = get_object_or_404(Asignacion, id=id)
-    if request.method == 'POST':
-        form = AsignacionForm(request.POST, instance=asignacion)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Asignación actualizada con éxito')
-            return redirect('visualizarasignaciondocente')
-    else:
-        form = AsignacionForm(instance=asignacion)
-    
-    return render(request, 'accounts/editarasignacion.html', {
-        'form': form,
-        'asignacion': asignacion
-    }) """
 
 
-"""def eliminarasignacion(request, id):
-    asignacion = get_object_or_404(Asignacion, id=id)
-    if request.method == 'POST':
-        asignacion.delete()
-        messages.success(request, 'Asignación eliminada con éxito')
-        # Enviar una respuesta JSON para mostrar el mensaje con SweetAlert2
-        return JsonResponse({'success': True})
 
-    return redirect('editarasignacion', id=id)  # Si no es una solicitud POST, redirecciona a la página de edición
-    """
+
