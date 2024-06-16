@@ -22,8 +22,20 @@ class EstudianteForm(forms.ModelForm):
         fields = [
             'nombreAlumno', 'apellidoAlumno', 'edadAlumno', 'numeroTelefonoAlumno',
             'nombreResponsable', 'apellidoResposable', 'numeroTelefonoResposable',
-            'duiResponsable', 'direccionResponsable', 'edadResponsable'
-        ]
+            'duiResponsable', 'direccionResponsable', 'edadResponsable']
+
+        labels = {
+            'nombreAlumno': 'Nombre del Estudiante',
+            'apellidoAlumno': 'Apellido del Estudiante',
+            'edadAlumno': 'Edad del Estudiante',
+            'numeroTelefonoAlumno': 'Teléfono del Estudiante',
+            'nombreResponsable': 'Nombre del Responsable',
+            'apellidoResposable': 'Apellido del Responsable',
+            'numeroTelefonoResposable': 'Teléfono del Responsable',
+            'duiResponsable': 'DUI del Responsable',
+            'direccionResponsable': 'Dirección del Responsable',
+            'edadResponsable': 'Edad del Responsable'
+        }
 
     def save(self, commit=True):
         cleaned_data = self.cleaned_data

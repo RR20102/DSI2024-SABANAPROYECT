@@ -11,20 +11,16 @@ urlpatterns = [
     path('accounts/profile/',views.profile,name='profile'),
     path('correo/', views.envio_correo, name='correo'),
     #Codigo Menu administrador - Agregado por Daniel 
-    path('menuadministrador/', views.menuadministrador, name='menuadministrador'),
-    path('registroestudiante/', views.registroestudiante, name='registroestudiante'),
     path('registrodocente/', views.registrodocente, name='registrodocente'),
     path('visualizardatosregistros/', views.visualizarregistro, name='visualizarregistro'),
-    #path('administrarasignaciondocente/', views.administrarasignaciondocente, name='administrarasignaciondocente'),
-    #path('visualizarasignaciondocente/', views.visualizarasignaciondocente, name='visualizarasignaciondocente'),
-    #path('editarasignacion/<int:id>/', views.editarasignacion, name='editarasignacion'),
-    #path('eliminarasignacion/<int:id>/', views.eliminarasignacion, name='eliminarasignacion'),  # Nueva ruta para eliminar asignación
-    #path('pruebasdjango/', views.pruebasdjango, name='pruebasdjango'),
+    #Codigo Asignacion Docente - Daniel 
     path('administrarasignaciondocente/', views.administrarasignaciondocente, name='administrarasignaciondocente'),
     path('visualizarasignaciondocente/', views.visualizarasignaciondocente, name='visualizarasignaciondocente'),
     path('editarasignacion/<int:id>/', views.editarasignacion, name='editarasignacion'),
     path('eliminarasignacion/<int:id>/', views.eliminarasignacion, name='eliminarasignacion'),
+    #Codigo Registro Estudiante - Daniel
     path('registrar_estudiante/', registrar_estudiante, name='registrar_estudiante'),
     path('listar_estudiantes/', listar_estudiantes, name='listar_estudiantes'),
-    path('editar_estudiante/<int:id_alumno>/', views.editar_estudiante, name='editar_estudiante'),
+    path('editar_estudiante/<int:id>/', views.editar_estudiante, name='editar_estudiante'),
+    path('eliminar_estudiante/<int:id>/', views.eliminar_estudiante, name='eliminar_estudiante'),
 ]

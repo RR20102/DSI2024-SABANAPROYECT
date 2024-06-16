@@ -2,12 +2,91 @@
 {% block title %}SABANA PROYECT {% endblock %}
 {% block content %}
 <div class="container">
-    <h1 class="mt-5">EDITAR ESTUDIANTE</h1>
-    <form method="post">
+    <h1 class="mt-5 text-center">EDITAR ESTUDIANTE </h1>
+    <form id="editar-estudiante-form" method="POST" class="mt-4">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit" class="btn btn-primary mt-3">Guardar Cambios</button>
-        <a href="{% url 'listar_estudiantes' %}" class="btn btn-secondary mt-3">Cancelar</a>
+        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+        <button type="button" class="btn btn-danger" id="eliminar-estudiante">Eliminar</button>
+        <a href="{% url 'listar_estudiantes' %}" class="btn btn-secondary">Volver</a>
     </form>
 </div>
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    document.getElementById('eliminar-estudiante').addEventListener('click', function() {
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: "¡No podrás revertir esto!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fetch("{% url 'eliminar_estudiante' estudiante.id_alumno %}", {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}',
+                        'Content-Type': 'application/json'
+                    },
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire(
+                            '¡Eliminado!',
+                            data.message,
+                            'success'
+                        ).then(() => {
+                            window.location.href = "{% url 'listar_estudiantes' %}";
+                        });
+                    } else {
+                        Swal.fire(
+                            'Error',
+                            data.message,
+                            'error'
+                        );
+                    }
+                });
+            }
+        });
+    });
+
+    document.getElementById('editar-estudiante-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const form = this;
+        const formData = new FormData(form);
+
+        fetch(form.action, {
+            method: form.method,
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                Swal.fire(
+                    '¡Guardado!',
+                    data.message,
+                    'success'
+                ).then(() => {
+                    window.location.href = "{% url 'listar_estudiantes' %}";
+                });
+            } else {
+                Swal.fire(
+                    'Error',
+                    data.message,
+                    'error'
+                );
+            }
+        });
+    });
+</script>
+{% endblock %}
 {% endblock %}

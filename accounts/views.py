@@ -322,14 +322,28 @@ def listar_estudiantes(request):
 
 
 @login_required
-def editar_estudiante(request, id_alumno):
-    estudiante = get_object_or_404(Estudiante, id_alumno=id_alumno)
+def editar_estudiante(request, id):
+    estudiante = get_object_or_404(Estudiante, id_alumno=id)
     if request.method == 'POST':
         form = EstudianteForm(request.POST, instance=estudiante)
         if form.is_valid():
             form.save()
-            return redirect('listar_estudiantes')
+            return JsonResponse({'success': True, 'message': 'Datos del estudiante actualizados con éxito.'})
+        else:
+            return JsonResponse({'success': False, 'message': 'Error al actualizar los datos del estudiante.'})
     else:
         form = EstudianteForm(instance=estudiante)
-    
+
     return render(request, 'accounts/editar_estudiante.html', {'form': form, 'estudiante': estudiante})
+
+def eliminar_estudiante(request, id):
+    estudiante = get_object_or_404(Estudiante, id_alumno=id)
+    
+    if request.method == 'POST':
+        # Confirmar eliminación
+        estudiante.delete()
+        messages.success(request, 'Estudiante eliminado con éxito.')
+        return JsonResponse({'success': True, 'message': 'Estudiante eliminado con éxito.'})
+    
+    # Si no es método POST, retornar un error
+    return JsonResponse({'success': False, 'message': 'Método no permitido.'})
