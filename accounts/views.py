@@ -122,6 +122,7 @@ def menuadministrador(request):
 @login_required 
 def registroestudiante(request):
     return render(request, 'accounts/registroestudiante.html')
+
 #Codigo Gustavo de registros de docentes
 @login_required 
 def registrodocente(request):
@@ -139,6 +140,22 @@ def registrodocente(request):
 def docentes_view(request):
     #Listar Docentes
     return render(request, 'accounts/verdocente.html')
+
+@login_required 
+def editardocente(request, id):
+
+    return render(request, 'accounts/editardocente.html')
+
+@login_required 
+def eliminardocente(request, id):
+    docente = get_object_or_404(Docente, id=id)
+    if request.method == 'POST':
+        docente.delete()
+        messages.success(request, 'Docente eliminado con éxito.')
+        return JsonResponse({'success': True})
+    return JsonResponse({'success': False})
+
+#Fin views de Gustavo
 
 @login_required 
 def administrarasignaciondocente(request):
