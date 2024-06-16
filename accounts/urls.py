@@ -10,6 +10,7 @@ urlpatterns = [
     path('accounts/logout/',views.exit,name='exit'),
     path('accounts/profile/',views.profile,name='profile'),
     path('correo/', views.envio_correo, name='correo'),
+    path('listar-docentes/',views.listar_docentes,name='listardocentes'),
     #Codigo Menu administrador - Agregado por Daniel 
     path('registrodocente/', views.registrodocente, name='registrodocente'),
     path('visualizardatosregistros/', views.visualizarregistro, name='visualizarregistro'),

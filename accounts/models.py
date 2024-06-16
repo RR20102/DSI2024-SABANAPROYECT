@@ -27,6 +27,8 @@ class Docente(models.Model):
         return f"{self.nombreDocente}   {self.apellidoDocente}"
 
 class Estudiante(models.Model):
+    
+  
     user = models.OneToOneField(User, on_delete= models.CASCADE )
     id_alumno = models.AutoField(primary_key= True, unique= True, null= False)
     nombreAlumno = models.CharField(max_length = 100, null= False)
@@ -41,8 +43,9 @@ class Estudiante(models.Model):
     direccionResponsable = models.CharField(max_length=100, null = False)
     edadResponsable = models.IntegerField(null=False) 
 
+
     def __str__(self):
-        return self.nombreAlumno      
+        return f"{self.nombreAlumno} d{self.apellidoAlumno}"      
 
 
 #Codigo Agregado  Daniel

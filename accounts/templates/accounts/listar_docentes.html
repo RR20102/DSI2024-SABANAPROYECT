@@ -1,0 +1,47 @@
+{% extends "accounts/templates/accounts/base.html" %}
+{% block title %}SABANA - Docentes {% endblock %}
+{% block content %}
+{% load tags %}
+
+<div class="container">
+    <div class="d-flex justify-content-center">
+        <h1 class="mt-5">LISTA DE DOCENTES</h1>
+    </div>
+    <div class="alert alert-info" role="alert">
+        Haga <strong>Click</strong> Sobre el nombre del docente para ver mas detalles.
+    </div>
+    <div class="accordion mt-4" id="accordionDocentes">
+        {% for docente in docentes %}
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="heading{{ docente.dui }}">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ docente.dui }}" aria-expanded="true" aria-controls="collapse{{ docente.dui }}">
+                    {{ docente.nombreDocente }} {{ docente.apellidoDocente }}
+                </button>
+            </h2>
+            <div id="collapse{{ docente.dui }}" class="accordion-collapse collapse" aria-labelledby="heading{{ docente.dui }}" data-bs-parent="#accordionDocentes">
+                <div class="accordion-body">
+                    <strong>Usuario:</strong> {{ docente.user.username }}<br>
+                    <strong>Contraseña:</strong> ****<br>
+                    <hr>
+                    <strong>DUI:</strong> {{ docente.dui|format_dui }}<br>
+                    <strong>Nombre:</strong> {{ docente.nombreDocente }}<br>
+                    <strong>Apellido:</strong> {{ docente.apellidoDocente }}<br>
+                    <strong>Género:</strong> {{ docente.generoDocente }}<br>
+                    <strong>Dirección:</strong> {{ docente.direccionDocente }}<br>
+                    <strong>Correo:</strong> {{ docente.correoDocente }}<br>
+                    <strong>Fecha de Registro:</strong> {{ docente.fechaRegistroDocente }}<br>
+                    <strong>Edad:</strong> {{ docente.edadDocente }}<br>
+                    <strong>Teléfono:</strong> {{ docente.telefonoDocente|format_phone }}<br>
+                    <hr>
+                    <a href="#" class="btn btn-primary btn-sm">Editar</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <div class="mt-4 d-flex justify-content-center">
+        <a href="{% url 'home' %}" class="btn btn-secondary">Volver</a>
+    </div>
+</div>
+
+{% endblock %}

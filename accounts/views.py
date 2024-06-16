@@ -136,6 +136,19 @@ def generate_unique_username(nombre, apellidos):
         username = f"{base_username}{''.join(random.choices(string.digits, k=2))}"
     return username
 
+def generate_unique_username_alumno(nombre, apellidos):
+    """Genera un nombre de usuario único basado en la primera letra del nombre
+     y la primera letra del primer apellido, más 7 números aleatorios."""
+    base_username = f"{nombre[0]}{apellidos[0]}".lower()
+    random_digits = ''.join(random.choices(string.digits, k=5))
+    username = f"{base_username}{random_digits}"
+    
+    # Verificar si el nombre de usuario ya existe (opcional pero recomendado)
+    while User.objects.filter(username=username).exists():
+        random_digits = ''.join(random.choices(string.digits, k=7))
+        username = f"{base_username}{random_digits}"
+    return username
+
 def registrar_docente(nombre, apellidos, correo_electronico, dui, genero, direccion, edad, telefono):
     """
     Registra un docente y crea un usuario asociado.
@@ -212,6 +225,69 @@ def registrar_docente(nombre, apellidos, correo_electronico, dui, genero, direcc
     except ValidationError as e:
         return {'success': False, 'message': str(e)}
     
+def registrar_alumno(nombreAlumno, apellidoAlumno, edadAlumno, telefonoAlumno, nombreTutor, apellidoTutor, telTutor, duiTutor, dirTutor, edadTutor):
+    
+    try:
+        # Validar que el correo electrónico sea único
+        
+        
+        # Generar un nombre de usuario único
+        username = generate_unique_username_alumno(nombreAlumno, apellidoAlumno)
+        
+        # Generar una contraseña aleatoria
+        password = generate_random_password()
+        
+        # Crear el usuario
+        user = User.objects.create_user(username=username, password=password)
+        user.first_name = nombreAlumno
+        user.last_name = apellidoAlumno
+        user.save()
+        
+        # Crear el estudiante asociado
+        alumno = Estudiante(
+            user=user, 
+            nombreAlumno=nombreAlumno, 
+            apellidoAlumno=apellidoAlumno,  
+            edadAlumno=edadAlumno, 
+            numeroTelefonoAlumno=telefonoAlumno, 
+            nombreResponsable=nombreTutor,
+            apellidoResposable=apellidoTutor,
+            numeroTelefonoResposable=telTutor, 
+            duiResponsable=duiTutor,
+            direccionResponsable=dirTutor,
+            edadResponsable=edadTutor
+        )
+        alumno.save()
+
+         # Agregar el usuario al grupo "Docentes"
+        try:
+            grupo_est = Group.objects.get(name='Estudiante')
+        except Group.DoesNotExist:
+            return {'success': False, 'message': 'El grupo "Estudiante" no existe.'}
+        
+        user.groups.add(grupo_est)
+        
+        # Enviar el correo electrónico con el username y la contraseña
+        #try:
+            # Enviar el correo electrónico con el username y la contraseña
+        """ send_mail(
+                'No responsa a Este correo - Registro exitoso',
+                f'Escuela La Sabana \n {Estudiante.__str__()} Su usuario ha sido creado exitosamente.\n\nUsername: {username}\nContraseña: {password}',
+                'admin@example.com',  # Debería ser el correo del sistema
+                [correo_electronico],
+                fail_silently=False,
+            )
+        except SMTPException as e:
+            return {'success': False, 'message': 'El usuario fue creado, pero ocurrió un error al enviar el correo electrónico.'} """
+        
+        return {'success': True, 'message': 'El usuario fue creado correctamente.', 'username': username, 'password': password}
+    
+    except IntegrityError as e:
+        return {'success': False, 'message': str(e)}
+    except ValidationError as e:
+        return {'success': False, 'message': str(e)}
+    
+
 
 #Codigo Menu administrador - Agregado por Daniel 
 @login_required 
@@ -302,16 +378,33 @@ def eliminarasignacion(request, id):
 
 @login_required
 def registrar_estudiante(request):
+    resultado =None
     if request.method == 'POST':
         form = EstudianteForm(request.POST)
         if form.is_valid():
-            form.save()
-            return JsonResponse({'success': True, 'message': 'Estudiante registrado con éxito.'})
-        else:
-            errors = dict([(field, [error for error in errors]) for field, errors in form.errors.items()])
-            return JsonResponse({'success': False, 'errors': errors})
+            resultado= registrar_alumno(
+                nombreAlumno=form.cleaned_data['nombreAlumno'],
+                apellidoAlumno=form.cleaned_data['apellidoAlumno'],
+                edadAlumno=form.cleaned_data['edadAlumno'],
+                telefonoAlumno=form.cleaned_data['numeroTelefonoAlumno'],
+                nombreTutor=form.cleaned_data['nombreResponsable'],
+                apellidoTutor=form.cleaned_data['apellidoResposable'],
+                telTutor=form.cleaned_data['numeroTelefonoResposable'],
+                duiTutor=form.cleaned_data['duiResponsable'],
+                dirTutor=form.cleaned_data['direccionResponsable'],
+                edadTutor=form.cleaned_data['edadResponsable']
+            )
+            if resultado['success']:
+                messages.success(request, resultado['message'])
+                form = EstudianteForm()
+                return render(request,'accounts/registrar_estudiante.html', {'form': form, 'usuario':resultado['username'], 'contra':resultado['password']})
+            else:
+                messages.error(request, resultado['message'])
+                form = EstudianteForm()
+                return render(request,'accounts/registrar_estudiante.html', {'form': form})
     else:
         form = EstudianteForm()
+    
     return render(request, 'accounts/registrar_estudiante.html', {'form': form})
 
 
@@ -319,6 +412,11 @@ def registrar_estudiante(request):
 def listar_estudiantes(request):
     estudiantes = Estudiante.objects.all()
     return render(request, 'accounts/listar_estudiantes.html', {'estudiantes': estudiantes})
+
+@login_required
+def listar_docentes(request):
+    docentes = Docente.objects.all()
+    return render(request, 'accounts/listar_docentes.html', {'docentes': docentes})
 
 
 @login_required

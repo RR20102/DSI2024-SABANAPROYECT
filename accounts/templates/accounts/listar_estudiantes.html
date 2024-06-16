@@ -1,61 +1,49 @@
 {% extends "accounts/templates/accounts/base.html" %}
-{% block title %}SABANA PROYECT {% endblock %}
+{% block title %}SABANA - Estudiantes {% endblock %}
 {% block content %}
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Roboto+Slab:wght@400;700&display=swap" rel="stylesheet">
+
 <div class="container">
     <div class="d-flex justify-content-center">
-    <h1 class="mt-5">LISTA DE ESTUDIANTES</h1>
-</div>
-    <div class="d-flex justify-content-center">
-    <table class="table table-striped mt-4">
-        <thead>
-            <tr>
-                <th>Usuario</th>
-                <th>Contraseña</th>
-                <th> | </th>
-                <th>Nombre Estudiante</th>
-                <th>Apellido Estudiante</th>
-                <th>Edad Estudiante</th>
-                <th>Teléfono Estudiante</th>
-                <th> | </th>
-                <th>Nombre Responsable</th>
-                <th>Apellido Responsable</th>
-                <th>Teléfono Responsable</th>
-                <th>DUI Responsable</th>
-                <th>Dirección Responsable</th>
-                <th>Edad Responsable</th>
-                <th>Acciones</th> <!--columna para botones de acción -->
-            </tr>
-        </thead>
-        <tbody>
-            {% for estudiante in estudiantes %}
-            <tr>
-                <td>{{ estudiante.user.username }}</td>
-                <td>****</td>
-                <th> | </th>
-                <td>{{ estudiante.nombreAlumno }}</td>
-                <td>{{ estudiante.apellidoAlumno }}</td>
-                <td>{{ estudiante.edadAlumno }}</td>
-                <td>{{ estudiante.numeroTelefonoAlumno }}</td>
-                <th> | </th>
-                <td>{{ estudiante.nombreResponsable }}</td>
-                <td>{{ estudiante.apellidoResposable }}</td>
-                <td>{{ estudiante.numeroTelefonoResposable }}</td>
-                <td>{{ estudiante.duiResponsable }}</td>
-                <td>{{ estudiante.direccionResponsable }}</td>
-                <td>{{ estudiante.edadResponsable }}</td>
-                <td>
-                    <a href="{% url 'editar_estudiante' estudiante.id_alumno %}" class="btn btn-primary btn-sm">Editar</a>
-                </td>
-            </tr>
-            <tr>
-                <td colspan="14"></td> <!-- Ajustar el colspan según el número de columnas -->
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+        <h1 class="mt-5">LISTA DE ESTUDIANTES</h1>
     </div>
-    <div class="mt-4">
+    <div class="alert alert-info" role="alert">
+        Haga <strong>Click</strong> Sobre el nombre del estudiante para ver mas detalles.
+    </div>
+    <div class="accordion mt-4" id="accordionEstudiantes">
+        {% for estudiante in estudiantes %}
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="heading{{ estudiante.id_alumno }}">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ estudiante.id_alumno }}" aria-expanded="true" aria-controls="collapse{{ estudiante.id_alumno }}">
+                    {{ estudiante.nombreAlumno }} {{ estudiante.apellidoAlumno }}
+                </button>
+            </h2>
+            <div id="collapse{{ estudiante.id_alumno }}" class="accordion-collapse collapse" aria-labelledby="heading{{ estudiante.id_alumno }}" data-bs-parent="#accordionEstudiantes">
+                <div class="accordion-body" >
+                    <strong>Usuario:</strong> {{ estudiante.user.username }}<br>
+                    <strong>Contraseña:</strong> ****<br>
+                    <hr>
+                    <strong>Nombre Estudiante:</strong> {{ estudiante.nombreAlumno }}<br>
+                    <strong>Apellido Estudiante:</strong> {{ estudiante.apellidoAlumno }}<br>
+                    <strong>Edad Estudiante:</strong> {{ estudiante.edadAlumno }}<br>
+                    <strong>Teléfono Estudiante:</strong> {{ estudiante.numeroTelefonoAlumno }}<br>
+                    <hr>
+                    <strong>Nombre Responsable:</strong> {{ estudiante.nombreResponsable }}<br>
+                    <strong>Apellido Responsable:</strong> {{ estudiante.apellidoResposable }}<br>
+                    <strong>Teléfono Responsable:</strong> {{ estudiante.numeroTelefonoResposable }}<br>
+                    <strong>DUI Responsable:</strong> {{ estudiante.duiResponsable }}<br>
+                    <strong>Dirección Responsable:</strong> {{ estudiante.direccionResponsable }}<br>
+                    <strong>Edad Responsable:</strong> {{ estudiante.edadResponsable }}<br>
+                    <hr>
+                    <a href="{% url 'editar_estudiante' estudiante.id_alumno %}" class="btn btn-primary btn-sm">Editar</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <div class="mt-4 d-flex justify-content-center">
         <a href="{% url 'home' %}" class="btn btn-secondary">Volver</a>
     </div>
 </div>
+
 {% endblock %}

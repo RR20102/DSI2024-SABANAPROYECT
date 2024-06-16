@@ -14,6 +14,7 @@
         max-height: 200px;
         object-fit: cover;
     }
+    
 </style>
 {% load tags %}
 {% if es_admin %}
@@ -44,7 +45,7 @@
                                 Gestion de estudiantes del Centro Escolar La Sabana
                             </p>
                             <div class="mt-auto">
-                                <a class="btn btn-primary btn-lg" href="{% url 'registrar_estudiante' %}" role="button">Administrar</a>
+                                <a class="btn btn-primary btn-lg" href="{% url 'registrar_estudiante' %}" role="button">Agregar</a>
                                 <a class="btn btn-secondary btn-lg" href="{% url 'listar_estudiantes' %}" role="button">Visualizar</a>
                             </div>
                         </div>
@@ -62,8 +63,8 @@
                                 Gestion de docentes del Centro Escolar La Sabana
                             </p>
                             <div class="mt-auto">
-                                <a class="btn btn-primary btn-lg" href="#" role="button">Administrar</a>
-                                <a class="btn btn-secondary btn-lg" href="#" role="button">Visualizar</a>
+                                <a class="btn btn-primary btn-lg" href="#" role="button">Agregar</a>
+                                <a class="btn btn-secondary btn-lg" href="{% url 'listardocentes' %}" role="button">Visualizar</a>
                             </div>
                         </div>
                     </div>
@@ -80,7 +81,7 @@
                                 Gestion de Asignacion de los docentes a cada grado del Centro Escolar La Sabana
                             </p>
                             <div class="mt-auto">
-                                <a class="btn btn-primary btn-lg" href="{% url 'administrarasignaciondocente' %}" role="button">Administrar</a>
+                                <a class="btn btn-primary btn-lg" href="{% url 'administrarasignaciondocente' %}" role="button">Asignar</a>
                                 <a class="btn btn-secondary btn-lg" href="{% url 'visualizarasignaciondocente' %}" role="button">Visualizar</a>
                             </div>
                         </div>
@@ -153,12 +154,72 @@
 
 <div class="container my-5">
     <div class="row">
-      <div class="col-md-6 offset-md-3">
-        <h1 class="display-4 text-center mb-4">¡Bienvenido!</h1>
-        <p class="lead text-center">¿Que haras hoy? Docente</p>
-      </div>
+        <div class="col-md-6 offset-md-3">
+            <h1 class="display-4 text-center mb-4">¡Bienvenido, Docente!</h1>
+            <p class="lead text-center">¿Qué harás hoy?</p>
+        </div>
     </div>
-  </div>
+</div>
+    <div class="container">
+        <div class="container">
+            <div class="row row-cols-1 row-cols-md-2 g-4">
+                <div class="col">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Notas Actividades Académicas</h5>
+                            <p class="card-text">Consulta y registra las calificaciones de las actividades académicas.</p>
+                            <a href="#" class="btn btn-primary">Ir a Notas Actividades Académicas</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Registro de Conducta</h5>
+                            <p class="card-text">Registra y consulta la conducta de los estudiantes.</p>
+                            <a href="#" class="btn btn-secondary">Ir a Registro de Conducta</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Ranking de Estudiantes</h5>
+                            <p class="card-text">Consulta el ranking de los estudiantes basado en su rendimiento académico.</p>
+                            <a href="#" class="btn btn-success">Ir a Ranking de Estudiantes</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Calendario Académico</h5>
+                            <p class="card-text">Consulta las fechas importantes del calendario académico.</p>
+                            <a href="#" class="btn btn-info">Ir a Calendario Académico</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Registro de Asistencia</h5>
+                            <p class="card-text">Registra y consulta la asistencia de los estudiantes.</p>
+                            <a href="#" class="btn btn-warning">Ir a Registro de Asistencia</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Horario de Clase</h5>
+                            <p class="card-text">Revisa y actualiza el horario de clases.</p>
+                            <a href="#" class="btn btn-danger">Ir a Horario de Clase</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
   
 <!-------------------->
