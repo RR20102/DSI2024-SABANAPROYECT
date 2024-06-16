@@ -43,17 +43,6 @@ def login_view(request):
             
     return render(request, 'accounts/login.html', {'form': form})
 
-def envio_correo(request):
-
-    try:
-        to_email = 'christianadonayriveralopez@gmail.com'
-        subject = 'Mensaje de prueba'
-        message = 'este es un mensaje de prueba'
-        send_mail(subject, message, None, [to_email])
-        return HttpResponse('Correo enviado con exito')
-    except Exception as e:
-        error_message = str(e)
-    return HttpResponse(error_message)
 @login_required 
 def home(request):
     contexto = {}
@@ -214,11 +203,6 @@ def registrar_docente(nombre, apellidos, correo_electronico, dui, genero, direcc
     
 
 #Codigo Menu administrador - Agregado por Daniel 
-def menuadministrador(request):
-    return render(request, 'accounts/menuadministrador.html')
-
-def registroestudiante(request):
-    return render(request, 'accounts/registroestudiante.html')
 
 def registrodocente(request):
     resultado = None
@@ -249,8 +233,7 @@ def registrodocente(request):
 
     return render(request, 'accounts/registrodocente.html',{'form': form})
 
-def visualizarregistro(request):
-    return render(request, 'accounts/visualizardatosregistro.html')
+
 
 def visualizarasignaciondocente(request):
     asignaciones = Asignacion.objects.all()

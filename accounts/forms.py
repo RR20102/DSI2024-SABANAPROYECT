@@ -8,10 +8,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
 #Codigo Daniel 
-"""class AsignacionForm(forms.ModelForm):
-    class Meta:
-        model = Asignacion
-        fields = ['docente_nombre', 'grado_nombre', 'seccion_nombre'] """
+
 
 
 #Codigo Christian 
