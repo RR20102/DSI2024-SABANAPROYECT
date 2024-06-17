@@ -279,9 +279,10 @@ def registrar_alumno(nombreAlumno, apellidoAlumno, edadAlumno, telefonoAlumno, n
 
 
 #Codigo Menu administrador - Agregado por Daniel 
-@login_required 
+
 def registrodocente(request):
     resultado = None
+    
     if request.method == 'POST':
         form = DocenteForm(request.POST)
         

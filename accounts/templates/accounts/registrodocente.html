@@ -48,18 +48,18 @@
                         <label for="id_nombreDocente" class="form-label">Nombres <span style="color: red;">*</span></label>
                         {% render_field form.nombreDocente class="form-control" placeholder="Ingresa el nombre" %}
                         <div class="invalid-feedback">
-                            {% for error in form.nombreDocente.errors %}
-                                {{ error }}
-                            {% endfor %}
+                            
+                                {{ form.nombreDocente.errors }}
+                            
                         </div>
                     </div>
                     <div class="col">
                         <label for="id_apellidoDocente" class="form-label">Apellidos <span style="color: red;">*</span></label>
                         {% render_field form.apellidoDocente class="form-control" placeholder="Ingresa los apellidos" %}
                         <div class="invalid-feedback">
-                            {% for error in form.apellidoDocente.errors %}
-                                {{ error }}
-                            {% endfor %}
+                            
+                                {{ form.apellidoDocente.errors }}
+                            
                         </div>
                     </div>
                 </div>
