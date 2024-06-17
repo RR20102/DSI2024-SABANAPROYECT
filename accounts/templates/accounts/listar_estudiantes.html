@@ -1,6 +1,7 @@
 {% extends "accounts/templates/accounts/base.html" %}
 {% block title %}SABANA - Estudiantes {% endblock %}
 {% block content %}
+{% load tags %}
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Roboto+Slab:wght@400;700&display=swap" rel="stylesheet">
 
 <div class="container">
@@ -26,12 +27,12 @@
                     <strong>Nombre Estudiante:</strong> {{ estudiante.nombreAlumno }}<br>
                     <strong>Apellido Estudiante:</strong> {{ estudiante.apellidoAlumno }}<br>
                     <strong>Edad Estudiante:</strong> {{ estudiante.edadAlumno }}<br>
-                    <strong>Teléfono Estudiante:</strong> {{ estudiante.numeroTelefonoAlumno }}<br>
+                    <strong>Teléfono Estudiante:</strong> {{ estudiante.numeroTelefonoAlumno|format_phone }}<br>
                     <hr>
                     <strong>Nombre Responsable:</strong> {{ estudiante.nombreResponsable }}<br>
                     <strong>Apellido Responsable:</strong> {{ estudiante.apellidoResposable }}<br>
-                    <strong>Teléfono Responsable:</strong> {{ estudiante.numeroTelefonoResposable }}<br>
-                    <strong>DUI Responsable:</strong> {{ estudiante.duiResponsable }}<br>
+                    <strong>Teléfono Responsable:</strong> {{ estudiante.numeroTelefonoResposable|format_phone }}<br>
+                    <strong>DUI Responsable:</strong> {{ estudiante.duiResponsable|format_dui }}<br>
                     <strong>Dirección Responsable:</strong> {{ estudiante.direccionResponsable }}<br>
                     <strong>Edad Responsable:</strong> {{ estudiante.edadResponsable }}<br>
                     <hr>

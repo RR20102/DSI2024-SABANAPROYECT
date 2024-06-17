@@ -99,7 +99,16 @@
                         {{ form.telefonoDocente.errors }}
                     </div>
                 </div>
-                <button type="submit" class="btn btn-success w-100">Registrar Docente</button>
+                
+                    <div class="row">
+                      <div class="mb-3">
+                        <button type="submit" class="btn btn-success w-100">Registrar Docente</button>
+                      </div>
+                      <div class="mb-3">
+                            <a class="btn btn-outline-dark w-100" href="{% url 'home' %}" role="button">Cancelar</a>
+                      </div>
+                    </div>
+                
             </form>
         </div>
     </div>
