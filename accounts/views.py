@@ -13,7 +13,7 @@ from django.http import HttpResponse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.sessions.backends.db import SessionStore
-from .forms import LoginForm
+from .forms import LoginForm, DocenteForm
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.db import IntegrityError
@@ -43,17 +43,6 @@ def login_view(request):
             
     return render(request, 'accounts/login.html', {'form': form})
 
-def envio_correo(request):
-
-    try:
-        to_email = 'christianadonayriveralopez@gmail.com'
-        subject = 'Mensaje de prueba'
-        message = 'este es un mensaje de prueba'
-        send_mail(subject, message, None, [to_email])
-        return HttpResponse('Correo enviado con exito')
-    except Exception as e:
-        error_message = str(e)
-    return HttpResponse(error_message)
 @login_required 
 def home(request):
     contexto = {}
@@ -164,7 +153,7 @@ def registrar_docente(nombre, apellidos, correo_electronico, dui, genero, direcc
         telefono (str): Teléfono del docente.
 
     Returns:
-        dict: Información sobre el registro, incluyendo el username y la contraseña si es exitoso.
+        dict: Información sobre el registro, incluyendo el mensaje si es exitoso.
     """
     try:
         # Validar que el correo electrónico sea único
@@ -173,15 +162,18 @@ def registrar_docente(nombre, apellidos, correo_electronico, dui, genero, direcc
         
         # Generar un nombre de usuario único
         username = generate_unique_username(nombre, apellidos)
-        
+        print(username)
+        if username is None:
+            print('nombre de usuario nulo.')
         # Generar una contraseña aleatoria
         password = generate_random_password()
         
         # Crear el usuario
         user = User.objects.create_user(username=username, password=password, email=correo_electronico)
+        
         user.first_name = nombre
         user.last_name = apellidos
-        user.save()
+        
         
         # Crear el docente asociado
         docente = Docente(
@@ -208,17 +200,14 @@ def registrar_docente(nombre, apellidos, correo_electronico, dui, genero, direcc
         # Enviar el correo electrónico con el username y la contraseña
         try:
             # Enviar el correo electrónico con el username y la contraseña
-            send_mail(
-                'No responsa a Este correo - Registro exitoso',
-                f'Escuela La Sabana \n {docente.__str__()} Su usuario ha sido creado exitosamente.\n\nUsername: {username}\nContraseña: {password}',
-                'admin@example.com',  # Debería ser el correo del sistema
-                [correo_electronico],
-                fail_silently=False,
-            )
+            to_email = correo_electronico
+            subject = 'No responsa a Este correo - Registro exitoso'
+            message = f'Escuela La Sabana \n {docente.__str__()} Su usuario ha sido creado exitosamente.\n\nUsername: {username}\nContraseña: {password}'
+            send_mail(subject, message, None, [to_email], fail_silently=False)
         except SMTPException as e:
             return {'success': False, 'message': 'El usuario fue creado, pero ocurrió un error al enviar el correo electrónico.'}
         
-        return {'success': True, 'username': username, 'password': password}
+        return {'success': True, 'message': 'El Docente fue Registrado con exito.'}
     
     except IntegrityError as e:
         return {'success': False, 'message': str(e)}
@@ -292,10 +281,49 @@ def registrar_alumno(nombreAlumno, apellidoAlumno, edadAlumno, telefonoAlumno, n
 #Codigo Menu administrador - Agregado por Daniel 
 @login_required 
 def registrodocente(request):
-    return render(request, 'accounts/registrodocente.html')
-@login_required 
-def visualizarregistro(request):
-    return render(request, 'accounts/visualizardatosregistro.html')
+    resultado = None
+    if request.method == 'POST':
+        form = DocenteForm(request.POST)
+        
+        if form.is_valid():
+            resultado = registrar_docente(
+                nombre= form.cleaned_data['nombreDocente'],
+                apellidos= form.cleaned_data['apellidoDocente'],
+                correo_electronico=form.cleaned_data['correoDocente'],
+                dui=form.cleaned_data['dui'],
+                genero=form.cleaned_data['generoDocente'],
+                direccion=form.cleaned_data['direccionDocente'],
+                edad=form.cleaned_data['edadDocente'],
+                telefono= form.cleaned_data['telefonoDocente']                         
+                )
+            if resultado['success']:
+                messages.success(request, resultado['message'])
+                form = DocenteForm()
+                return render(request,'accounts/registrodocente.html', {'form': form})
+            else:
+                messages.error(request, resultado['message'])
+                form = DocenteForm()
+                return render(request,'accounts/registrodocente.html', {'form': form})
+    else:
+        form = DocenteForm()
+
+    return render(request, 'accounts/registrodocente.html',{'form': form})
+
+
+
+def visualizarasignaciondocente(request):
+    asignaciones = Asignacion.objects.all()
+    return render(request, 'accounts/visualizarasignaciondocente.html', {
+        'asignaciones': asignaciones
+    })
+
+
+
+
+
+
+
+
 
 @login_required 
 def administrarasignaciondocente(request):

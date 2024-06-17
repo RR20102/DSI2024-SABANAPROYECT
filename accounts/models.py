@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django import template
+from django.core.validators import RegexValidator
 
 # Create your models here.
 register = template.Library()
@@ -12,16 +13,21 @@ def has_group(user, group_name):
 
 #Codigo Agreado Christian 
 class Docente(models.Model):
+    GENERO_CHOICES = [
+        ('M', 'Masculino'),
+        ('F', 'Femenino'),
+    ]
     user = models.OneToOneField(User, on_delete= models.CASCADE )
     dui= models.CharField(primary_key=True, max_length=9, null = False, unique= True)
-    nombreDocente = models.TextField(max_length=100, null= False)
-    apellidoDocente = models.TextField(max_length=100, null= False)
-    generoDocente = models.CharField(max_length=1, null= False)
-    direccionDocente = models.TextField(max_length=100, null = False)
+    nombreDocente = models.CharField(max_length=100, null= False)
+    apellidoDocente = models.CharField(max_length=100, null= False)
+    generoDocente = models.CharField(max_length=1, null= False, choices=GENERO_CHOICES)
+    direccionDocente = models.CharField(max_length=100, null = False)
     correoDocente = models.EmailField(unique= True, null = False )
     fechaRegistroDocente = models.DateField(auto_now_add=True, null=False)
     edadDocente = models.IntegerField(null=False)
-    telefonoDocente = models.CharField(max_length = 8, null = False)
+    telefonoDocente = models.CharField(max_length = 8, validators=[RegexValidator(r'^\d{8}$', 'Ingrese un número de teléfono válido de 8 dígitos.')] ,null = False)
+
 
     def __str__(self):
         return f"{self.nombreDocente}   {self.apellidoDocente}"

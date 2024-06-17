@@ -28,20 +28,5 @@ urlpatterns = [
     #path('accounts/', include('django.contrib.auth.urls')),
     path('', include('accounts.urls')),
     
-    
-    #path('admin/', admin.site.urls),
-    #Codigo Menu administrador - Agregado por Daniel 
-    path('registrodocente/', views.registrodocente, name='registrodocente'),
-    path('visualizardatosregistros/', views.visualizarregistro, name='visualizarregistro'),
-    #path('administrarasignaciondocente/', views.administrarasignaciondocente, name='administrarasignaciondocente'),
-    #path('visualizarasignaciondocente/', views.visualizarasignaciondocente, name='visualizarasignaciondocente'),
-    #path('editarasignacion/<int:id>/', views.editarasignacion, name='editarasignacion'),
-    #path('eliminarasignacion/<int:id>/', views.eliminarasignacion, name='eliminarasignacion'),  # Nueva ruta para eliminar asignación
-   # path('pruebasdjango/', views.pruebasdjango, name='pruebasdjango'),
-    path('administrarasignaciondocente/', views.administrarasignaciondocente, name='administrarasignaciondocente'),
-    path('visualizarasignaciondocente/', views.visualizarasignaciondocente, name='visualizarasignaciondocente'),
-    path('editarasignacion/<int:id>/', views.editarasignacion, name='editarasignacion'),
-    path('eliminarasignacion/<int:id>/', views.eliminarasignacion, name='eliminarasignacion'),
-    #path('registrar_estudiante/', registrar_estudiante, name='registrar_estudiante'),
 
 ]   
