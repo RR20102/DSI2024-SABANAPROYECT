@@ -101,7 +101,7 @@ DATABASES = {
         'NAME': 'postgres',
         'USER': 'admin',
         'PASSWORD': 'Ra18012002',
-        'HOST': 'us-east-1.abe6426c-c92c-4bd1-9bc0-c60c370a590f.aws.ybdb.io',
+        'HOST': 'us-east-1.b4b1d627-e0c4-43da-9b2f-93b9b7e05574.aws.ybdb.io',
         'PORT': '5433',
     }
 
