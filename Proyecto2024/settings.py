@@ -98,7 +98,7 @@ DATABASES = {
 
         'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
+        'NAME': 'sabana',
         'USER': 'admin',
         'PASSWORD': 'Ra18012002',
         'HOST': 'us-east-1.b4b1d627-e0c4-43da-9b2f-93b9b7e05574.aws.ybdb.io',
