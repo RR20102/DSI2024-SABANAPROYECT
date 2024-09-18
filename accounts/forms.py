@@ -23,13 +23,14 @@ class EstudianteForm(forms.ModelForm):
     class Meta:
         model = Estudiante
         fields = [
-            'nombreAlumno', 'apellidoAlumno', 'edadAlumno', 'numeroTelefonoAlumno',
+            'nombreAlumno', 'apellidoAlumno', 'id_gradoseccion', 'edadAlumno', 'numeroTelefonoAlumno',
             'nombreResponsable', 'apellidoResposable', 'numeroTelefonoResposable',
             'duiResponsable', 'direccionResponsable', 'edadResponsable'
         ]
         widgets = {
             'nombreAlumno': forms.TextInput(attrs={'placeholder': 'Ingrese el nombre'}),
             'apellidoAlumno': forms.TextInput(attrs={'placeholder': 'Ingrese el apellido'}),
+            'id_gradoseccion': forms.Select(),
             'edadAlumno': forms.NumberInput(attrs={'placeholder': 'Ingrese la edad'}),
             'numeroTelefonoAlumno': forms.TextInput(attrs={'placeholder': 'Ingrese el número de teléfono', 'pattern': r'^\d{8}$'}),
             'nombreResponsable': forms.TextInput(attrs={'placeholder': 'Ingrese el nombre'}),

@@ -7,7 +7,7 @@
     <div class="d-flex justify-content-center">
         <h1 class="mt-5">LISTA DE DOCENTES</h1>
     </div>
-    <div class="alert alert-info" role="alert">
+   <!-- <div class="alert alert-info" role="alert">
         Haga <strong>Click</strong> Sobre el nombre del docente para ver mas detalles.
     </div>
     <div class="accordion mt-4" id="accordionDocentes">
@@ -38,7 +38,45 @@
             </div>
         </div>
         {% endfor %}
+    </div> -->
+
+    <div class="table-responsive mt-4">
+        <table class="table table-bordered table-hover">
+            <thead class="table-light">
+                <tr>
+                    <th>Nombre Completo</th>
+                    <th>Usuario</th>
+                    <th>DUI</th>
+                    <th>Género</th>
+                    <th>Dirección</th>
+                    <th>Correo</th>
+                    <th>Fecha de Registro</th>
+                    <!--<th>Edad</th>-->
+                    <th>Teléfono</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for docente in docentes %}
+                <tr>
+                    <td>{{ docente.nombreDocente }} {{ docente.apellidoDocente }}</td>
+                    <td>{{ docente.user.username }}</td>
+                    <td>{{ docente.dui|format_dui }}</td>
+                    <td>{{ docente.generoDocente }}</td>
+                    <td>{{ docente.direccionDocente }}</td>
+                    <td>{{ docente.correoDocente }}</td>
+                    <td>{{ docente.fechaRegistroDocente|date:"d M Y" }}</td>
+                    <!--<td>{{ docente.edadDocente }}</td> -->
+                    <td>{{ docente.telefonoDocente|format_phone }}</td>
+                    <td>
+                        <a href="#" class="btn btn-primary btn-sm">Editar</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
+    
     <div class="mt-4 d-flex justify-content-center">
         <a href="{% url 'home' %}" class="btn btn-secondary">Volver</a>
     </div>

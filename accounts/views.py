@@ -214,7 +214,7 @@ def registrar_docente(nombre, apellidos, correo_electronico, dui, genero, direcc
     except ValidationError as e:
         return {'success': False, 'message': str(e)}
     
-def registrar_alumno(nombreAlumno, apellidoAlumno, edadAlumno, telefonoAlumno, nombreTutor, apellidoTutor, telTutor, duiTutor, dirTutor, edadTutor):
+def registrar_alumno(nombreAlumno, apellidoAlumno, gradoAlumno, edadAlumno, telefonoAlumno, nombreTutor, apellidoTutor, telTutor, duiTutor, dirTutor, edadTutor):
     
     try:
         # Validar que el correo electrónico sea único
@@ -237,7 +237,8 @@ def registrar_alumno(nombreAlumno, apellidoAlumno, edadAlumno, telefonoAlumno, n
             user=user, 
             nombreAlumno=nombreAlumno, 
             apellidoAlumno=apellidoAlumno,  
-            edadAlumno=edadAlumno, 
+            edadAlumno=edadAlumno,
+            id_gradoseccion = gradoAlumno,
             numeroTelefonoAlumno=telefonoAlumno, 
             nombreResponsable=nombreTutor,
             apellidoResposable=apellidoTutor,
@@ -415,6 +416,7 @@ def registrar_estudiante(request):
                 nombreAlumno=form.cleaned_data['nombreAlumno'],
                 apellidoAlumno=form.cleaned_data['apellidoAlumno'],
                 edadAlumno=form.cleaned_data['edadAlumno'],
+                gradoAlumno = form.cleaned_data['id_gradoseccion'],
                 telefonoAlumno=form.cleaned_data['numeroTelefonoAlumno'],
                 nombreTutor=form.cleaned_data['nombreResponsable'],
                 apellidoTutor=form.cleaned_data['apellidoResposable'],
@@ -463,6 +465,7 @@ def editar_estudiante(request, id):
 
     return render(request, 'accounts/editar_estudiante.html', {'form': form, 'estudiante': estudiante})
 
+@login_required
 def eliminar_estudiante(request, id):
     estudiante = get_object_or_404(Estudiante, id_alumno=id)
     

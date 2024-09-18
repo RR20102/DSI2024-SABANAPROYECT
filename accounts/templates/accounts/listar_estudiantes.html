@@ -8,7 +8,7 @@
     <div class="d-flex justify-content-center">
         <h1 class="mt-5">LISTA DE ESTUDIANTES</h1>
     </div>
-    <div class="alert alert-info" role="alert">
+   <!-- <div class="alert alert-info" role="alert">
         Haga <strong>Click</strong> Sobre el nombre del estudiante para ver mas detalles.
     </div>
     <div class="accordion mt-4" id="accordionEstudiantes">
@@ -41,7 +41,48 @@
             </div>
         </div>
         {% endfor %}
+    </div> -->
+
+    <div class="table-responsive mt-4">
+        <table class="table table-bordered table-hover">
+            <thead class="table-light">
+                <tr>
+                    <th>Nombre Estudiante</th>
+                    <th>Usuario</th>
+                    <th>Edad</th>
+                    <th>Grado</th>
+                    <th>Teléfono Estudiante</th>
+                    <th>Nombre Responsable</th>
+                    <th>Teléfono Responsable</th>
+                    <th>DUI Responsable</th>
+                    <th>Dirección Responsable</th>
+                    <th>Edad Responsable</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for estudiante in estudiantes %}
+                <tr>
+                    <td>{{ estudiante.nombreAlumno }} {{ estudiante.apellidoAlumno }}</td>
+                    <td>{{ estudiante.user.username }}</td>
+                    <td>{{ estudiante.edadAlumno }}</td>
+                    <td>{{ estudiante.id_gradoseccion }}</td>
+                    <td>{{ estudiante.numeroTelefonoAlumno|format_phone }}</td>
+                    <td>{{ estudiante.nombreResponsable }} {{ estudiante.apellidoResposable }}</td>
+                    <td>{{ estudiante.numeroTelefonoResposable|format_phone }}</td>
+                    <td>{{ estudiante.duiResponsable|format_dui }}</td>
+                    <td>{{ estudiante.direccionResponsable }}</td>
+                    <td>{{ estudiante.edadResponsable }}</td>
+                    <td>
+                        <a href="{% url 'editar_estudiante' estudiante.id_alumno %}" class="btn btn-primary btn-sm">Editar</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
+    
+
     <div class="mt-4 d-flex justify-content-center">
         <a href="{% url 'home' %}" class="btn btn-secondary">Volver</a>
     </div>

@@ -56,6 +56,14 @@
                     </div>
                 </div>
                 <div class="mb-3">
+                    <label for="id_grado" class="form-label">Grado: <span style="color: red;">*</span></label>
+                    {% render_field form.id_gradoseccion class="form-select" %}
+                    <div class="invalid-feedback">
+                        {{ form.id_gradoseccion.errors }}
+                            
+                    </div>
+                </div>
+                <div class="mb-3">
                     <label for="id_edadAlumno" class="form-label">Edad del estudiante: <span style="color: red;">*</span></label>
                     {% render_field form.edadAlumno class="form-control" %}
                     <div class="invalid-feedback">

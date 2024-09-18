@@ -14,7 +14,7 @@ SABANA PROYECT
             {{ form.as_p }}
             <div class="mt-3">
                 <label for="selectDocente">Selecciona el docente:</label>
-                <select class="form-control" id="selectDocente" name="docente">
+                <select class="form-select" id="selectDocente" name="docente">
                     <option value="" selected disabled>-- Selecciona un docente --</option>
                     {% for docente in docentes %}
                         <option value="{{ docente.dui }}">{{ docente.nombreDocente }}</option>
@@ -23,7 +23,7 @@ SABANA PROYECT
             </div>
             <div class="mt-3">
                 <label for="selectGradoSeccion">Selecciona el grado y sección:</label>
-                <select class="form-control" id="selectGradoSeccion" name="grado_seccion">
+                <select class="form-select" id="selectGradoSeccion" name="grado_seccion">
                     <option value="" selected disabled>-- Selecciona un grado y sección --</option>
                     {% for grado_seccion in grados_secciones %}
                         <option value="{{ grado_seccion.id }}">{{ grado_seccion.grado.nombreGrado }} - {{ grado_seccion.seccion.nombreSeccion }}</option>
@@ -55,7 +55,7 @@ document.getElementById('asignacionForm').addEventListener('submit', function(ev
     }
 });
 
-{% if messages %}
+/*{% if messages %}
     {% for message in messages %}
         {% if message.tags == 'success' %}
             Swal.fire({
@@ -74,6 +74,6 @@ document.getElementById('asignacionForm').addEventListener('submit', function(ev
             });
         {% endif %}
     {% endfor %}
-{% endif %}
+{% endif %} */
 </script>
 {% endblock %}
