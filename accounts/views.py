@@ -473,3 +473,11 @@ def eliminar_estudiante(request, id):
     
     # Si no es método POST, retornar un error
     return JsonResponse({'success': False, 'message': 'Método no permitido.'})
+
+
+
+
+# Codigo Registro de asistencia
+@login_required
+def registro_asistencia(request):
+    return render(request, 'asistencia/registro_asistencia.html')

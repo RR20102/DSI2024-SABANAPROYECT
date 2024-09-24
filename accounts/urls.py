@@ -28,4 +28,6 @@ urlpatterns = [
     path('editarasignacion/<int:id>/', views.editarasignacion, name='editarasignacion'),
     path('visualizarasignaciondocente/', views.visualizarasignaciondocente, name='visualizarasignaciondocente'),
     
+    #Codigo Registro de Asistencia - Ricardo
+    path('asistencia/listar-registros/', views.registro_asistencia, name='registroasistencia'),
 ]
