@@ -323,10 +323,6 @@ def visualizarasignaciondocente(request):
 
 
 
-
-
-
-
 @login_required 
 def administrarasignaciondocente(request):
     if request.method == 'POST':
