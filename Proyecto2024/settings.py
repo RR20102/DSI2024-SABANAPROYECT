@@ -103,6 +103,10 @@ DATABASES = {
         'PASSWORD': 'Ra18012002',
         'HOST': 'us-east-1.b4b1d627-e0c4-43da-9b2f-93b9b7e05574.aws.ybdb.io',
         'PORT': '5433',
+        'OPTIONS': {
+            'sslmode': 'verify-ca',  # Usar 'require' si no necesitas verificación del CA
+            'sslrootcert': 'C:/cert/root (2).crt',  # Ruta al certificado CA
+        },
     }
 
 
