@@ -21,7 +21,7 @@ SABANA PROYECT
             <tbody>
                 {% for asignacion in asignaciones %}
                     <tr>
-                        <td>{{ asignacion.docente.nombreDocente }}</td>
+                        <td>{{ asignacion.docente.nombreDocente }} {{ asignacion.docente.apellidoDocente }}</td>
                         <td>{{ asignacion.grado_seccion.grado.nombreGrado }}</td>
                         <td>{{ asignacion.grado_seccion.seccion.nombreSeccion }}</td>
                         <td>

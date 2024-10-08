@@ -14,7 +14,7 @@
             </div>
         </form>
 
-        <button id="eliminarAsignacionBtn" class="btn btn-danger mt-3">Eliminar</button>
+        <button id="eliminarAsignacionBtn" class="btn btn-danger mt-3" data-id="{{ asignacion.id }}">Eliminar</button>
     </div>
 </div>
 
@@ -24,6 +24,7 @@
 $(document).ready(function() {
     // Confirmación de eliminación
     $('#eliminarAsignacionBtn').click(function() {
+        var asignacionId = $(this).data('id'); // Obtiene el ID de la asignación
         Swal.fire({
             title: '¿Estás seguro?',
             text: 'La asignación será eliminada permanentemente',
@@ -37,7 +38,7 @@ $(document).ready(function() {
                 var csrftoken = $('input[name="csrfmiddlewaretoken"]').val();
                 $.ajax({
                     type: 'POST',
-                    url: '{% url "eliminarasignacion" asignacion.id %}',
+                    url: '{% url "eliminarasignacion" asignacion.id %}', // Cambiado a asignacion.id
                     data: {
                         csrfmiddlewaretoken: csrftoken
                     },
@@ -51,6 +52,13 @@ $(document).ready(function() {
                                 window.location.href = '{% url "visualizarasignaciondocente" %}';
                             });
                         }
+                    },
+                    error: function() {
+                        Swal.fire({
+                            title: 'Error',
+                            text: 'Ocurrió un error al eliminar la asignación.',
+                            icon: 'error'
+                        });
                     }
                 });
             }

@@ -87,30 +87,24 @@ MESSAGE_TAGS = {
     messages.ERROR: 'error',
 }
 
-# Database
-# https://docs.djangoproject.com/en/3.2/ref/settings/#databases
+
 
 DATABASES = {
-    #'default': {
-       # 'ENGINE': 'django.db.backends.sqlite3',
-        #'NAME': BASE_DIR / 'db.sqlite3',
-    #}
-
-        'default': {
+    'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'sabana',
         'USER': 'admin',
         'PASSWORD': 'Ra18012002',
-        'HOST': 'us-east-1.b4b1d627-e0c4-43da-9b2f-93b9b7e05574.aws.ybdb.io',
+        'HOST': 'us-east-1.b4b1d627-e0c4-43da-9b2f-93b9b7e05574.aws.yugabyte.cloud',
         'PORT': '5433',
         'OPTIONS': {
             'sslmode': 'verify-ca',  # Usar 'require' si no necesitas verificación del CA
             'sslrootcert': 'C:/cert/root (2).crt',  # Ruta al certificado CA
         },
     }
-
-
 }
+
+
 
 
 # Password validation

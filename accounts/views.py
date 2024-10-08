@@ -323,13 +323,10 @@ def visualizarasignaciondocente(request):
 
 
 
-
-
-
-
 @login_required 
 def administrarasignaciondocente(request):
     if request.method == 'POST':
+        # Obtener el DUI del docente y el id de grado_seccion desde el formulario
         docente_dui = request.POST.get('docente')
         grado_seccion_id = request.POST.get('grado_seccion')
         
@@ -339,32 +336,54 @@ def administrarasignaciondocente(request):
         
         # Verifica si el docente ya está asignado a una sección del grado seleccionado
         docente_asignaciones = Asignacion.objects.filter(docente__dui=docente_dui)
-        grado_seccion = GradoSeccion.objects.get(id=grado_seccion_id)
-        seccion_actual = grado_seccion.seccion
+        try:
+            grado_seccion = GradoSeccion.objects.get(id_gradoseccion=grado_seccion_id)
+        except GradoSeccion.DoesNotExist:
+            messages.error(request, 'Grado y sección no encontrados.')
+            return redirect('administrarasignaciondocente')
 
-        for asignacion in docente_asignaciones:
-            if asignacion.grado_seccion.seccion == seccion_actual:
-                messages.error(request, 'El docente ya está asignado a una sección del mismo grado.')
-                return redirect('administrarasignaciondocente')
+        seccion_actual = grado_seccion.seccion
         
+        # Acumula mensajes de error
+        errores = []
+
         # Verificar si el docente ya tiene 2 asignaciones en total
         if docente_asignaciones.count() >= 2:
-            messages.error(request, 'El docente ya tiene el máximo de asignaciones permitidas.')
+            errores.append('El docente ya tiene el máximo de asignaciones permitidas.')
+        
+        # Verificar si el docente ya está asignado a la misma sección del grado
+        for asignacion in docente_asignaciones:
+            if asignacion.grado_seccion.seccion == seccion_actual:
+                errores.append('El docente ya está asignado a un Grado con la misma sección.')
+
+        # Si hay errores, mostrar un único mensaje de error concatenado
+        if errores:
+            mensaje_final = " ".join(errores)  # Concatenar todos los errores en un solo mensaje
+            messages.error(request, mensaje_final)
             return redirect('administrarasignaciondocente')
         
-        # Crear una nueva instancia de Asignacion con los objetos obtenidos
-        docente = Docente.objects.get(dui=docente_dui)
+        # Crear la asignación
+        try:
+            docente = Docente.objects.get(dui=docente_dui)
+        except Docente.DoesNotExist:
+            messages.error(request, 'Docente no encontrado.')
+            return redirect('administrarasignaciondocente')
+        
+        # Crear la asignación
         Asignacion.objects.create(docente=docente, grado_seccion=grado_seccion)
         messages.success(request, 'Asignación guardada con éxito')
         return redirect('administrarasignaciondocente')
 
+    # Obtener todos los docentes y grados_secciones para el formulario
     docentes = Docente.objects.all()
     grados_secciones = GradoSeccion.objects.all()
+    
 
     return render(request, 'accounts/administrarasignaciondocente.html', {
         'docentes': docentes,
         'grados_secciones': grados_secciones
     })
+
 
 @login_required 
 def visualizarasignaciondocente(request):
@@ -372,32 +391,35 @@ def visualizarasignaciondocente(request):
     return render(request, 'accounts/visualizarasignaciondocente.html', {'asignaciones': asignaciones})
 
 @login_required 
+@login_required
 def editarasignacion(request, id):
     asignacion = get_object_or_404(Asignacion, id=id)
+    
     if request.method == 'POST':
         form = AsignacionForm(request.POST, instance=asignacion)
+        
         if form.is_valid():
-            # Realizar la validación adicional antes de guardar
             cleaned_data = form.cleaned_data
             docente = cleaned_data['docente']
-            grado_seccion = cleaned_data['grado_seccion']
+            grado_seccion = cleaned_data['grado_seccion']  # Esto utilizará id_gradoseccion en el modelo
+
+            # Verificar si el docente ya está asignado a la misma sección
             if Asignacion.objects.filter(docente=docente, grado_seccion__seccion=grado_seccion.seccion).exclude(id=asignacion.id).exists():
-                # Si el docente ya está asignado a una sección igual, mostrar un mensaje de error
                 return JsonResponse({'success': False, 'message': 'El docente ya está asignado a una sección igual.'})
             else:
-                # Si la validación pasa, guardar la asignación
                 form.save()
                 return JsonResponse({'success': True, 'message': 'Asignación actualizada con éxito.'})
         else:
-            # Si el formulario no es válido, devolver errores
+            # Devolver los errores del formulario
             errors = dict([(field, [error for error in errors]) for field, errors in form.errors.items()])
             return JsonResponse({'success': False, 'errors': errors})
+
     else:
         form = AsignacionForm(instance=asignacion)
 
     return render(request, 'accounts/editarasignacion.html', {'form': form, 'asignacion': asignacion})
- 
-@login_required 
+
+@login_required
 def eliminarasignacion(request, id):
     asignacion = get_object_or_404(Asignacion, id=id)
     if request.method == 'POST':

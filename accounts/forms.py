@@ -9,14 +9,23 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
 #Codigo Daniel 
+
 class AsignacionForm(forms.ModelForm):
     class Meta:
         model = Asignacion
         fields = ['docente', 'grado_seccion']
         widgets = {
-            'docente' : forms.Select(attrs={'class':'select-form'}),
-            'grado_seccion' : forms.Select(attrs={'class':'select-form'}),
+            'docente': forms.Select(attrs={'class': 'select-form'}),
+            'grado_seccion': forms.Select(attrs={'class': 'select-form'}),
         }
+
+    def __init__(self, *args, **kwargs):
+        super(AsignacionForm, self).__init__(*args, **kwargs)
+        
+        # Cambiar las opciones para el campo 'grado_seccion' para usar 'id_gradoseccion'
+        self.fields['grado_seccion'].queryset = GradoSeccion.objects.all()
+        self.fields['grado_seccion'].label_from_instance = lambda obj: f"{obj.grado.nombreGrado} - {obj.seccion.nombreSeccion}"
+
 
 class EstudianteForm(forms.ModelForm):
 

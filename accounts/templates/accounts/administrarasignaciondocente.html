@@ -17,7 +17,7 @@ SABANA PROYECT
                 <select class="form-select" id="selectDocente" name="docente">
                     <option value="" selected disabled>-- Selecciona un docente --</option>
                     {% for docente in docentes %}
-                        <option value="{{ docente.dui }}">{{ docente.nombreDocente }}</option>
+                    <option value="{{ docente.dui }}">{{ docente.nombreDocente }} {{ docente.apellidoDocente }}</option>
                     {% endfor %}
                 </select>
             </div>
@@ -26,7 +26,7 @@ SABANA PROYECT
                 <select class="form-select" id="selectGradoSeccion" name="grado_seccion">
                     <option value="" selected disabled>-- Selecciona un grado y sección --</option>
                     {% for grado_seccion in grados_secciones %}
-                        <option value="{{ grado_seccion.id }}">{{ grado_seccion.grado.nombreGrado }} - {{ grado_seccion.seccion.nombreSeccion }}</option>
+                        <option value="{{ grado_seccion.id_gradoseccion }}">{{ grado_seccion.grado.nombreGrado }} - {{ grado_seccion.seccion.nombreSeccion }}</option>
                     {% endfor %}
                 </select>
             </div>
@@ -44,6 +44,8 @@ SABANA PROYECT
 document.getElementById('asignacionForm').addEventListener('submit', function(event) {
     var docente = document.getElementById('selectDocente').value;
     var gradoSeccion = document.getElementById('selectGradoSeccion').value;
+    console.log("Docente seleccionado:", docente);
+    console.log("Grado sección seleccionado:", gradoSeccion);
 
     if (docente === "" || gradoSeccion === "") {
         event.preventDefault(); // Evitar el envío del formulario
@@ -55,7 +57,7 @@ document.getElementById('asignacionForm').addEventListener('submit', function(ev
     }
 });
 
-/*{% if messages %}
+{% if messages %}
     {% for message in messages %}
         {% if message.tags == 'success' %}
             Swal.fire({
@@ -74,6 +76,6 @@ document.getElementById('asignacionForm').addEventListener('submit', function(ev
             });
         {% endif %}
     {% endfor %}
-{% endif %} */
+{% endif %} 
 </script>
 {% endblock %}
