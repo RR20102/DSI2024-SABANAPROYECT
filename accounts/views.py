@@ -499,3 +499,50 @@ def eliminar_estudiante(request, id):
     
     # Si no es método POST, retornar un error
     return JsonResponse({'success': False, 'message': 'Método no permitido.'})
+
+
+
+# Vista para asignar Horarios de Clases Docentes y Estudiantes - Daniel SP2
+from .models import HorarioClase, DocenteMateriaGrado
+from .forms import HorarioClaseForm
+from django.contrib import messages
+#from django.db.models import Q  # Para hacer búsquedas con múltiples campos
+
+def agregar_horario(request):
+    if request.method == 'POST':
+        form = HorarioClaseForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('lista_horarios')  # Redirigir a la lista de horarios
+    else:
+        form = HorarioClaseForm()
+    
+    return render(request, 'accounts/agregar_horario.html', {'form': form})
+
+def lista_horarios(request):
+    docente_materias = DocenteMateriaGrado.objects.all()  # Obtener todos los DocenteMateriaGrado
+    #Ordenar los docentes y materias por el nombre del grado (ascendente)
+    docente_materias = DocenteMateriaGrado.objects.all().order_by('id_matrgrasec__id_gradoseccion__grado__nombreGrado')
+    return render(request, 'accounts/lista_horarios.html', {'docente_materias': docente_materias})
+    
+    
+
+def ver_horarios(request, docente_materia_id):
+    docente_materia = get_object_or_404(DocenteMateriaGrado, id_doc_mat_grado=docente_materia_id)
+    horarios = HorarioClase.objects.filter(docente_materia_grado=docente_materia)
+
+     #Ordenar primero por día de la semana y luego por la hora de inicio
+    dias_orden = {
+        'Lunes': 1,
+        'Martes': 2,
+        'Miércoles': 3,
+        'Jueves': 4,
+        'Viernes': 5,
+        'Sábado': 6,
+        'Domingo': 7
+    }
+    
+    horarios = sorted(horarios, key=lambda h: (dias_orden[h.dia_semana], h.hora_inicio))
+
+    return render(request, 'accounts/ver_horarios.html', {'docente_materia': docente_materia, 'horarios': horarios})
+

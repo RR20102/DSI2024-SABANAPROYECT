@@ -85,10 +85,6 @@ class Estudiante(models.Model):
         return f"{self.nombreAlumno} d{self.apellidoAlumno}"      
 
 
-#Codigo Agregado  Daniel
-
-
-
 class Asignacion(models.Model):
     docente = models.ForeignKey(Docente, on_delete=models.CASCADE, related_name='asignaciones')
     grado_seccion = models.ForeignKey(GradoSeccion, on_delete=models.CASCADE, related_name='asignaciones')
@@ -111,10 +107,12 @@ class MateriaGradoSeccion(models.Model):
     id_materia = models.ForeignKey(Materia, on_delete=models.RESTRICT, null=True)
     id_gradoseccion = models.ForeignKey(GradoSeccion, on_delete=models.RESTRICT, null=True)
 
+
 class DocenteMateriaGrado(models.Model):
     id_doc_mat_grado = models.AutoField(primary_key=True, unique=True, null=False)
     dui = models.ForeignKey(Docente, on_delete=models.RESTRICT, null=True)
     id_matrgrasec = models.ForeignKey(MateriaGradoSeccion, on_delete=models.RESTRICT)
+
 
 class Asistencia(models.Model):
     id_asistencia = models.AutoField(primary_key=True, unique=True, null=False)
@@ -140,3 +138,23 @@ class ActividadAcademica(models.Model):
     fecha_actividad = models.DateField()
     nota = models.FloatField()
 
+#Codigo para Horarios de Clases 
+class HorarioClase(models.Model):
+    docente_materia_grado = models.ForeignKey(DocenteMateriaGrado, on_delete=models.CASCADE, null=True)  # Ahora permite valores nulos
+    dia_semana = models.CharField(max_length=9, choices=[
+        ('Lunes', 'Lunes'), 
+        ('Martes', 'Martes'),
+        ('Miércoles', 'Miércoles'), 
+        ('Jueves', 'Jueves'),
+        ('Viernes', 'Viernes'),
+        ('Sábado', 'Sábado'),
+        ('Domingo', 'Domingo'),
+    ])
+    hora_inicio = models.TimeField()
+    hora_fin = models.TimeField()
+
+    class Meta:
+        unique_together = ('docente_materia_grado', 'dia_semana', 'hora_inicio', 'hora_fin')
+
+    def __str__(self):
+        return f"{self.docente_materia_grado} ({self.dia_semana}, {self.hora_inicio} - {self.hora_fin})"

@@ -161,3 +161,35 @@ class DocenteForm(forms.ModelForm):
             raise ValidationError('Este correo electrónico ya está registrado. Por favor, ingrese otro.')
         return correo
     
+
+#Codigo Daniel SP2 Asignacion de Horarios de Clases 
+from .models import HorarioClase, DocenteMateriaGrado
+
+class HorarioClaseForm(forms.ModelForm):
+    class Meta:
+        model = HorarioClase
+        fields = ['docente_materia_grado', 'dia_semana', 'hora_inicio', 'hora_fin']
+        widgets = {
+            'hora_inicio': forms.TimeInput(attrs={'type': 'time', 'class': 'form-control'}),
+            'hora_fin': forms.TimeInput(attrs={'type': 'time', 'class': 'form-control'}),
+        }
+        
+    def __init__(self, *args, **kwargs):
+        super(HorarioClaseForm, self).__init__(*args, **kwargs)
+        self.fields['docente_materia_grado'].queryset = DocenteMateriaGrado.objects.all()
+        self.fields['docente_materia_grado'].label_from_instance = lambda obj: f"{obj.dui} - {obj.id_matrgrasec.id_materia.nombre_materia} - {obj.id_matrgrasec.id_gradoseccion.grado.nombreGrado} - {obj.id_matrgrasec.id_gradoseccion.seccion.nombreSeccion}"
+
+    # Validación para evitar conflictos de horarios
+    def clean(self):
+        cleaned_data = super().clean()
+        docente_materia_grado = cleaned_data.get("docente_materia_grado")
+        dia_semana = cleaned_data.get("dia_semana")
+        hora_inicio = cleaned_data.get("hora_inicio")
+        hora_fin = cleaned_data.get("hora_fin")
+
+        if HorarioClase.objects.filter(docente_materia_grado=docente_materia_grado, dia_semana=dia_semana, hora_inicio__lt=hora_fin, hora_fin__gt=hora_inicio).exists():
+            raise forms.ValidationError("Ya existe un horario conflictivo para este docente y materia.")
+        
+        return cleaned_data
+
+

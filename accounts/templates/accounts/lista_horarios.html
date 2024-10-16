@@ -1,0 +1,36 @@
+{% extends "accounts/templates/accounts/base.html" %}
+{% block title %}Lista de Horarios Clases{% endblock %}
+
+{% block content %}
+<div class="text-center mt-5">
+    <h1>Lista de Horarios de Clases Asignados a cada Docente</h1>
+    <table class="table table-striped mt-4">
+        <thead>
+            <tr>
+                <th>Docente</th>
+                <th>Materia</th>
+                <th>Grado</th>
+                <th>Ver Horarios</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for docente_materia in docente_materias %}
+            <tr>
+                <td>{{ docente_materia.dui.nombreDocente }} {{ docente_materia.dui.apellidoDocente }}</td>
+                <td>{{ docente_materia.id_matrgrasec.id_materia.nombre_materia }}</td>
+                <td>{{ docente_materia.id_matrgrasec.id_gradoseccion.grado.nombreGrado }}</td>
+                <td><a href="{% url 'ver_horarios' docente_materia.id_doc_mat_grado %}" class="btn btn-info">Visualizar</a></td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4">No hay docente-materia registrados.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a href="{% url 'agregar_horario' %}" class="btn btn-success">Agregar Nuevo Horario</a>
+    <a href="{% url 'home' %}" class="btn btn-secondary">Volver al menu principal</a>
+</div>
+{% endblock %}
+
+
