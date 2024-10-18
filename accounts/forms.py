@@ -1,7 +1,7 @@
-from django import forms
+from django import forms, modelformset_factory
 
 #Codigo Daniel 
-from .models import Asignacion, Docente, GradoSeccion, Estudiante
+from .models import Asignacion, Docente, GradoSeccion, Estudiante, Asistencia
 from django.contrib.auth.models import User
 
 #Codigo Christian 
@@ -152,3 +152,18 @@ class DocenteForm(forms.ModelForm):
             raise ValidationError('Este correo electrónico ya está registrado. Por favor, ingrese otro.')
         return correo
     
+
+#Registro de asistencia
+class SeleccionarGradoSeccionForm(forms.Form):
+    grado_seccion = forms.ModelChoiceField(queryset=GradoSeccion.objects.all(), label="Grado y Sección")
+    fecha = forms.DateField(widget=forms.SelectDateWidget(), label="Fecha de asistencia")
+
+class AsistenciaForm(forms.ModelForm):
+    class Meta:
+        model = Asistencia
+        fields = ['id_alumno', 'asistio']
+        widgets = {
+            'asistio': forms.RadioSelect(choices=Asistencia.ASISTENCIA_CHOICES),  # Usamos radio buttons
+        }
+
+AsistenciaFormSet = modelformset_factory(Asistencia, form=AsistenciaForm, extra=0)

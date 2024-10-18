@@ -4,13 +4,30 @@
 {% load tags %}
 
 <div class="container">
-    <div>
-        <h1 class="mt-5">Registro de Asistencia</h1>
-    </div>
 
-    <div class="container mt-4">
-        <h5>Listado de registros de asistencia</h5>
-    </div>
+    <form method="POST">
+        {% csrf_token %}
+        <h3>Registro de Asistencia para la fecha {{ fecha }}</h3>
+    
+        <table>
+            <thead>
+                <tr>
+                    <th>Estudiante</th>
+                    <th>Asistió</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for form in formset %}
+                    <tr>
+                        <td>{{ form.id_alumno.value }}</td>
+                        <td>{{ form.asistio }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    
+        <button type="submit">Guardar</button>
+    </form>    
 
     <div class="mt-4 d-flex justify-content-center">
         <a href="{% url 'home' %}" class="btn btn-secondary">Volver</a>

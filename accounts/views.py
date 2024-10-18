@@ -1,10 +1,11 @@
 from django.shortcuts import render, get_object_or_404, redirect
 #Importacion de modelos de la base de datos - Codigo Daniel 
-from .models import Docente, Grado, Seccion, Asignacion, Estudiante, GradoSeccion
-from .forms import AsignacionForm, EstudianteForm
+from .models import Docente, Grado, Seccion, Asignacion, Estudiante, GradoSeccion, Asistencia
+from .forms import AsignacionForm, EstudianteForm, AsistenciaFormSet, SeleccionarGradoSeccionForm
 from django.contrib import messages  # Importa messages
 from django.http import JsonResponse
 import json
+from django.utils import timezone
 
 #Codigo Christian 
 from django.contrib.auth import authenticate, login, logout
@@ -481,3 +482,39 @@ def eliminar_estudiante(request, id):
 @login_required
 def registro_asistencia(request):
     return render(request, 'asistencia/registro_asistencia.html')
+
+def seleccionar_grado(request):
+    if request.method == 'POST':
+        form = SeleccionarGradoSeccionForm(request.POST)
+        if form.is_valid():
+            grado_seccion = form.cleaned_data['grado_seccion']
+            fecha = form.cleaned_data['fecha']
+            return redirect('registrar_asistencia', id_gradoseccion=grado_seccion.id, fecha=fecha)
+    else:
+        form = SeleccionarGradoSeccionForm()
+
+    return render(request, 'asistencia/seleccionar_grado.html', {'form': form})
+
+
+@login_required
+def registrar_asistencia(request, id_gradoseccion, fecha=None):
+
+    fecha = fecha or timezone.now().date() 
+    estudiantes = Estudiante.objects.filter(id_gradoseccion=id_gradoseccion)
+    asistencias = Asistencia.objects.filter(idgradoseccion=id_gradoseccion, fechaasistencia=fecha)
+    
+    if not asistencias.exists():
+
+        for estudiante in estudiantes:
+            Asistencia.objects.create(id_alumno=estudiante, idgradoseccion_id=id_gradoseccion, fechaasistencia=fecha)
+        asistencias = Asistencia.objects.filter(idgradoseccion=id_gradoseccion, fechaasistencia=fecha)
+
+    if request.method == 'POST':
+        formset = AsistenciaFormSet(request.POST, queryset=asistencias)
+        if formset.is_valid():
+            formset.save()
+            return redirect('asistencia_exitosa')
+    else:
+        formset = AsistenciaFormSet(queryset=asistencias)
+
+    return render(request, 'asistencia/registrar_asistencia.html', {'formset': formset, 'fecha': fecha})

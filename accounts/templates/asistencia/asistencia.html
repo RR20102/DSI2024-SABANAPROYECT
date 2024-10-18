@@ -1,0 +1,21 @@
+{% extends "accounts/templates/accounts/base.html" %}
+{% block title %}SABANA - Asistencia {% endblock %}
+{% block content %}
+{% load tags %}
+
+<div class="container">
+   
+    <h3>Seleccione el grado y la fecha a registrar</h3>
+
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Seleccionar</button>
+    </form>
+    
+    <div class="mt-4 d-flex justify-content-center">
+        <a href="{% url 'home' %}" class="btn btn-secondary">Volver</a>
+    </div>
+</div>
+
+{% endblock %}
