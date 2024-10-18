@@ -480,10 +480,7 @@ def eliminar_estudiante(request, id):
 
 # Codigo Registro de asistencia
 @login_required
-def registro_asistencia(request):
-    return render(request, 'asistencia/registro_asistencia.html')
-
-def seleccionar_grado(request):
+def gestionar_asistencia(request):
     if request.method == 'POST':
         form = SeleccionarGradoSeccionForm(request.POST)
         if form.is_valid():
@@ -493,7 +490,7 @@ def seleccionar_grado(request):
     else:
         form = SeleccionarGradoSeccionForm()
 
-    return render(request, 'asistencia/seleccionar_grado.html', {'form': form})
+    return render(request, 'asistencia/gestion_asistencia.html', {'form': form})
 
 
 @login_required
@@ -517,4 +514,4 @@ def registrar_asistencia(request, id_gradoseccion, fecha=None):
     else:
         formset = AsistenciaFormSet(queryset=asistencias)
 
-    return render(request, 'asistencia/registrar_asistencia.html', {'formset': formset, 'fecha': fecha})
+    return render(request, 'asistencia/gestion_asistencia.html', {'formset': formset, 'fecha': fecha})

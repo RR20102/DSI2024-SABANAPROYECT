@@ -29,7 +29,6 @@ urlpatterns = [
     path('visualizarasignaciondocente/', views.visualizarasignaciondocente, name='visualizarasignaciondocente'),
     
     #Codigo Registro de Asistencia - Ricardo
-    path('asistencia/listar-registros/', views.registro_asistencia, name='registroasistencia'),
-    path('asistencia/seleccionar_grado/', views.seleccionar_grado, name='seleccionar_grado'),
-    path('asistencia/registrar_asistencia/<int:id_gradoseccion>/<str:fecha>/', views.registrar_asistencia, name='registrar_asistencia'),
+    path('asistencia/gestion_asistencia/', views.gestionar_asistencia, name='gestionar_asistencia'),
+    path('asistencia/registro_asistencia/<int:id_gradoseccion>/<str:fecha>/', views.registrar_asistencia, name='registrar_asistencia'),
 ]

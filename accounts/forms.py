@@ -1,4 +1,6 @@
-from django import forms, modelformset_factory
+from django import forms
+from django.forms.models import modelformset_factory
+
 
 #Codigo Daniel 
 from .models import Asignacion, Docente, GradoSeccion, Estudiante, Asistencia
@@ -154,6 +156,11 @@ class DocenteForm(forms.ModelForm):
     
 
 #Registro de asistencia
+ASISTENCIA_CHOICES = [
+        ('P', 'Presente'),
+        ('A', 'Ausente'),
+    ]
+
 class SeleccionarGradoSeccionForm(forms.Form):
     grado_seccion = forms.ModelChoiceField(queryset=GradoSeccion.objects.all(), label="Grado y Sección")
     fecha = forms.DateField(widget=forms.SelectDateWidget(), label="Fecha de asistencia")
@@ -163,7 +170,7 @@ class AsistenciaForm(forms.ModelForm):
         model = Asistencia
         fields = ['id_alumno', 'asistio']
         widgets = {
-            'asistio': forms.RadioSelect(choices=Asistencia.ASISTENCIA_CHOICES),  # Usamos radio buttons
+            'asistio': forms.RadioSelect(choices=ASISTENCIA_CHOICES),  # Usamos radio buttons
         }
 
 AsistenciaFormSet = modelformset_factory(Asistencia, form=AsistenciaForm, extra=0)
