@@ -1,7 +1,7 @@
 from django.urls import path
 #from django.contrib import admin
 from . import views
-from .views import registrar_estudiante, listar_estudiantes, editar_estudiante, agregar_horario, lista_horarios, ver_horarios
+from .views import registrar_estudiante, listar_estudiantes, editar_estudiante, agregar_horario, lista_horarios, ver_horarios, eliminar_horario, editar_horario
 
 urlpatterns = [
     #Codio Login - Codigo Chritian
@@ -33,5 +33,9 @@ urlpatterns = [
     path('agregar-horario/', agregar_horario, name='agregar_horario'),
     path('lista-horarios/', lista_horarios, name='lista_horarios'),
     path('ver-horarios/<int:docente_materia_id>/', ver_horarios, name='ver_horarios'),
+
+
+    path('eliminar_horario/<int:horario_id>/', views.eliminar_horario, name='eliminar_horario'),
+     path('editar_horario/<int:horario_id>/', editar_horario, name='editar_horario'),
 
 ]

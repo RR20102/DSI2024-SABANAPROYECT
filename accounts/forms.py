@@ -186,10 +186,31 @@ class HorarioClaseForm(forms.ModelForm):
         dia_semana = cleaned_data.get("dia_semana")
         hora_inicio = cleaned_data.get("hora_inicio")
         hora_fin = cleaned_data.get("hora_fin")
-
-        if HorarioClase.objects.filter(docente_materia_grado=docente_materia_grado, dia_semana=dia_semana, hora_inicio__lt=hora_fin, hora_fin__gt=hora_inicio).exists():
-            raise forms.ValidationError("Ya existe un horario conflictivo para este docente y materia.")
         
+
+        if hora_inicio and hora_fin and hora_inicio >= hora_fin:
+             raise forms.ValidationError("La hora de fin debe ser mayor que la hora de inicio.")
+
+         # Verificar si el horario se está editando
+        if self.instance and self.instance.id:  # Verifica si es una instancia existente
+            # Excluir el horario actual de la verificación
+            horarios_conflictivos = HorarioClase.objects.filter(
+                docente_materia_grado=docente_materia_grado,
+                dia_semana=dia_semana,
+                hora_inicio__lt=hora_fin,
+                hora_fin__gt=hora_inicio
+            ).exclude(id=self.instance.id)  # Excluir el horario que se está editando
+            
+            if horarios_conflictivos.exists():
+                raise forms.ValidationError("Ya existe un horario conflictivo para este docente y materia.")
+        else:
+            # Si no es una instancia existente, solo verificar si hay conflictos
+            if HorarioClase.objects.filter(
+                docente_materia_grado=docente_materia_grado,
+                dia_semana=dia_semana,
+                hora_inicio__lt=hora_fin,
+                hora_fin__gt=hora_inicio
+            ).exists():
+                raise forms.ValidationError("Ya existe un horario conflictivo para este docente y materia.")
+
         return cleaned_data
-
-

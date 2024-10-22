@@ -512,12 +512,35 @@ def agregar_horario(request):
     if request.method == 'POST':
         form = HorarioClaseForm(request.POST)
         if form.is_valid():
+            docente_materia_grado = form.cleaned_data.get("docente_materia_grado")
+            dia_semana = form.cleaned_data.get("dia_semana")
+            hora_inicio = form.cleaned_data.get("hora_inicio")
+            hora_fin = form.cleaned_data.get("hora_fin")
+
+            # Validación de que la hora de fin sea mayor que la hora de inicio
+            if hora_inicio >= hora_fin:
+                messages.error(request, "La hora de fin debe ser mayor que la hora de inicio.")
+                return render(request, 'accounts/agregar_horario.html', {'form': form})
+
+            # Validación para evitar conflictos de horarios
+            if HorarioClase.objects.filter(
+                docente_materia_grado=docente_materia_grado,
+                dia_semana=dia_semana,
+                hora_inicio__lt=hora_fin,
+                hora_fin__gt=hora_inicio
+            ).exists():
+                messages.error(request, "Ya existe un horario conflictivo para este docente y materia.")
+                return render(request, 'accounts/agregar_horario.html', {'form': form})
+
+            # Si todo es válido, guardar el formulario
             form.save()
-            return redirect('lista_horarios')  # Redirigir a la lista de horarios
+            messages.success(request, "Horario agregado con éxito.")
+            return redirect('lista_horarios')
     else:
         form = HorarioClaseForm()
     
     return render(request, 'accounts/agregar_horario.html', {'form': form})
+ 
 
 def lista_horarios(request):
     docente_materias = DocenteMateriaGrado.objects.all()  # Obtener todos los DocenteMateriaGrado
@@ -546,3 +569,28 @@ def ver_horarios(request, docente_materia_id):
 
     return render(request, 'accounts/ver_horarios.html', {'docente_materia': docente_materia, 'horarios': horarios})
 
+def eliminar_horario(request, horario_id):
+    horario = get_object_or_404(HorarioClase, id=horario_id)
+    horario.delete()
+    messages.success(request, "Horario eliminado con éxito.")
+    return redirect('ver_horarios', docente_materia_id=horario.docente_materia_grado.id_doc_mat_grado)
+
+def editar_horario(request, horario_id):
+    horario = get_object_or_404(HorarioClase, id=horario_id)
+
+    if request.method == 'POST':
+        form = HorarioClaseForm(request.POST, instance=horario)  # Pasar la instancia del horario actual
+        if form.is_valid():
+            form.save()  # Guardar el formulario, ya tiene la validación incorporada
+            messages.success(request, "Horario actualizado con éxito.")
+            return redirect('ver_horarios', docente_materia_id=horario.docente_materia_grado.id_doc_mat_grado)
+        else:
+            # Mostrar errores específicos de los campos
+            for field in form:
+                for error in field.errors:
+                    messages.error(request, error)
+
+    else:
+        form = HorarioClaseForm(instance=horario)
+
+    return render(request, 'accounts/editar_horario.html', {'form': form})

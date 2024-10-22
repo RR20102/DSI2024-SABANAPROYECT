@@ -18,6 +18,35 @@
                 <td>{{ horario.dia_semana }}</td>
                 <td>{{ horario.hora_inicio|date:"h:i A" }}</td>
                 <td>{{ horario.hora_fin|date:"h:i A" }}</td>
+                <td>
+                    <a href="{% url 'editar_horario' horario.id %}" class="btn btn-warning">Editar</a>
+                    <!-- Botón Eliminar con ventana modal -->
+                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal{{ horario.id }}">
+                        Eliminar
+                    </button>
+                    
+                    <!-- Modal para confirmación de eliminación -->
+                    <div class="modal fade" id="confirmDeleteModal{{ horario.id }}" tabindex="-1" aria-labelledby="confirmDeleteLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="confirmDeleteLabel">Confirmar Eliminación</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    ¿Estás seguro de que deseas eliminar este horario?
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                    <form method="post" action="{% url 'eliminar_horario' horario.id %}">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-danger">Eliminar</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </td>
             </tr>
             {% empty %}
             <tr>
