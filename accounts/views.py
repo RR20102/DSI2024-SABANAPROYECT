@@ -506,6 +506,7 @@ def eliminar_estudiante(request, id):
 from .models import HorarioClase, DocenteMateriaGrado
 from .forms import HorarioClaseForm
 from django.contrib import messages
+from django.shortcuts import render
 #from django.db.models import Q  # Para hacer búsquedas con múltiples campos
 
 def agregar_horario(request):
@@ -532,6 +533,16 @@ def agregar_horario(request):
                 messages.error(request, "Ya existe un horario conflictivo para este docente y materia.")
                 return render(request, 'accounts/agregar_horario.html', {'form': form})
 
+             # Validación adicional: verificar si el docente tiene otra materia asignada en el mismo día y hora
+            if HorarioClase.objects.filter(
+                docente_materia_grado__dui=docente_materia_grado.dui,  # Verificar por el mismo docente
+                dia_semana=dia_semana,
+                hora_inicio__lt=hora_fin,
+                hora_fin__gt=hora_inicio
+            ).exists():
+                messages.error(request, "El docente ya tiene otra materia asignada en este día y hora.")
+                return render(request, 'accounts/agregar_horario.html', {'form': form})
+
             # Si todo es válido, guardar el formulario
             form.save()
             messages.success(request, "Horario agregado con éxito.")
@@ -543,18 +554,37 @@ def agregar_horario(request):
  
 
 def lista_horarios(request):
-    docente_materias = DocenteMateriaGrado.objects.all()  # Obtener todos los DocenteMateriaGrado
-    #Ordenar los docentes y materias por el nombre del grado (ascendente)
+    # Obtener todos los DocenteMateriaGrado ordenados por grado
     docente_materias = DocenteMateriaGrado.objects.all().order_by('id_matrgrasec__id_gradoseccion__grado__nombreGrado')
-    return render(request, 'accounts/lista_horarios.html', {'docente_materias': docente_materias})
-    
-    
+
+    # Obtener el valor del parámetro 'search' de la URL
+    search_query = request.GET.get('search', '')
+
+    if search_query:
+        # Filtrar los resultados según el campo de búsqueda
+        docente_materias = DocenteMateriaGrado.objects.filter(
+            id_matrgrasec__id_materia__nombre_materia__icontains=search_query
+        ).distinct() | DocenteMateriaGrado.objects.filter(
+            dui__nombreDocente__icontains=search_query
+        ).distinct() | DocenteMateriaGrado.objects.filter(
+            id_matrgrasec__id_gradoseccion__grado__nombreGrado__icontains=search_query
+        ).distinct()
+
+    return render(request, 'accounts/lista_horarios.html', {
+        'docente_materias': docente_materias,
+        'search_query': search_query  # Pasar el término de búsqueda para mantenerlo en el campo de texto
+    })
+
+     
 
 def ver_horarios(request, docente_materia_id):
+    # Obtener el objeto DocenteMateriaGrado
     docente_materia = get_object_or_404(DocenteMateriaGrado, id_doc_mat_grado=docente_materia_id)
+
+    # Obtener todos los horarios de este docente
     horarios = HorarioClase.objects.filter(docente_materia_grado=docente_materia)
 
-     #Ordenar primero por día de la semana y luego por la hora de inicio
+    # Ordenar los horarios por día de la semana y hora de inicio
     dias_orden = {
         'Lunes': 1,
         'Martes': 2,
@@ -564,10 +594,14 @@ def ver_horarios(request, docente_materia_id):
         'Sábado': 6,
         'Domingo': 7
     }
-    
+
     horarios = sorted(horarios, key=lambda h: (dias_orden[h.dia_semana], h.hora_inicio))
 
-    return render(request, 'accounts/ver_horarios.html', {'docente_materia': docente_materia, 'horarios': horarios})
+    return render(request, 'accounts/ver_horarios.html', {
+        'docente_materia': docente_materia,
+        'horarios': horarios
+    })
+ 
 
 def eliminar_horario(request, horario_id):
     horario = get_object_or_404(HorarioClase, id=horario_id)
@@ -594,3 +628,4 @@ def editar_horario(request, horario_id):
         form = HorarioClaseForm(instance=horario)
 
     return render(request, 'accounts/editar_horario.html', {'form': form})
+
