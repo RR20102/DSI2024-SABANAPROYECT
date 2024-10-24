@@ -1,7 +1,37 @@
 {% extends "accounts/templates/accounts/base.html" %}
 
-{% block title %}Horarios del Docente {{ docente.nombreDocente }} {{ docente.apellidoDocente }}{% endblock %}
-
 {% block content %}
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Horarios de clases completos de {{ docente.nombreDocente }} {{ docente.apellidoDocente }}</h2>
 
+    <table class="table table-bordered table-striped">
+        <thead class="thead-dark">
+            <tr>
+                <th>Día</th>
+                <th>Hora de Inicio</th>
+                <th>Hora de Fin</th>
+                <th>Materia</th>
+                <th>Grado - Sección</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for horario in horarios %}
+            <tr>
+                <td>{{ horario.dia_semana }}</td>
+                <td>{{ horario.hora_inicio|date:"h:i A" }}</td>
+                <td>{{ horario.hora_fin|date:"h:i A" }}</td>
+                <td>{{ horario.docente_materia_grado.id_matrgrasec.id_materia.nombre_materia }}</td>
+                <td>{{ horario.docente_materia_grado.id_matrgrasec.id_gradoseccion }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" class="text-center">No hay horarios asignados para este docente.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div class="text-center mt-4">
+        <a href="{% url 'lista_docentes' %}" class="btn btn-secondary">Volver a la Lista de horarios completos</a>
+    </div>
+</div>
 {% endblock %}

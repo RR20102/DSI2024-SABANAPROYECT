@@ -1,0 +1,37 @@
+{% extends "accounts/templates/accounts/base.html" %}
+
+{% block content %}
+<div class="container mx-auto mt-8">
+    <h2 class="text-center text-3xl font-bold mb-4">Tus Horarios de Clases</h2>
+    <h4 class="text-center text-xl mb-6">{{ docente.nombreDocente }} {{ docente.apellidoDocente }}</h4>
+    
+    <div class="overflow-x-auto">
+        <table class="min-w-full table-auto border-collapse border border-gray-300 shadow-lg rounded-lg">
+            <thead>
+                <tr class="bg-yellow-200 text-gray-600 uppercase text-sm leading-normal">
+                    <th class="py-3 px-6 text-left">Día</th>
+                    <th class="py-3 px-6 text-left">Hora de Inicio</th>
+                    <th class="py-3 px-6 text-left">Hora de Fin</th>
+                    <th class="py-3 px-6 text-left">Materia</th>
+                    <th class="py-3 px-6 text-left">Grado - Sección</th>
+                </tr>
+            </thead>
+            <tbody class="text-gray-700 text-sm font-light">
+                {% for horario in horarios %}
+                <tr class="border-b border-gray-300 hover:bg-gray-100">
+                    <td class="py-3 px-6">{{ horario.dia_semana }}</td>
+                    <td class="py-3 px-6">{{ horario.hora_inicio|time:"g:i A" }}</td>
+                    <td class="py-3 px-6">{{ horario.hora_fin|time:"g:i A" }}</td>
+                    <td class="py-3 px-6">{{ horario.docente_materia_grado.id_matrgrasec.id_materia.nombre_materia }}</td>
+                    <td class="py-3 px-6">{{ horario.docente_materia_grado.id_matrgrasec.id_gradoseccion }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center py-3">No hay horarios asignados para este docente.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

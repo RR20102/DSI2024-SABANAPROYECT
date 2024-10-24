@@ -97,9 +97,12 @@
                             <p class="card-text flex-grow-1">
                                 Gestion de Horarios de clases de docentes y estudiantes 
                             </p>
-                            <div class="mt-auto">
+                            <div class="mt-auto"> 
                                 <a class="btn btn-primary btn-lg" href="{% url 'agregar_horario' %}" role="button">Asignar</a>
-                                <a class="btn btn-secondary btn-lg" href="{% url 'lista_horarios' %}" role="button">Visualizar</a>
+                                <p></p>
+                                <a class="btn btn-secondary btn-lg" href="{% url 'lista_horarios' %}" role="button">Gestionar por Materia</a>
+                                <p></p>
+                                <a class="btn btn-secondary btn-lg" href="{% url 'lista_docentes' %}"role="button">Visualizar Horarios completos</a>
                             </div>
                         </div>
                     </div>
@@ -156,7 +159,7 @@
                         <div class="card-body">
                             <h5 class="card-title">Horario de Clase</h5>
                             <p class="card-text">Revisa tu horario de clases y asignaturas.</p>
-                            <a href="#" class="btn btn-info">Ir a Horario de Clase</a>
+                            <a href="{% url 'horario_estudiante' %}" class="btn btn-info">Ver mi Horario Completo</a>
                         </div>
                     </div>
                 </div>
@@ -229,13 +232,8 @@
                     <div class="card">
                         <div class="card-body">
                             <h5 class="card-title">Horario de Clase</h5>
-                            <p class="card-text">Revisa y actualiza el horario de clases.</p>
-                            <a href="#" class="btn btn-danger">Ir a Horario de Clase</a> 
-                            <!-- {% if docente_materia.dui and docente_materia.dui.dui %}
-                            <a href="{% url 'horarios_por_docente' docente_materia.dui.dui %}" class="btn btn-info">Ver Horarios</a>
-                        {% else %}
-                            <span>Docente no registrado</span> 
-                        {% endif %}                             -->
+                            <p class="card-text">Revisa y actualiza tu horario de clases.</p>
+                            <a href="{% url 'mi_horario' %}" class="btn btn-info">Ver mi Horario Completo</a>
                         </div>
                     </div>
                 </div>

@@ -629,3 +629,82 @@ def editar_horario(request, horario_id):
 
     return render(request, 'accounts/editar_horario.html', {'form': form})
 
+def lista_docentes(request):
+    # Obtener todos los docentes de la base de datos
+    docentes = Docente.objects.all()
+
+    return render(request, 'accounts/lista_horarios_completos.html', {
+        'docentes': docentes
+    })
+
+
+
+def ver_horarios_docente(request, docente_dui):
+    # Obtener el docente a través de su DUI
+    docente = get_object_or_404(Docente, dui=docente_dui)
+
+    # Obtener todas las asignaciones del docente y sus horarios
+    horarios = HorarioClase.objects.filter(docente_materia_grado__dui=docente).order_by('dia_semana', 'hora_inicio')
+    
+      
+    # Ordenar los horarios por día de la semana y hora de inicio
+    dias_orden = {
+        'Lunes': 1,
+        'Martes': 2,
+        'Miércoles': 3,
+        'Jueves': 4,
+        'Viernes': 5,
+        'Sábado': 6,
+        'Domingo': 7
+    }
+
+    horarios = sorted(horarios, key=lambda h: (dias_orden[h.dia_semana], h.hora_inicio))
+
+
+    return render(request, 'accounts/ver_horario_completo.html', {
+        'docente': docente,
+        'horarios': horarios
+    })
+    
+    
+#Vista para docente especficamnente 
+def horario_docente(request):
+    # Obtener el docente asociado al usuario autenticado
+    docente = get_object_or_404(Docente, user=request.user)
+    
+    # Obtener todos los horarios del docente
+    horarios = HorarioClase.objects.filter(docente_materia_grado__dui=docente).order_by('dia_semana', 'hora_inicio')
+    
+    # Ordenar los horarios por día de la semana y hora de inicio
+    dias_orden = {
+        'Lunes': 1,
+        'Martes': 2,
+        'Miércoles': 3,
+        'Jueves': 4,
+        'Viernes': 5,
+        'Sábado': 6,
+        'Domingo': 7
+    }
+
+    horarios = sorted(horarios, key=lambda h: (dias_orden[h.dia_semana], h.hora_inicio))
+
+    return render(request, 'accounts/horario_docente.html', {
+        'docente': docente,
+        'horarios': horarios,
+    })
+    
+#Vista para estudiantes especificamente 
+def horario_estudiante(request):
+    # Obtener el estudiante que está autenticado
+    estudiante = get_object_or_404(Estudiante, user=request.user)
+
+    # Obtener el grado y sección asignados al estudiante
+    grado_seccion = estudiante.id_gradoseccion
+
+    # Obtener los horarios correspondientes al grado y sección del estudiante
+    horarios = HorarioClase.objects.filter(docente_materia_grado__id_matrgrasec__id_gradoseccion=grado_seccion).order_by('dia_semana', 'hora_inicio')
+
+    return render(request, 'accounts/horario_estudiante.html', {
+        'estudiante': estudiante,
+        'horarios': horarios
+    })
