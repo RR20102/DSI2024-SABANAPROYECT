@@ -99,7 +99,7 @@ DATABASES = {
         'PORT': '5433',
         'OPTIONS': {
             'sslmode': 'verify-ca',  # Usar 'require' si no necesitas verificación del CA
-            'sslrootcert': 'C:/Users/holac/Downloads/root (2).crt',  # Ruta al certificado CA
+            'sslrootcert': 'C:/cert/root (2).crt',  # Ruta al certificado CA
         },
     }
 }
