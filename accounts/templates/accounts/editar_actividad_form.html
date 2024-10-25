@@ -1,0 +1,35 @@
+
+    {% load static %}
+    {% load widget_tweaks %}
+    <form id="edit-actividad-form" method="POST" action="{% url 'editar_actividad' actividad.id_actividad %}">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="id_tipoactividad" class="form-label">Tipo de Actividad</label>
+            {% render_field form.id_tipoactividad class="form-select" %}
+        </div>
+        
+        <div class="mb-3">
+            <label for="id_matrgrasec" class="form-label">Materia Asignada</label>
+            {% render_field form.id_matrgrasec class="form-select" %}
+        </div>
+        
+        <div class="mb-3">
+            <label for="nombre_actividad" class="form-label">Nombre de la Actividad</label>
+            {% render_field form.nombre_actividad class="form-control" %}
+        </div>
+        
+        <div class="mb-3">
+            <label for="descripcion_actividad" class="form-label">Descripción</label>
+            {% render_field form.descripcion_actividad class="form-control" %}
+        </div>
+        
+        <div class="mb-3">
+            <label for="fecha_actividad" class="form-label">Fecha de la Actividad</label>
+            {% render_field form.fecha_actividad class="form-control" type="date" %}
+        </div>
+        
+
+        <button type="button" class="btn btn-primary" onclick="submitEditForm()">Guardar Cambios</button>
+    </form>
+
+

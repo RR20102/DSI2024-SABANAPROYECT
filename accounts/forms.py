@@ -1,13 +1,14 @@
 from django import forms
 
 #Codigo Daniel 
-from .models import Asignacion, Docente, GradoSeccion, Estudiante
+from .models import Asignacion, Docente, GradoSeccion, Estudiante, MateriaGradoSeccion, DocenteMateriaGrado, TipoActividad, ActividadAcademica
 from django.contrib.auth.models import User
 
 #Codigo Christian 
 from django.contrib.auth.forms import AuthenticationForm
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
+from django_select2.forms import Select2MultipleWidget
 #Codigo Daniel 
 
 class AsignacionForm(forms.ModelForm):
@@ -214,3 +215,96 @@ class HorarioClaseForm(forms.ModelForm):
                 raise forms.ValidationError("Ya existe un horario conflictivo para este docente y materia.")
 
         return cleaned_data
+
+#Codigo Daniel SP2 Asignacion de Horarios de Clases 
+from .models import HorarioClase, DocenteMateriaGrado
+
+class HorarioClaseForm(forms.ModelForm):
+    class Meta:
+        model = HorarioClase
+        fields = ['docente_materia_grado', 'dia_semana', 'hora_inicio', 'hora_fin']
+        widgets = {
+            'hora_inicio': forms.TimeInput(attrs={'type': 'time', 'class': 'form-control'}),
+            'hora_fin': forms.TimeInput(attrs={'type': 'time', 'class': 'form-control'}),
+        }
+        
+    def __init__(self, *args, **kwargs):
+        super(HorarioClaseForm, self).__init__(*args, **kwargs)
+        self.fields['docente_materia_grado'].queryset = DocenteMateriaGrado.objects.all()
+        self.fields['docente_materia_grado'].label_from_instance = lambda obj: f"{obj.dui} - {obj.id_matrgrasec.id_materia.nombre_materia} - {obj.id_matrgrasec.id_gradoseccion.grado.nombreGrado} - {obj.id_matrgrasec.id_gradoseccion.seccion.nombreSeccion}"
+
+    # Validación para evitar conflictos de horarios
+    def clean(self):
+        cleaned_data = super().clean()
+        docente_materia_grado = cleaned_data.get("docente_materia_grado")
+        dia_semana = cleaned_data.get("dia_semana")
+        hora_inicio = cleaned_data.get("hora_inicio")
+        hora_fin = cleaned_data.get("hora_fin")
+        
+
+        if hora_inicio and hora_fin and hora_inicio >= hora_fin:
+             raise forms.ValidationError("La hora de fin debe ser mayor que la hora de inicio.")
+
+         # Verificar si el horario se está editando
+        if self.instance and self.instance.id:  # Verifica si es una instancia existente
+            # Excluir el horario actual de la verificación
+            horarios_conflictivos = HorarioClase.objects.filter(
+                docente_materia_grado=docente_materia_grado,
+                dia_semana=dia_semana,
+                hora_inicio__lt=hora_fin,
+                hora_fin__gt=hora_inicio
+            ).exclude(id=self.instance.id)  # Excluir el horario que se está editando
+            
+            if horarios_conflictivos.exists():
+                raise forms.ValidationError("Ya existe un horario conflictivo para este docente y materia.")
+        else:
+            # Si no es una instancia existente, solo verificar si hay conflictos
+            if HorarioClase.objects.filter(
+                docente_materia_grado=docente_materia_grado,
+                dia_semana=dia_semana,
+                hora_inicio__lt=hora_fin,
+                hora_fin__gt=hora_inicio
+            ).exists():
+                raise forms.ValidationError("Ya existe un horario conflictivo para este docente y materia.")
+
+        return cleaned_data
+
+class DocenteMateriaGradoForm(forms.ModelForm):
+    # Reemplazamos el campo id_matrgrasec por un multiselect
+    id_matrgrasec = forms.ModelMultipleChoiceField(
+        queryset=MateriaGradoSeccion.objects.all(),
+        widget=Select2MultipleWidget,  # Usamos Select2MultipleWidget
+        required=True
+    )
+
+    class Meta:
+        model = DocenteMateriaGrado
+        fields = ['dui', 'id_matrgrasec']
+
+
+class ActividadAcademicaForm(forms.ModelForm):
+    class Meta:
+        model = ActividadAcademica
+        fields = ['id_tipoactividad', 'id_matrgrasec', 'nombre_actividad', 'descripcion_actividad', 'fecha_actividad']
+        widgets = {
+            'fecha_actividad': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),  # Aseguramos que el widget sea tipo "date"
+        }
+    def __init__(self, *args, **kwargs):
+        # Obtenemos el docente (docente actual) del contexto que pasaremos en la vista
+        docente = kwargs.pop('docente', None)
+        super(ActividadAcademicaForm, self).__init__(*args, **kwargs)
+        self.fields['fecha_actividad'].input_formats = ['%Y-%m-%d']
+        # Filtrar el campo id_matrgrasec para mostrar solo las materias asignadas al docente
+        if docente:
+            # Obtener los MateriaGradoSeccion asignados al docente
+            materias_asignadas = DocenteMateriaGrado.objects.filter(dui=docente).values_list('id_matrgrasec', flat=True)
+            
+            # Filtrar el queryset de id_matrgrasec en base a las materias del docente
+            self.fields['id_matrgrasec'].queryset = self.fields['id_matrgrasec'].queryset.filter(id_matrgrasec__in=materias_asignadas)
+
+        # Añadir clases de Bootstrap 5 a los campos del formulario
+        self.fields['id_tipoactividad'].widget.attrs.update({'class': 'form-control'})
+        self.fields['id_matrgrasec'].widget.attrs.update({'class': 'form-control'})
+        self.fields['nombre_actividad'].widget.attrs.update({'class': 'form-control'})
+        self.fields['descripcion_actividad'].widget.attrs.update({'class': 'form-control'})
+        self.fields['fecha_actividad'].widget.attrs.update({'class': 'form-control', 'type': 'date'})
