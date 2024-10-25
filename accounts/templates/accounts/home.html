@@ -87,6 +87,7 @@
                         </div>
                     </div>
                 </div>
+
                 <div class="col d-flex">
                     <div class="card text-dark bg-light text-center w-100">
                         <div class="card-header text-white bg-dark">
@@ -98,12 +99,15 @@
                                 Gestion de Horarios de clases de docentes y estudiantes 
                             </p>
                             <div class="mt-auto"> 
-                                <a class="btn btn-primary btn-lg" href="{% url 'agregar_horario' %}" role="button">Asignar</a>
+                                <a class="btn btn-primary" href="{% url 'agregar_horario' %}" role="button">Asignar</a>
                                 <p></p>
-                                <a class="btn btn-secondary btn-lg" href="{% url 'lista_horarios' %}" role="button">Gestionar por Materia</a>
+                                <a class="btn btn-secondary" href="{% url 'lista_horarios' %}" role="button">Gestionar por Materia</a>
                                 <p></p>
-                                <a class="btn btn-secondary btn-lg" href="{% url 'lista_docentes' %}"role="button">Visualizar Horarios completos</a>
-
+                                <a class="btn btn-secondary" href="{% url 'lista_docentes' %}"role="button">Visualizar Horarios completos</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>    
 
                 <div class="col d-flex">
                     <div class="card text-dark bg-light text-center w-100">
