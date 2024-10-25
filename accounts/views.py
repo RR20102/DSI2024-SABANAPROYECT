@@ -1,8 +1,8 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.core.paginator import Paginator
 #Importacion de modelos de la base de datos - Codigo Daniel 
-from .models import Docente, Grado, Seccion, Asignacion, Estudiante, GradoSeccion, MateriaGradoSeccion, DocenteMateriaGrado, ActividadAcademica
-from .forms import AsignacionForm, EstudianteForm, DocenteMateriaGradoForm, ActividadAcademicaForm
+from .models import Docente, Grado, Seccion, Asignacion, Estudiante, GradoSeccion, MateriaGradoSeccion, DocenteMateriaGrado, ActividadAcademica, HorarioClase
+from .forms import AsignacionForm, EstudianteForm, DocenteMateriaGradoForm, ActividadAcademicaForm, HorarioClaseForm
 from django.contrib import messages  # Importa messages
 from django.http import JsonResponse
 import json
@@ -506,10 +506,7 @@ def eliminar_estudiante(request, id):
 
 
 # Vista para asignar Horarios de Clases Docentes y Estudiantes - Daniel SP2
-from .models import HorarioClase, DocenteMateriaGrado
-from .forms import HorarioClaseForm
-from django.contrib import messages
-from django.shortcuts import render
+
 #from django.db.models import Q  # Para hacer búsquedas con múltiples campos
 
 def agregar_horario(request):
