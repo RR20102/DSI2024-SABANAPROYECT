@@ -1,13 +1,14 @@
 from django import forms
 
 #Codigo Daniel 
-from .models import Asignacion, Docente, GradoSeccion, Estudiante
+from .models import Asignacion, Docente, GradoSeccion, Estudiante, MateriaGradoSeccion, DocenteMateriaGrado, TipoActividad, ActividadAcademica
 from django.contrib.auth.models import User
 
 #Codigo Christian 
 from django.contrib.auth.forms import AuthenticationForm
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
+from django_select2.forms import Select2MultipleWidget
 #Codigo Daniel 
 
 class AsignacionForm(forms.ModelForm):
@@ -161,3 +162,43 @@ class DocenteForm(forms.ModelForm):
             raise ValidationError('Este correo electrónico ya está registrado. Por favor, ingrese otro.')
         return correo
     
+
+class DocenteMateriaGradoForm(forms.ModelForm):
+    # Reemplazamos el campo id_matrgrasec por un multiselect
+    id_matrgrasec = forms.ModelMultipleChoiceField(
+        queryset=MateriaGradoSeccion.objects.all(),
+        widget=Select2MultipleWidget,  # Usamos Select2MultipleWidget
+        required=True
+    )
+
+    class Meta:
+        model = DocenteMateriaGrado
+        fields = ['dui', 'id_matrgrasec']
+
+
+class ActividadAcademicaForm(forms.ModelForm):
+    class Meta:
+        model = ActividadAcademica
+        fields = ['id_tipoactividad', 'id_matrgrasec', 'nombre_actividad', 'descripcion_actividad', 'fecha_actividad']
+        widgets = {
+            'fecha_actividad': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),  # Aseguramos que el widget sea tipo "date"
+        }
+    def __init__(self, *args, **kwargs):
+        # Obtenemos el docente (docente actual) del contexto que pasaremos en la vista
+        docente = kwargs.pop('docente', None)
+        super(ActividadAcademicaForm, self).__init__(*args, **kwargs)
+        self.fields['fecha_actividad'].input_formats = ['%Y-%m-%d']
+        # Filtrar el campo id_matrgrasec para mostrar solo las materias asignadas al docente
+        if docente:
+            # Obtener los MateriaGradoSeccion asignados al docente
+            materias_asignadas = DocenteMateriaGrado.objects.filter(dui=docente).values_list('id_matrgrasec', flat=True)
+            
+            # Filtrar el queryset de id_matrgrasec en base a las materias del docente
+            self.fields['id_matrgrasec'].queryset = self.fields['id_matrgrasec'].queryset.filter(id_matrgrasec__in=materias_asignadas)
+
+        # Añadir clases de Bootstrap 5 a los campos del formulario
+        self.fields['id_tipoactividad'].widget.attrs.update({'class': 'form-control'})
+        self.fields['id_matrgrasec'].widget.attrs.update({'class': 'form-control'})
+        self.fields['nombre_actividad'].widget.attrs.update({'class': 'form-control'})
+        self.fields['descripcion_actividad'].widget.attrs.update({'class': 'form-control'})
+        self.fields['fecha_actividad'].widget.attrs.update({'class': 'form-control', 'type': 'date'})

@@ -101,20 +101,32 @@ class TipoActividad(models.Model):
     id_tipoactividad = models.AutoField(primary_key=True, unique=True, null=False)
     nombretipoactividad = models.CharField(max_length=100)
 
+    def __str__(self):
+        return f"{self.nombretipoactividad}"
+
 class Materia(models.Model):
     id_materia = models.AutoField(primary_key=True)
     nombre_materia = models.CharField(max_length=25)
     anio_materia = models.IntegerField()
+
+    def __str__(self):
+        return f"{self.nombre_materia}"
 
 class MateriaGradoSeccion(models.Model):
     id_matrgrasec = models.AutoField(primary_key=True, unique=True, null=False)
     id_materia = models.ForeignKey(Materia, on_delete=models.RESTRICT, null=True)
     id_gradoseccion = models.ForeignKey(GradoSeccion, on_delete=models.RESTRICT, null=True)
 
+    def __str__(self):
+        return f"{self.id_materia} - {self.id_gradoseccion}"
+
 class DocenteMateriaGrado(models.Model):
     id_doc_mat_grado = models.AutoField(primary_key=True, unique=True, null=False)
-    dui = models.ForeignKey(Docente, on_delete=models.RESTRICT, null=True)
-    id_matrgrasec = models.ForeignKey(MateriaGradoSeccion, on_delete=models.RESTRICT)
+    dui = models.ForeignKey(Docente, on_delete=models.RESTRICT, null=False, blank = False)
+    id_matrgrasec = models.ForeignKey(MateriaGradoSeccion, on_delete=models.RESTRICT, null=False, blank = False)
+
+    def __str__(self):
+        return f"{self.dui} - {self.id_matrgrasec}"
 
 class Asistencia(models.Model):
     id_asistencia = models.AutoField(primary_key=True, unique=True, null=False)
@@ -133,10 +145,15 @@ class Conducta(models.Model):
 class ActividadAcademica(models.Model):
     id_actividad = models.AutoField(primary_key=True, unique=True, null=False)
     id_tipoactividad = models.ForeignKey(TipoActividad, on_delete=models.RESTRICT, unique=True, null=False)
-    id_alumno = models.ForeignKey(Estudiante, on_delete=models.RESTRICT)
     id_matrgrasec = models.ForeignKey(MateriaGradoSeccion, on_delete=models.RESTRICT)
     nombre_actividad = models.CharField(max_length=25)
     descripcion_actividad = models.CharField(max_length=50)
     fecha_actividad = models.DateField()
-    nota = models.FloatField()
+    
 
+class NotaActividad(models.Model):
+    id_nota = models.AutoField(primary_key=True, unique=True, null=False)
+    nota = models.FloatField(null = False)
+    id_actividad = models.ForeignKey(ActividadAcademica, on_delete= models.RESTRICT, null = False)
+    id_alumno = models.ForeignKey(Estudiante, on_delete=models.RESTRICT, null = False)
+    

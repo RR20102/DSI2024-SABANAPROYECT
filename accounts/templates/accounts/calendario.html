@@ -1,0 +1,243 @@
+{% extends "accounts/templates/accounts/base.html" %}
+{% block title %}SABANA - Calendario Academico {% endblock %}
+{% block extra_css %}
+<style>
+
+    body {
+      padding: 0;
+      font-size: 14px;
+    }
+  
+    #calendar {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+
+    #calendar a {
+        color: black;
+       text-decoration: none;
+    }
+</style>
+
+{% endblock %}
+
+{% block content %}
+{% load tags %}
+{% load static %}
+{% load widget_tweaks %}
+<h1 class="mt-5 text-center">Calendario Académico</h1>
+
+<div class="row">
+
+    <div class="col">
+        <div class="container">
+            <h2>Crear Actividad Académica</h2>
+        
+            <!-- Mostrar el formulario -->
+            <div class="mt-5">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label for="id_tipoactividad" class="form-label">Tipo de Actividad</label>
+                        {% render_field form.id_tipoactividad class="form-select" %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_matrgrasec" class="form-label">Materia Asignada</label>
+                        {% render_field form.id_matrgrasec class="form-select" %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="nombre_actividad" class="form-label">Nombre de la Actividad</label>
+                        {% render_field form.nombre_actividad class="form-control" %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="descripcion_actividad" class="form-label">Descripción</label>
+                        {% render_field form.descripcion_actividad class="form-control" %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="fecha_actividad" class="form-label">Fecha de la Actividad</label>
+                        {% render_field form.fecha_actividad class="form-control" type="date" %}
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">Guardar Actividad</button>
+                </form>
+            </div>
+            
+        </div>
+    </div>
+
+    <div class="col align-items-center">
+        <div id="calendar" style="font-family: Arial, Helvetica Neue, Helvetica, sans-serif;"></div>
+    </div>
+
+     <!-- Modal para mostrar la actividad -->
+     <div class="modal fade" id="event-modal" tabindex="-1" aria-labelledby="modal-title" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="modal-title">Actividad</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="modal-body">
+              <!-- Aquí se inyectarán los detalles del evento -->
+            </div>
+            <div class="modal-footer">
+              <a id="edit-btn" class="btn btn-warning">Editar</a>
+              <a id="delete-btn" class="btn btn-danger">Eliminar</a>
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Segundo Modal: Muestra el formulario de edición -->
+      <div class="modal fade" id="edit-modal" tabindex="-1" aria-labelledby="edit-modal-title" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="edit-modal-title">Editar Actividad</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="edit-modal-body">
+              <!-- Aquí se cargará el contenido del formulario de edición -->
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+</div>
+
+
+{% block extrajs %}
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+    var calendarEl = document.getElementById('calendar');
+
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+      headerToolbar: {
+        left: 'prev,next today',
+        center: 'title',
+        right: 'dayGridMonth,timeGridWeek,timeGridDay,listMonth'
+      },
+      initialDate: new Date(),
+      navLinks: true, // can click day/week names to navigate views
+      businessHours: true, // display business hours
+      editable: true,
+      selectable: true,
+      events: '/api/actividades/',
+
+      // Configuración de eventClick para capturar clic en evento
+    eventClick: function(info) {
+        // Prevenir que el navegador siga el enlace predeterminado (si hay uno)
+        info.jsEvent.preventDefault();
+
+        // Mostrar información del evento clicado en la consola
+        console.log("Evento clicado:", info.event.title);
+
+        // Abrir modal (definido más abajo) para editar/eliminar
+        document.getElementById('modal-title').innerText = info.event.title;
+        document.getElementById('modal-body').innerHTML = `
+          <p><strong>Descripción:</strong> ${info.event.extendedProps.description || "No hay descripción"}</p>
+          <p><strong>Fecha:</strong> ${info.event.start.toLocaleString()}</p>
+        `;
+        //document.getElementById('edit-btn').setAttribute('href', `/editar/actividad/${info.event.id}/`);
+        document.getElementById('delete-btn').setAttribute('href', `/eliminar/actividad/${info.event.id}`);
+
+        // Mostrar modal
+        /*var modal = new bootstrap.Modal(document.getElementById('event-modal'), {});
+        modal.show();*/
+
+        document.getElementById('edit-btn').addEventListener('click', function() {
+          
+          // Cerrar el primer modal
+          var modal1 = bootstrap.Modal.getInstance(document.getElementById('event-modal'));
+          modal1.hide();
+
+          // Cargar el formulario de edición en el segundo modal
+          var eventId = info.event.id;
+          console.log(eventId)
+          var url = `/editar/actividad/${eventId}/`;
+
+          fetch(url)
+            .then(response => response.text())
+            .then(html => {
+              document.getElementById('edit-modal-body').innerHTML = html;
+
+              // Mostrar el segundo modal con el formulario de edición
+              var modal2 = new bootstrap.Modal(document.getElementById('edit-modal'));
+              modal2.show();
+            })
+            .catch(err => console.error('Error al cargar el formulario:', err));
+        });
+
+        // Mostrar el primer modal
+        var modal = new bootstrap.Modal(document.getElementById('event-modal'));
+        modal.show();
+      }
+    });
+
+    calendar.render();
+  });
+
+  
+</script>
+
+<script>
+  // Función para enviar el formulario de edición con AJAX
+  function submitEditForm() {
+    var form = document.getElementById('edit-actividad-form');
+    var formData = new FormData(form);
+
+    fetch(form.action, {
+      method: 'POST',
+      body: formData,
+    })
+    .then(response => response.json())  // Convertir la respuesta a JSON
+    .then(data => {
+      if (data.success) {
+        // Cerrar el modal de edición
+        var modal = bootstrap.Modal.getInstance(document.getElementById('edit-modal'));
+        modal.hide();
+
+        // Mostrar SweetAlert2 de éxito
+        Swal.fire({
+          title: '¡Éxito!',
+          text: 'La actividad ha sido actualizada correctamente.',
+          icon: 'success',
+          confirmButtonText: 'OK',
+        }).then((result) => {
+          if (result.isConfirmed) {
+            // Redirigir a la vista del calendario
+            window.location.href = '/calendario/';
+          }
+        });
+      } else {
+        // Mostrar errores si los hay
+        let errorMessages = '';
+        for (const [field, errors] of Object.entries(data.errors)) {
+          errorMessages += `<p><strong>${field}:</strong> ${errors.join(', ')}</p>`;
+        }
+        document.getElementById('edit-modal-body').innerHTML += `<div class="alert alert-danger">${errorMessages}</div>`;
+      }
+    })
+    .catch(error => {
+      console.error('Error al guardar la actividad:', error);
+      Swal.fire({
+        title: 'Error',
+        text: 'Ocurrió un error al intentar guardar la actividad.',
+        icon: 'error',
+        confirmButtonText: 'OK',
+      });
+    });
+  }
+</script>
+{% endblock %}
+{% endblock %}

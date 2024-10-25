@@ -1,7 +1,8 @@
 from django.shortcuts import render, get_object_or_404, redirect
+from django.core.paginator import Paginator
 #Importacion de modelos de la base de datos - Codigo Daniel 
-from .models import Docente, Grado, Seccion, Asignacion, Estudiante, GradoSeccion
-from .forms import AsignacionForm, EstudianteForm
+from .models import Docente, Grado, Seccion, Asignacion, Estudiante, GradoSeccion, MateriaGradoSeccion, DocenteMateriaGrado, ActividadAcademica
+from .forms import AsignacionForm, EstudianteForm, DocenteMateriaGradoForm, ActividadAcademicaForm
 from django.contrib import messages  # Importa messages
 from django.http import JsonResponse
 import json
@@ -375,13 +376,15 @@ def administrarasignaciondocente(request):
         return redirect('administrarasignaciondocente')
 
     # Obtener todos los docentes y grados_secciones para el formulario
+    formd = DocenteMateriaGradoForm()
     docentes = Docente.objects.all()
     grados_secciones = GradoSeccion.objects.all()
     
 
     return render(request, 'accounts/administrarasignaciondocente.html', {
         'docentes': docentes,
-        'grados_secciones': grados_secciones
+        'grados_secciones': grados_secciones,
+        'formd': formd
     })
 
 
@@ -499,3 +502,89 @@ def eliminar_estudiante(request, id):
     
     # Si no es método POST, retornar un error
     return JsonResponse({'success': False, 'message': 'Método no permitido.'})
+
+
+def listar_materias(request):
+    grado_id = request.GET.get('grado', 'todos')
+    page_number = request.GET.get('page', 1)  # Manejo de paginación
+    materias = MateriaGradoSeccion.objects.all()  # Obtener todas las materias
+
+    if grado_id != 'todos':
+        materias = materias.filter(id_gradoseccion=grado_id)  # Filtrar por grado
+
+    paginator = Paginator(materias, 10)  # Suponiendo que quieres 10 materias por página
+    page_materia = paginator.get_page(page_number)
+
+    # Obtener todos los grados para llenar el select
+    grados = GradoSeccion.objects.all().order_by('grado')  # Asegúrate de tener tu modelo correcto
+
+    return render(request, 'accounts/listar_materias.html', {'page_materia' : page_materia, 'grados': grados, 'selected_grado': grado_id})
+
+def asignarMaterias(request):
+    formd = DocenteMateriaGradoForm()
+    if request.method == 'POST':
+        docente = Docente.objects.get(dui=request.POST.get('dui'))
+        materias_grados = request.POST.getlist('id_matrgrasec') 
+        mat_asig = " "
+        mat_no_asig = " "
+        for materia_grado in materias_grados:
+            mat_grad = MateriaGradoSeccion.objects.get(id_matrgrasec = materia_grado)
+            if DocenteMateriaGrado.objects.filter(dui = docente, id_matrgrasec = mat_grad).exists() or DocenteMateriaGrado.objects.filter(id_matrgrasec = mat_grad).exists():
+                mat_no_asig += mat_grad.__str__() + ', '
+            else:
+                DocenteMateriaGrado.objects.create(
+                    dui=docente,
+                    id_matrgrasec=mat_grad
+                )
+                mat_asig += mat_grad.__str__() + ', ' 
+        if mat_asig != " ":
+            messages.success(request, f"Asignación de las Materias: {mat_asig} realizada con éxito")
+        
+        if mat_no_asig != " ":
+            messages.error(request, f"La Asignación de las Materias: {mat_no_asig} ya exite")
+         
+    return render(request, 'accounts/asignar_materias.html', {'formd' : formd})
+
+def calendario(request):
+     # Suponiendo que el docente se obtiene del usuario autenticado
+    docente = Docente.objects.get(user=request.user)
+
+    if request.method == 'POST':
+        form = ActividadAcademicaForm(request.POST, docente=docente)
+        if form.is_valid():
+            form.save()
+            return redirect('calendario')  # Redirigir a la lista de actividades
+    else:
+        form = ActividadAcademicaForm(docente=docente)
+    return render(request, 'accounts/calendario.html', {'form': form})
+
+def obtener_actividades(request):
+    actividades = ActividadAcademica.objects.all()
+    eventos = []
+    
+    # Convertir las actividades en el formato requerido por FullCalendar
+    for actividad in actividades:
+        eventos.append({
+            'id': actividad.id_actividad,
+            'title': actividad.nombre_actividad,
+            'start': actividad.fecha_actividad.isoformat(),
+            'description': actividad.descripcion_actividad,
+        })
+    
+    return JsonResponse(eventos, safe=False)
+
+def editar_actividad(request, id):
+    actividad = get_object_or_404(ActividadAcademica, id_actividad=id)
+    docente = Docente.objects.get(user=request.user)
+    if request.method == 'POST':
+        form = ActividadAcademicaForm(request.POST, instance=actividad)
+        if form.is_valid():
+            form.save()
+            return JsonResponse({'success': True})  # Respuesta exitosa para el AJAX
+        else:
+            # Respuesta con errores del formulario
+            return JsonResponse({'success': False, 'errors': form.errors}, status=400)
+    else:
+        form = ActividadAcademicaForm(instance=actividad, docente=docente)
+
+    return render(request, 'accounts/editar_actividad_form.html', {'form': form, 'actividad': actividad})

@@ -1,7 +1,7 @@
 from django.urls import path
 #from django.contrib import admin
 from . import views
-from .views import registrar_estudiante, listar_estudiantes, editar_estudiante
+from .views import registrar_estudiante, listar_estudiantes, editar_estudiante, asignarMaterias
 
 urlpatterns = [
     #Codio Login - Codigo Chritian
@@ -13,8 +13,11 @@ urlpatterns = [
     path('registrar-estudiantes/',views.registrar_estudiante,name='registrar_estudiante'),
     path('editar-estudiantes/<int:id>/',views.editar_estudiante,name='editar_estudiante'),
     path('eliminar_estudiante/<int:id>/', views.eliminar_estudiante, name='eliminar_estudiante'),
-
-
+    path('materias/', views.listar_materias, name='materias'),
+    path('asinar-materias/', views.asignarMaterias, name='asignar_materias'),
+    path('calendario/', views.calendario, name= 'calendario'),
+    path('api/actividades/', views.obtener_actividades, name='obtener_actividades'),
+     path('editar/actividad/<int:id>/', views.editar_actividad, name='editar_actividad'),
    
     path('listar-docentes/',views.listar_docentes,name='listardocentes'),
     #Codigo Menu administrador - Agregado por Daniel 

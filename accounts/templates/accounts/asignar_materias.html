@@ -1,0 +1,84 @@
+{% extends "accounts/templates/accounts/base.html" %}
+{% block title %}
+SABANA - Asignación de Materias
+{% endblock %}
+{% load widget_tweaks %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10 text-center">
+            <div class="card-header" style="margin-top: 20px;">
+            <h5 class="card-title">Asignación de Materias a Docentes</h5>
+            </div>
+            <p class="lead">
+                Seleccione el docente, luego seleccione todas la materias que quiere asirnarle.
+            </p>
+            <div class="mt-3">
+                <form action="" method="post">
+                    {{ formd.media }}
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="id_selectDocente">Selecciona el docente:</label>
+                        {% render_field formd.dui class="form-select" %}
+                    </div>
+                   
+                    <div class="form-group mt-3">
+                        <label for="id_selectMateria"> Seleccione las Materias:</label>
+                        {% render_field formd.id_matrgrasec class="form-select" %}
+                    </div>
+
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-primary mb-3">Asignar Materias</button>
+                        <a href="{% url 'home' %}" class="btn btn-secondary mb-3">Volver</a>
+                    </div>  
+                </form>
+      
+            </div>   
+            
+          
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+   /* {% if messages %}
+        {% for message in messages %}
+            Swal.fire({
+                icon: 'success',
+                title: 'Éxito',
+                text: '{{ message }}',
+                confirmButtonText: 'OK'
+            });
+        {% endfor %}
+    {% endif %} */
+
+    const messages = [
+            {% for message in messages %}
+                {
+                    icon: '{% if message.tags == "success" %}success{% elif message.tags == "warning" %}warning{% else %}info{% endif %}',
+                    title: '{% if message.tags == "success" %}¡Éxito!{% elif message.tags == "warning" %}Advertencia{% else %}Información{% endif %}',
+                    text: `{{ message|safe }}`
+                },
+            {% endfor %}
+        ];
+
+        // Función para mostrar los mensajes secuencialmente
+        function showMessagesSequentially(index = 0) {
+            if (index < messages.length) {
+                Swal.fire({
+                    icon: messages[index].icon,
+                    title: messages[index].title,
+                    text: messages[index].text,
+                    confirmButtonText: 'OK',
+                    showConfirmButton: true,  // Botón para cerrar
+                }).then(() => {
+                    // Llamar a la función recursivamente para mostrar el siguiente mensaje
+                    showMessagesSequentially(index + 1);
+                });
+            }
+        }
+
+        // Iniciar la secuencia de alertas si hay mensajes
+        if (messages.length > 0) {
+            showMessagesSequentially();
+        }
+</script>
+{% endblock %}

@@ -1,7 +1,8 @@
 {% extends "accounts/templates/accounts/base.html" %}
 {% block title %}Editar Asignación{% endblock %}
 {% block content %}
-<div class="row justify-content-center">
+{% load widget_tweaks %}
+<!--<div class="row justify-content-center">
     <div class="col-md-6">
         <h1 class="mt-5">Editar Asignación</h1>
         
@@ -16,14 +17,50 @@
 
         <button id="eliminarAsignacionBtn" class="btn btn-danger mt-3" data-id="{{ asignacion.id }}">Eliminar</button>
     </div>
+</div>  -->
+
+<div class="container mt-5 align-items-center justify-content-center min-vh-100 py-3">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h2>Editar Asignación</h2>
+
+                    <form method="post" id="editarAsignacionForm">
+                        {% csrf_token %}
+
+                        {{ form.non_field_errors }}
+
+                        <div class="form-group ">
+                            <label for="id_docente">Docente:</label>
+                            {% render_field form.docente class="form-select" %}
+                            {{ form.docente.errors }}
+                        </div>
+
+                        <div class="form-group mt-3">
+                            <label for="id_grado_seccion">Grado y Sección:</label>
+                            {% render_field form.grado_seccion class="form-select" %}
+                            {{ form.grado_seccion.errors }}
+                        </div>
+
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary btn-block">Guardar Cambios</button>
+                            <a href="{% url 'visualizarasignaciondocente' %}" class="btn btn-secondary">Cancelar</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
 $(document).ready(function() {
     // Confirmación de eliminación
-    $('#eliminarAsignacionBtn').click(function() {
+    /*$('#eliminarAsignacionBtn').click(function() {
         var asignacionId = $(this).data('id'); // Obtiene el ID de la asignación
         Swal.fire({
             title: '¿Estás seguro?',
@@ -63,7 +100,7 @@ $(document).ready(function() {
                 });
             }
         });
-    });
+    }); */
 
     // Confirmación de cambios guardados
     $('#editarAsignacionForm').on('submit', function(event) {

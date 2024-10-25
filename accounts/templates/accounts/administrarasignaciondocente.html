@@ -2,7 +2,6 @@
 {% block title %}
 SABANA PROYECT 
 {% endblock %}
-
 {% block content %}
 <div class="row justify-content-center">
     <div class="col-md-10 text-center">
@@ -30,13 +29,18 @@ SABANA PROYECT
                     {% endfor %}
                 </select>
             </div>
+        
             <div class="mt-4">
                 <button type="submit" class="btn btn-primary">Guardar</button>
                 <a href="{% url 'home' %}" class="btn btn-secondary">Volver</a>
             </div>
+            
+            
         </form>
     </div>
 </div>
+
+
 
 <!-- SweetAlert2 JS -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
