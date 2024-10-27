@@ -1,0 +1,26 @@
+{% extends "accounts/templates/accounts/base.html" %}
+{% block title %}SABANA - Asistencia {% endblock %}
+{% block content %}
+{% load tags %}
+
+<div class="container mt-4">
+    <h2 class="mb-4">Seleccionar Grado y Sección</h2>
+    <form method="POST" action="{% url 'gestionar_asistencia' %}" class="bg-light p-4 rounded shadow-sm">
+        {% csrf_token %}
+        <div class="mb-3">
+            {{ form.grado_seccion.label_tag }}
+            {{ form.grado_seccion }}
+        </div>
+        <div class="mb-3">
+            {{ form.fecha.label_tag }}
+            {{ form.fecha }}
+        </div>
+        <button type="submit" class="btn btn-primary">Continuar</button>
+    </form>
+
+    <div class="mt-4 d-flex justify-content-center">
+        <a href="{% url 'home' %}" class="btn btn-secondary">Volver</a>
+    </div>
+</div>
+
+{% endblock %}

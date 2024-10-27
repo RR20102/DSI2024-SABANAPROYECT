@@ -1,0 +1,32 @@
+{% extends "accounts/templates/accounts/base.html" %}
+{% block title %}SABANA - Registro de Asistencia{% endblock %}
+{% block content %}
+{% load tags %}
+
+<div class="container">
+    <h2>Registro de Asistencia - {{ fecha }}</h2>
+    <p><strong>Grado y Sección:</strong> {{ formset.queryset.first.idgradoseccion }}</p>
+
+    <form method="POST">
+        {% csrf_token %}
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Nombre del Estudiante</th>
+                    <th>Asistencia</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for form in formset %}
+                    <tr>
+                        <td>{{ form.instance.id_alumno.nombreAlumno }} {{ form.instance.id_alumno.apellidoAlumno }}</td>
+                        <td>{{ form.as_p }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <button type="submit" class="btn btn-success">Guardar Asistencia</button>
+    </form>
+</div>
+
+{% endblock %}

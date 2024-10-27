@@ -490,7 +490,7 @@ def gestionar_asistencia(request):
     else:
         form = SeleccionarGradoSeccionForm()
 
-    return render(request, 'asistencia/gestion_asistencia.html', {'form': form})
+    return render(request, 'accounts/gestionar_asistencia.html', {'form': form})
 
 
 @login_required
@@ -514,4 +514,4 @@ def registrar_asistencia(request, id_gradoseccion, fecha=None):
     else:
         formset = AsistenciaFormSet(queryset=asistencias)
 
-    return render(request, 'asistencia/gestion_asistencia.html', {'formset': formset, 'fecha': fecha})
+    return render(request, 'accounts/gestionar_asistencia.html', {'formset': formset, 'fecha': fecha})
