@@ -156,11 +156,6 @@ class DocenteForm(forms.ModelForm):
     
 
 #Registro de asistencia
-ASISTENCIA_CHOICES = [
-        ('P', 'Presente'),
-        ('A', 'Ausente'),
-    ]
-
 class SeleccionarGradoSeccionForm(forms.Form):
     grado_seccion = forms.ModelChoiceField(
         queryset=GradoSeccion.objects.all(),
@@ -172,13 +167,23 @@ class SeleccionarGradoSeccionForm(forms.Form):
         label="Fecha de asistencia"
     )
 
+ASISTENCIA_CHOICES = [
+    ('P', 'Presente'),
+    ('A', 'Ausente'),
+]
 
 class AsistenciaForm(forms.ModelForm):
+    asistio = forms.ChoiceField(choices=ASISTENCIA_CHOICES, widget=forms.RadioSelect)
+
     class Meta:
         model = Asistencia
         fields = ['id_alumno', 'asistio']
-        widgets = {
-            'asistio': forms.RadioSelect(choices=ASISTENCIA_CHOICES),  # Usamos radio buttons
-        }
+
+    def clean_id_alumno(self):
+        id_alumno = self.cleaned_data.get('id_alumno')
+        if not id_alumno:
+            raise forms.ValidationError("El campo 'id_alumno' es obligatorio.")
+        return id_alumno
+
 
 AsistenciaFormSet = modelformset_factory(Asistencia, form=AsistenciaForm, extra=0)

@@ -5,6 +5,18 @@
 
 <div class="container mt-4">
     <h2 class="mb-4">Seleccionar Grado y Sección</h2>
+
+    {% if success_message %}
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        {% for message in success_message %}
+            {{ message }}
+        {% endfor %}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    {% endif %}
+
     <form method="POST" action="{% url 'gestionar_asistencia' %}" class="bg-light p-4 rounded shadow-sm">
         {% csrf_token %}
         <div class="mb-3">

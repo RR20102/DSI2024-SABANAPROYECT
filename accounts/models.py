@@ -122,7 +122,7 @@ class Asistencia(models.Model):
     idgradoseccion = models.ForeignKey(GradoSeccion, on_delete=models.RESTRICT)
     fechaasistencia = models.DateField()
     asistio = models.CharField(max_length=1, choices=[('P', 'Presente'), ('A', 'Ausente')])
-
+    
 class Conducta(models.Model):
     id_conducta = models.AutoField(primary_key=True, unique=True, null=False)
     id_alumno = models.ForeignKey(Estudiante, on_delete=models.RESTRICT)

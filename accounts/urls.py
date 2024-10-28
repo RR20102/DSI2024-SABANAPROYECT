@@ -31,4 +31,7 @@ urlpatterns = [
     #Codigo Registro de Asistencia - Ricardo
     path('asistencia/gestionar_asistencia/', views.gestionar_asistencia, name='gestionar_asistencia'),
     path('asistencia/registrar_asistencia/<int:id_gradoseccion>/<str:fecha>/', views.registrar_asistencia, name='registrar_asistencia'),
+    path('asistencia/ver_asistencias/', views.ver_asistencias, name='ver_asistencias'),
+    path('asistencia/editar/<int:id_asistencia>/', views.editar_asistencia, name='editar_asistencia'),
+    path('asistencia/eliminar/<int:id_asistencia>/', views.eliminar_asistencia, name='eliminar_asistencia'),
 ]

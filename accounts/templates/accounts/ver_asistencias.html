@@ -1,0 +1,68 @@
+{% extends "accounts/templates/accounts/base.html" %}
+{% block title %}SABANA - Registros de Asistencia{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Registros de Asistencia</h2>
+
+    {% if success_message %}
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        {% for message in success_message %}
+            {{ message }}
+        {% endfor %}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    {% endif %}
+    
+    {% if asistencias %}
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Estudiante</th>
+                    <th>Grado y Sección</th>
+                    <th>Fecha</th>
+                    <th>Asistió</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for asistencia in asistencias %}
+                    <tr>
+                        <td>{{ asistencia.id_asistencia }}</td>
+                        <td>{{ asistencia.id_alumno.nombreAlumno }} {{ asistencia.id_alumno.apellidoAlumno }}</td>
+                        <td>{{ asistencia.idgradoseccion }}</td>
+                        <td>{{ asistencia.fechaasistencia }}</td>
+                        <td>
+                            {% if asistencia.asistio == 'P' %}
+                                Presente
+                            {% elif asistencia.asistio == 'A' %}
+                                Ausente
+                            {% else %}
+                                No especificado
+                            {% endif %}
+                        </td>
+                        <td>
+                            <!-- Botón de Editar -->
+                            <a href="{% url 'editar_asistencia' asistencia.id_asistencia %}" class="btn btn-primary btn-sm">Editar</a>
+
+                            <!-- Botón de Eliminar -->
+                            <form action="{% url 'eliminar_asistencia' asistencia.id_asistencia %}" method="POST" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de que deseas eliminar este registro?');">Eliminar</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="alert alert-warning" role="alert">
+            No hay registros de asistencia disponibles.
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+

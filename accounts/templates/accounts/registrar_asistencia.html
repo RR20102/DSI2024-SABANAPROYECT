@@ -3,27 +3,36 @@
 {% block content %}
 {% load tags %}
 
-<div class="container">
-    <h2>Registro de Asistencia - {{ fecha }}</h2>
+<div class="container mt-4">
+    <h2 class="mb-4">Registro de Asistencia - {{ fecha }}</h2>
     <p><strong>Grado y Sección:</strong> {{ formset.queryset.first.idgradoseccion }}</p>
 
-    <form method="POST">
+    <form method="POST" class="p-4 rounded shadow-sm">
         {% csrf_token %}
         <table class="table table-striped">
             <thead>
                 <tr>
                     <th>Nombre del Estudiante</th>
-                    <th>Asistencia</th>
+                    <th>Presente (P)</th>
+                    <th>Ausente (A)</th>
                 </tr>
             </thead>
             <tbody>
                 {% for form in formset %}
                     <tr>
                         <td>{{ form.instance.id_alumno.nombreAlumno }} {{ form.instance.id_alumno.apellidoAlumno }}</td>
-                        <td>{{ form.as_p }}</td>
+                        <td>
+                            <input type="radio" name="form-{{ forloop.counter0 }}-asistio" value="P" {% if form.asistio.value == 'P' %}checked{% endif %}> Presente
+                        </td>
+                        <td>
+                            <input type="radio" name="form-{{ forloop.counter0 }}-asistio" value="A" {% if form.asistio.value == 'A' %}checked{% endif %}> Ausente
+                        </td>
+                        <td>
+                            <input type="hidden" name="form-{{ forloop.counter0 }}-id_alumno" value="{{ form.instance.id_alumno.id_alumno }}">
+                        </td>
                     </tr>
                 {% endfor %}
-            </tbody>
+            </tbody>            
         </table>
         <button type="submit" class="btn btn-success">Guardar Asistencia</button>
     </form>
