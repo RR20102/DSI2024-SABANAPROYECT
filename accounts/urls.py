@@ -1,7 +1,7 @@
 from django.urls import path
 #from django.contrib import admin
 from . import views
-from .views import registrar_estudiante, listar_estudiantes, editar_estudiante, registrar_asistencia, gestionar_asistencia
+from .views import registrar_estudiante, listar_estudiantes, editar_estudiante, registrar_asistencia, gestionar_asistencia,generar_reporte_asistencia
 
 urlpatterns = [
     #Codio Login - Codigo Chritian
@@ -35,4 +35,6 @@ urlpatterns = [
     path('asistencia/ver_asistencias/', views.ver_asistencias, name='ver_asistencias'),
     path('asistencia/editar/<int:id_asistencia>/', views.editar_asistencia, name='editar_asistencia'),
     path('asistencia/eliminar/<int:id_asistencia>/', views.eliminar_asistencia, name='eliminar_asistencia'),
+    path('asistencia/generar_reporte_asistencia/', views.generar_reporte_asistencia, name='generar_reporte_asistencia'),
+
 ]

@@ -5,45 +5,62 @@
 
 <div class="container mt-4">
 
-    <h2>Registro de Asistencia</h2>
+    <h3>Registro de Asistencia</h3>
+
     {% if messages %}
-    <div class="alert alert-success">
+    <div class="alert alert-success mt-2">
         {% for message in messages %}
             {{ message }}
         {% endfor %}
     </div>
     {% endif %}
-    
-    <div class="btn-group btn-group-toggle" data-toggle="buttons">
-        <label class="btn btn-secondary active">
-          <input type="button" name="options" id="option1" autocomplete="off" checked> Agregar asistencia
-        </label>
-        <label class="btn btn-secondary">
-          <input type="button" name="options" id="option2" autocomplete="off"> Ver registros
-        </label>
-        <label class="btn btn-secondary">
-          <input type="button" name="options" id="option3" autocomplete="off"> Reporte mensual de asistencia
-        </label>
-    </div>
 
-    <h5>Registrar asistencia</h5>
-    <form method="post">
-        {% csrf_token %}
-        <div class="form-group">
-            {{ form.grado_seccion.label_tag }}
-            {{ form.grado_seccion }}
+    <div class="row row-cols-1 row-cols-md-2 g-4 mt-2">
+        <div class="col">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Agregar Registro de Asistencia</h5>
+                    <p class="card-text">Selecciona el grado y la fecha a registrar la asistencia.</p>
+
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            {{ form.grado_seccion.label_tag }}
+                            {{ form.grado_seccion }}
+                        </div>
+                        <div class="form-group mt-2">
+                            {{ form.fecha.label_tag }}
+                            {{ form.fecha }}
+                        </div>
+                        <button type="submit" class="btn btn-primary mt-4">Crear Registro de Asistencia</button>
+                    </form>
+
+                </div>
+            </div>
         </div>
-        <div class="form-group">
-            {{ form.fecha.label_tag }}
-            {{ form.fecha }}
-        </div>
-        <button type="submit" class="btn btn-primary">Continuar</button>
-    </form>
-    
+        <div class="col">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Reporte Mensual de Asistencia</h5>
+                    <p class="card-text">Genera un reporte de asistencia del mes y grado seleccionado.</p>
+                    <a href="{% url 'generar_reporte_asistencia' %}" class="btn btn-secondary">Generar Reporte</a>
+                </div>
+            </div>
+            <div class="card mt-2">
+                <div class="card-body">
+                    <h5 class="card-title">Ver Registros de Asistencia</h5>
+                    <p class="card-text">Detalle de todos los registros de asistencia realizados.</p>
+                    <a href="{% url 'ver_asistencias' %}" class="btn btn-secondary">Ver Registros</a>
+                </div>
+            </div>
+        </div> 
+                 
+    </div>
+       
     <div class="mt-4 d-flex justify-content-center">
         <a href="{% url 'home' %}" class="btn btn-secondary">Volver</a>
     </div>
-
+          
 </div>
 
 {% endblock %}

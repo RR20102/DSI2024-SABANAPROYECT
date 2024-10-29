@@ -1,0 +1,36 @@
+{% extends "accounts/templates/accounts/base.html" %}
+{% block title %}SABANA - Reporte Mensual de Asistencia {% endblock %}
+{% block content %}
+{% load tags %}
+
+<div class="container mt-4">
+
+    <h3>Generar Reporte Mensual de Asistencia</h3>
+
+    {% if messages %}
+    <div class="alert alert-success mt-2">
+        {% for message in messages %}
+            {{ message }}
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="row row-cols-1 row-cols-md-2 g-4 mt-2">
+        <div class="col">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Selecciona el grado y el mes del reporte</h5>
+
+                </div>
+            </div>
+        </div>
+                 
+    </div>
+       
+    <div class="mt-4 d-flex justify-content-center">
+        <a href="{% url 'gestionar_asistencia' %}" class="btn btn-secondary">Volver</a>
+    </div>
+          
+</div>
+
+{% endblock %}

@@ -156,17 +156,6 @@ class DocenteForm(forms.ModelForm):
     
 
 #Registro de asistencia
-class SeleccionarGradoSeccionForm(forms.Form):
-    grado_seccion = forms.ModelChoiceField(
-        queryset=GradoSeccion.objects.all(),
-        label="Grado y Sección",
-        widget=forms.Select(attrs={'class': 'form-select'})  # Estilo Bootstrap
-    )
-    fecha = forms.DateField(
-        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),  # Estilo Bootstrap
-        label="Fecha de asistencia"
-    )
-
 ASISTENCIA_CHOICES = [
     ('P', 'Presente'),
     ('A', 'Ausente'),

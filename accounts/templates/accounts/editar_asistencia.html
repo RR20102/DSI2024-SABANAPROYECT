@@ -2,7 +2,7 @@
 {% block title %}Editar Asistencia{% endblock %}
 {% block content %}
 <div class="container mt-4">
-    <h2 class="mb-4">Editar Asistencia</h2>
+    <h3 class="mb-4">Editar Asistencia</h3>
 
     <div class="card">
         <div class="card-body">
@@ -16,7 +16,7 @@
                 <!-- Campo oculto para id_alumno -->
                 <input type="hidden" name="id_alumno" value="{{ asistencia.id_alumno.id_alumno }}">
 
-                <div class="form-group">
+                <div class="form-group mb-4">
                     <label for="asistio">Asistencia:</label>
                     <div class="form-check">
                         <input type="radio" id="presente" name="asistio" value="P" class="form-check-input" {% if asistencia.asistio == 'P' %}checked{% endif %}>

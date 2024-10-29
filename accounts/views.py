@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 #Importacion de modelos de la base de datos - Codigo Daniel 
 from .models import Docente, Grado, Seccion, Asignacion, Estudiante, GradoSeccion, Asistencia
-from .forms import AsignacionForm, EstudianteForm, AsistenciaFormSet, SeleccionarGradoSeccionForm, AsistenciaForm, GradoSeccionForm
+from .forms import AsignacionForm, EstudianteForm, AsistenciaForm, GradoSeccionForm
 from django.contrib import messages  # Importa messages
 from django.http import JsonResponse
 import json
@@ -477,7 +477,6 @@ def eliminar_estudiante(request, id):
 
 
 
-
 # Codigo Registro de asistencia
 @login_required
 def gestionar_asistencia(request):
@@ -534,13 +533,12 @@ def ver_asistencias(request):
 def editar_asistencia(request, id_asistencia):
     asistencia = get_object_or_404(Asistencia, id_asistencia=id_asistencia)
 
-    print(f"Editando asistencia para ID: {asistencia.id_asistencia}")  # Verificar el ID de asistencia
+    print(f"Editando asistencia para ID: {asistencia.id_asistencia}")  
 
     if request.method == 'POST':
-        print("Formulario enviado.")  # Confirmar que se envió el formulario
-        print("Datos recibidos:", request.POST)  # Imprimir datos recibidos del formulario
+        print("Formulario enviado.") 
+        print("Datos recibidos:", request.POST)  
 
-        # Crear un formulario con los datos enviados
         form = AsistenciaForm(request.POST, instance=asistencia)
 
         if form.is_valid():
@@ -548,18 +546,20 @@ def editar_asistencia(request, id_asistencia):
             messages.success(request, "Asistencia actualizada exitosamente.")
             return redirect('ver_asistencias')
         else:
-            print(f"Errores en el formulario: {form.errors}")  # Mostrar errores en consola
+            print(f"Errores en el formulario: {form.errors}") 
     else:
         form = AsistenciaForm(instance=asistencia)
 
     return render(request, 'accounts/editar_asistencia.html', {'form': form, 'asistencia': asistencia})
 
 
-
-# Vista para eliminar un registro de asistencia
 @login_required
 def eliminar_asistencia(request, id_asistencia):
     asistencia = get_object_or_404(Asistencia, id_asistencia=id_asistencia)
     asistencia.delete()
     messages.success(request, "Asistencia eliminada exitosamente.")
-    return redirect('ver_asistencias')  # Cambia esta URL si es necesario
+    return redirect('ver_asistencias')  
+
+@login_required
+def generar_reporte_asistencia(request):
+    return render(request, 'accounts/generar_reporte_asistencia.html')
