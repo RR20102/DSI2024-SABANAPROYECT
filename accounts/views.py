@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 #Importacion de modelos de la base de datos - Codigo Daniel 
 from .models import Docente, Grado, Seccion, Asignacion, Estudiante, GradoSeccion, Asistencia
-from .forms import AsignacionForm, EstudianteForm, AsistenciaFormSet, SeleccionarGradoSeccionForm, AsistenciaForm
+from .forms import AsignacionForm, EstudianteForm, AsistenciaFormSet, SeleccionarGradoSeccionForm, AsistenciaForm, GradoSeccionForm
 from django.contrib import messages  # Importa messages
 from django.http import JsonResponse
 import json
@@ -481,69 +481,49 @@ def eliminar_estudiante(request, id):
 # Codigo Registro de asistencia
 @login_required
 def gestionar_asistencia(request):
-    if request.method == 'POST':
-        form = SeleccionarGradoSeccionForm(request.POST)
+    if request.method == "POST":
+        form = GradoSeccionForm(request.POST)
         if form.is_valid():
-            grado_seccion = form.cleaned_data['grado_seccion']
+            grado_seccion_id = form.cleaned_data['grado_seccion'].id_gradoseccion
             fecha = form.cleaned_data['fecha']
-            return redirect('registrar_asistencia', id_gradoseccion=grado_seccion.id_gradoseccion, fecha=fecha)
+            return redirect('registrar_asistencia', grado_seccion_id=grado_seccion_id, fecha=fecha)
     else:
-        form = SeleccionarGradoSeccionForm()
-
-    return render(request, 'accounts/gestionar_asistencia.html', {
-        'form': form,
-        'success_message': messages.get_messages(request)  # Pasar los mensajes a la plantilla
-    })
-
+        form = GradoSeccionForm()
+    return render(request, 'accounts/gestionar_asistencia.html', {'form': form})
 
 @login_required
-def registrar_asistencia(request, id_gradoseccion, fecha=None):
-    fecha = fecha or timezone.now().date()
-    print(f"Fecha de asistencia: {fecha}")
+def registrar_asistencia(request, grado_seccion_id, fecha):
+    grado_seccion = GradoSeccion.objects.get(id_gradoseccion=grado_seccion_id)
+    estudiantes = Estudiante.objects.filter(id_gradoseccion=grado_seccion_id)
+    asistencias = {
+        asistencia.id_alumno.id_alumno: asistencia.asistio
+        for asistencia in Asistencia.objects.filter(idgradoseccion=grado_seccion_id, fechaasistencia=fecha)
+    }
 
-    estudiantes = Estudiante.objects.filter(id_gradoseccion=id_gradoseccion)
-    print(f"Número de estudiantes encontrados: {estudiantes.count()}")
-
-    asistencias = Asistencia.objects.filter(idgradoseccion=id_gradoseccion, fechaasistencia=fecha)
-    print(f"Número de registros de asistencia existentes: {asistencias.count()}")
-
-    if not asistencias.exists():
-        print("No existen registros de asistencia. Creando nuevos registros...")
+    if request.method == "POST":
         for estudiante in estudiantes:
-            Asistencia.objects.create(id_alumno=estudiante, idgradoseccion_id=id_gradoseccion, fechaasistencia=fecha)
-            print(f"Registro de asistencia creado para: {estudiante.nombreAlumno} {estudiante.apellidoAlumno}")
+            asistio = request.POST.get(f'asistio_{estudiante.id_alumno}')
+            if not asistio:
+                messages.error(request, 'Todos los campos deben ser llenados')
+                return redirect('registrar_asistencia', grado_seccion_id=grado_seccion_id, fecha=fecha)
 
-        asistencias = Asistencia.objects.filter(idgradoseccion=id_gradoseccion, fechaasistencia=fecha)
-        print(f"Número de registros de asistencia después de la creación: {asistencias.count()}")
+            Asistencia.objects.update_or_create(
+                id_alumno=estudiante,
+                idgradoseccion_id=grado_seccion_id,
+                fechaasistencia=fecha,
+                defaults={'asistio': asistio}
+            )
 
-    if request.method == 'POST':
-        formset = AsistenciaFormSet(request.POST, queryset=asistencias)
-        print("Datos del formulario enviados:", request.POST)
+        messages.success(request, 'Asistencia registrada exitosamente')
+        return redirect('gestionar_asistencia')
 
-        all_valid = True
-        errors = []
+    return render(request, 'accounts/registrar_asistencia.html', {
+        'estudiantes': estudiantes,
+        'fecha': fecha,
+        'grado_seccion': grado_seccion,
+        'asistencias': asistencias
+    })
 
-        # Validar cada formulario en el formset
-        for form in formset:
-            if form.is_valid():
-                print("Formulario válido:", form.cleaned_data)
-            else:
-                all_valid = False
-                errors.append(form.errors)
-                print("Errores en el formulario:", form.errors)
-
-        if all_valid:
-            formset.save()
-            print("Registros de asistencia guardados con éxito.")
-            return redirect('gestionar_asistencia')
-        else:
-            print("Errores de validación encontrados:", errors)
-
-    else:
-        formset = AsistenciaFormSet(queryset=asistencias)
-        print("Cargando formset para GET. Número de registros:", asistencias.count())
-
-    return render(request, 'accounts/registrar_asistencia.html', {'formset': formset, 'fecha': fecha})
 
 @login_required
 def ver_asistencias(request):

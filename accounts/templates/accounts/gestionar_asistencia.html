@@ -4,35 +4,46 @@
 {% load tags %}
 
 <div class="container mt-4">
-    <h2 class="mb-4">Seleccionar Grado y Sección</h2>
 
-    {% if success_message %}
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-        {% for message in success_message %}
+    <h2>Registro de Asistencia</h2>
+    {% if messages %}
+    <div class="alert alert-success">
+        {% for message in messages %}
             {{ message }}
         {% endfor %}
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
     </div>
     {% endif %}
+    
+    <div class="btn-group btn-group-toggle" data-toggle="buttons">
+        <label class="btn btn-secondary active">
+          <input type="button" name="options" id="option1" autocomplete="off" checked> Agregar asistencia
+        </label>
+        <label class="btn btn-secondary">
+          <input type="button" name="options" id="option2" autocomplete="off"> Ver registros
+        </label>
+        <label class="btn btn-secondary">
+          <input type="button" name="options" id="option3" autocomplete="off"> Reporte mensual de asistencia
+        </label>
+    </div>
 
-    <form method="POST" action="{% url 'gestionar_asistencia' %}" class="bg-light p-4 rounded shadow-sm">
+    <h5>Registrar asistencia</h5>
+    <form method="post">
         {% csrf_token %}
-        <div class="mb-3">
+        <div class="form-group">
             {{ form.grado_seccion.label_tag }}
             {{ form.grado_seccion }}
         </div>
-        <div class="mb-3">
+        <div class="form-group">
             {{ form.fecha.label_tag }}
             {{ form.fecha }}
         </div>
         <button type="submit" class="btn btn-primary">Continuar</button>
     </form>
-
+    
     <div class="mt-4 d-flex justify-content-center">
         <a href="{% url 'home' %}" class="btn btn-secondary">Volver</a>
     </div>
+
 </div>
 
 {% endblock %}

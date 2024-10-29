@@ -4,38 +4,41 @@
 {% load tags %}
 
 <div class="container mt-4">
-    <h2 class="mb-4">Registro de Asistencia - {{ fecha }}</h2>
-    <p><strong>Grado y Sección:</strong> {{ formset.queryset.first.idgradoseccion }}</p>
 
-    <form method="POST" class="p-4 rounded shadow-sm">
+    {% if asistencias %}
+    <h2>Editar Asistencia</h2>
+    {% else %}
+        <h2>Registrar Asistencia</h2>
+    {% endif %}
+    <h4>{{ fecha }} - {{ grado_seccion.grado.nombreGrado }} {{ grado_seccion.seccion.nombreSeccion }}</h4>
+    <form method="post">
         {% csrf_token %}
+        <input type="hidden" name="fecha" value="{{ fecha }}">
         <table class="table table-striped">
             <thead>
                 <tr>
                     <th>Nombre del Estudiante</th>
-                    <th>Presente (P)</th>
-                    <th>Ausente (A)</th>
+                    <th>Presente</th>
+                    <th>Ausente</th>
                 </tr>
             </thead>
             <tbody>
-                {% for form in formset %}
-                    <tr>
-                        <td>{{ form.instance.id_alumno.nombreAlumno }} {{ form.instance.id_alumno.apellidoAlumno }}</td>
-                        <td>
-                            <input type="radio" name="form-{{ forloop.counter0 }}-asistio" value="P" {% if form.asistio.value == 'P' %}checked{% endif %}> Presente
-                        </td>
-                        <td>
-                            <input type="radio" name="form-{{ forloop.counter0 }}-asistio" value="A" {% if form.asistio.value == 'A' %}checked{% endif %}> Ausente
-                        </td>
-                        <td>
-                            <input type="hidden" name="form-{{ forloop.counter0 }}-id_alumno" value="{{ form.instance.id_alumno.id_alumno }}">
-                        </td>
-                    </tr>
-                {% endfor %}
-            </tbody>            
+            {% for estudiante in estudiantes %}
+                <tr>
+                    <td>{{ estudiante.nombreAlumno }} {{ estudiante.apellidoAlumno }}</td>
+                    <td>
+                        <input type="radio" name="asistio_{{ estudiante.id_alumno }}" value="P" class="form-check-input" {% if asistencias.estudiante.id_alumno == 'P' %}checked{% endif %}> Presente
+                    </td>
+                    <td>
+                        <input type="radio" name="asistio_{{ estudiante.id_alumno }}" value="A" class="form-check-input" {% if asistencias.estudiante.id_alumno == 'A' %}checked{% endif %}> Ausente
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
         </table>
-        <button type="submit" class="btn btn-success">Guardar Asistencia</button>
+        <button type="submit" class="btn btn-success">Registrar asistencia</button>
     </form>
+    
 </div>
 
 {% endblock %}

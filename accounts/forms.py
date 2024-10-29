@@ -187,3 +187,12 @@ class AsistenciaForm(forms.ModelForm):
 
 
 AsistenciaFormSet = modelformset_factory(Asistencia, form=AsistenciaForm, extra=0)
+
+
+class GradoSeccionForm(forms.Form):
+    grado_seccion = forms.ModelChoiceField(queryset=GradoSeccion.objects.all(), widget=forms.Select(attrs={'class': 'form-control'}))
+    fecha = forms.DateField(
+        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),  # Estilo Bootstrap
+        label="Fecha de asistencia"
+    )
+    
