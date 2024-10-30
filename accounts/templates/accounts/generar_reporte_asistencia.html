@@ -2,11 +2,8 @@
 {% block title %}SABANA - Reporte Mensual de Asistencia {% endblock %}
 {% block content %}
 {% load tags %}
-
 <div class="container mt-4">
-
     <h3>Generar Reporte Mensual de Asistencia</h3>
-
     {% if messages %}
     <div class="alert alert-success mt-2">
         {% for message in messages %}
@@ -14,23 +11,40 @@
         {% endfor %}
     </div>
     {% endif %}
-
-    <div class="row row-cols-1 row-cols-md-2 g-4 mt-2">
-        <div class="col">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Selecciona el grado y el mes del reporte</h5>
-
+ 
+    <div class="card mt-4">
+        <div class="card-body">
+            <p class="card-text">Selecciona el grado, mes y año del reporte</p>
+            <form method="post" action="{% url 'reporte_asistencia' %}">
+                {% csrf_token %}
+                <div class="row mt-4">
+                    <div class="col-6">
+                        <div class="form-group">
+                        {{ form.grado_seccion.label_tag }}
+                        {{ form.grado_seccion }}
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="form-group">
+                            {{ form.mes.label_tag }}
+                            {{ form.mes }}
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="form-group">
+                            {{ form.año.label_tag }}
+                            {{ form.año }}
+                        </div>
+                    </div>
                 </div>
-            </div>
+                        
+                <button type="submit" class="btn btn-primary mt-4">Generar Reporte</button>
+                <a href="{% url 'ver_asistencias' %}" class="btn btn-secondary mt-4">Cancelar</a>
+            </form>
         </div>
-                 
     </div>
-       
-    <div class="mt-4 d-flex justify-content-center">
-        <a href="{% url 'gestionar_asistencia' %}" class="btn btn-secondary">Volver</a>
-    </div>
-          
+        
 </div>
-
 {% endblock %}
+
+

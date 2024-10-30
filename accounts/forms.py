@@ -1,5 +1,6 @@
 from django import forms
 from django.forms.models import modelformset_factory
+import calendar
 
 
 #Codigo Daniel 
@@ -184,4 +185,25 @@ class GradoSeccionForm(forms.Form):
         widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),  # Estilo Bootstrap
         label="Fecha de asistencia"
     )
-    
+
+
+MESES = [
+    ('1', 'Enero'), ('2', 'Febrero'), ('3', 'Marzo'), ('4', 'Abril'), 
+    ('5', 'Mayo'), ('6', 'Junio'), ('7', 'Julio'), ('8', 'Agosto'), 
+    ('9', 'Septiembre'), ('10', 'Octubre'), ('11', 'Noviembre'), ('12', 'Diciembre')
+]
+
+YEARS = [(str(year), str(year)) for year in range(2020, 2031)]
+
+class ReporteAsistenciaForm(forms.Form):
+    grado_seccion = forms.ModelChoiceField(queryset=GradoSeccion.objects.all(), widget=forms.Select(attrs={'class': 'form-control'}))
+    mes = forms.ChoiceField(
+        choices=MESES,
+        widget=forms.Select(attrs={'class': 'form-control'}),
+        label="Mes"
+    )
+    año = forms.ChoiceField(
+        choices=YEARS,
+        widget=forms.Select(attrs={'class': 'form-control'}),
+        label="Año"
+    )

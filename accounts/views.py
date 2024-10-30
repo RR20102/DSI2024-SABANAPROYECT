@@ -1,11 +1,14 @@
 from django.shortcuts import render, get_object_or_404, redirect
 #Importacion de modelos de la base de datos - Codigo Daniel 
 from .models import Docente, Grado, Seccion, Asignacion, Estudiante, GradoSeccion, Asistencia
-from .forms import AsignacionForm, EstudianteForm, AsistenciaForm, GradoSeccionForm
+from .forms import AsignacionForm, EstudianteForm, AsistenciaForm, GradoSeccionForm, ReporteAsistenciaForm, MESES
 from django.contrib import messages  # Importa messages
 from django.http import JsonResponse
 import json
 from django.utils import timezone
+from calendar import monthrange
+from calendar import month_name
+from datetime import datetime
 
 #Codigo Christian 
 from django.contrib.auth import authenticate, login, logout
@@ -529,6 +532,7 @@ def ver_asistencias(request):
     asistencias = Asistencia.objects.all().order_by('-fechaasistencia')
     return render(request, 'accounts/ver_asistencias.html', {'asistencias': asistencias})
 
+
 @login_required
 def editar_asistencia(request, id_asistencia):
     asistencia = get_object_or_404(Asistencia, id_asistencia=id_asistencia)
@@ -560,6 +564,55 @@ def eliminar_asistencia(request, id_asistencia):
     messages.success(request, "Asistencia eliminada exitosamente.")
     return redirect('ver_asistencias')  
 
+
 @login_required
 def generar_reporte_asistencia(request):
-    return render(request, 'accounts/generar_reporte_asistencia.html')
+    form = ReporteAsistenciaForm()
+    return render(request, 'accounts/generar_reporte_asistencia.html', {'form': form})
+
+
+@login_required
+def reporte_asistencia(request):
+    if request.method == "POST":
+        form = ReporteAsistenciaForm(request.POST)
+        if form.is_valid():
+            grado_seccion_id = form.cleaned_data['grado_seccion'].id_gradoseccion
+            mes = int(form.cleaned_data['mes'])
+            año = int(form.cleaned_data['año'])
+            nombre_mes = [nombre for numero, nombre in MESES if numero == str(mes)][0]
+            grado_seccion = GradoSeccion.objects.get(id_gradoseccion=grado_seccion_id)
+            estudiantes = Estudiante.objects.filter(id_gradoseccion=grado_seccion_id)
+            
+            # Obtener días del mes seleccionado
+            num_dias = monthrange(año, mes)[1]
+            dias_mes = range(1, num_dias + 1)
+            
+            # Generar la estructura de asistencia
+            asistencias = []
+            for estudiante in estudiantes:
+                asistencia_dias = []
+                for dia in dias_mes:
+                    fecha = datetime(año, mes, dia).date()
+                    asistencia = Asistencia.objects.filter(id_alumno=estudiante, fechaasistencia=fecha).first()
+                    asistencia_dias.append(asistencia.asistio if asistencia else "")
+                asistencias.append({
+                    'estudiante': estudiante,
+                    'asistencia_dias': asistencia_dias
+                })
+            
+            return render(request, 'accounts/reporte_asistencia.html', {
+                'grado_seccion': grado_seccion,
+                'nombre_mes': nombre_mes,
+                'año': año,
+                'dias_mes': dias_mes,
+                'asistencias': asistencias
+            })
+        else:
+            messages.error(request, 'Formulario inválido')
+            return redirect('generar_reporte_asistencia')
+    else:
+        form = ReporteAsistenciaForm()
+    return render(request, 'accounts/generar_reporte_asistencia.html', {'form': form})
+
+
+

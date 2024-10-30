@@ -6,7 +6,7 @@
 <div class="container mt-4">
 
     {% if asistencias %}
-    <h3>Editar Asistencia</h3>
+        <h3>Editar Asistencia</h3>
     {% else %}
         <h3>Registrar Asistencia</h3>
     {% endif %}
@@ -52,13 +52,9 @@
 
             </div>
 
-            
-
         </div>
         
-
-
-        <button type="submit" class="btn btn-success">Registrar asistencia</button>
+        <button type="submit" class="btn btn-success">Guardar Registro</button>
         <a href="{% url 'gestionar_asistencia' %}" class="btn btn-secondary">Cancelar</a>
     </form>
     
