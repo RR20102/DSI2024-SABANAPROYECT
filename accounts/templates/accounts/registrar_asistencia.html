@@ -1,0 +1,63 @@
+{% extends "accounts/templates/accounts/base.html" %}
+{% block title %}SABANA - Registro de Asistencia{% endblock %}
+{% block content %}
+{% load tags %}
+
+<div class="container mt-4">
+
+    {% if asistencias %}
+        <h3>Editar Asistencia</h3>
+    {% else %}
+        <h3>Registrar Asistencia</h3>
+    {% endif %}
+    <h4>{{ fecha }} - {{ grado_seccion.grado.nombreGrado }} {{ grado_seccion.seccion.nombreSeccion }}</h4>
+
+    {% if messages %}
+    <div class="alert alert-danger mt-2">
+        {% for message in messages %}
+            {{ message }}
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="fecha" value="{{ fecha }}">
+
+        <div class="card mt-4 mb-4">
+            <div class="card-body">
+
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Nombre del Estudiante</th>
+                            <th>Presente (P)</th>
+                            <th>Ausente (A)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for estudiante in estudiantes %}
+                        <tr>
+                            <td>{{ estudiante.nombreAlumno }} {{ estudiante.apellidoAlumno }}</td>
+                            <td>
+                                <input type="radio" name="asistio_{{ estudiante.id_alumno }}" value="P" class="form-check-input" {% if asistencias.estudiante.id_alumno == 'P' %}checked{% endif %}> P
+                            </td>
+                            <td>
+                                <input type="radio" name="asistio_{{ estudiante.id_alumno }}" value="A" class="form-check-input" {% if asistencias.estudiante.id_alumno == 'A' %}checked{% endif %}> A
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+
+            </div>
+
+        </div>
+        
+        <button type="submit" class="btn btn-success">Guardar Registro</button>
+        <a href="{% url 'gestionar_asistencia' %}" class="btn btn-secondary">Cancelar</a>
+    </form>
+    
+</div>
+
+{% endblock %}

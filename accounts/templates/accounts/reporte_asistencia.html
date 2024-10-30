@@ -1,0 +1,61 @@
+{% extends "accounts/templates/accounts/base.html" %}
+{% block title %}SABANA - Reporte de Asistencia {% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <h3>Resumen de Asistencia Mensual</h3>
+    <h5>{{ grado_seccion }} - {{ nombre_mes }} {{ año }}</h5>
+    <p>A continuacion se muestra el resumen mensual de asistencia del los alumnos, siendo "P" presente y "A" una ausencia</p>
+</div>
+<div class="container mt-4">
+
+    <table class="table">
+        <thead>
+            <tr style="background-color: #c5c5c7">
+                <th>Alumno</th>
+                {% for dia in dias_mes %}
+                <th>{{ dia }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in asistencias %}
+            <tr>
+                <td style="background-color: #dddde0">{{ item.estudiante.nombreAlumno }} {{ item.estudiante.apellidoAlumno }}</td>
+                {% for asistencia in item.asistencia_dias %}
+                <td class="attendance-cell {% if asistencia == 'P' %}present{% elif asistencia == 'A' %}absent{% endif %}">{{ asistencia }}</td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="mt-4 d-flex justify-content-center">
+        <a href="{% url 'ver_asistencias' %}" class="btn btn-secondary">Volver</a>
+    </div>
+</div>
+
+<style>
+    .table td {
+        font-size: 0.8em;
+    }
+ 
+    .attendance-cell {
+        text-align: center;
+        vertical-align: middle;
+        padding: 8px;
+        border: 1px solid #ddd;
+    }
+    
+    .present {
+        background-color: #90f3a7 !important; 
+        color: #155724  
+    }
+    
+    .absent {
+        background-color: #f57f88 !important;
+        color: #721c24;
+    }
+</style>
+
+
+{% endblock %}

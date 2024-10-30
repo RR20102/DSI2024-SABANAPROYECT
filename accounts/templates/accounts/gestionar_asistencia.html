@@ -1,0 +1,60 @@
+{% extends "accounts/templates/accounts/base.html" %}
+{% block title %}SABANA - Asistencia {% endblock %}
+{% block content %}
+{% load tags %}
+
+<div class="container mt-4">
+
+    <h3>Registro de Asistencia</h3>
+
+    {% if messages %}
+    <div class="alert alert-success mt-2">
+        {% for message in messages %}
+            {{ message }}
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="row mt-4">
+        <div class="col-7">
+            <div class="card">
+                <div class="card-body">
+                    <p class="card-text">Selecciona el grado y la fecha a registrar la asistencia</p>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="form-group">
+                                    {{ form.grado_seccion.label_tag }}
+                                    {{ form.grado_seccion }}
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-group">
+                                    {{ form.fecha.label_tag }}
+                                    {{ form.fecha }}
+                                </div>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary mt-4">Registrar Asistencia</button>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+        <div class="col-5">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Resumen de Asistencia</h5>
+                    <p class="card-text mt-2">Detalle de registros de asistencia realizados y creacion de resumen mensual</p>
+                    <a href="{% url 'ver_asistencias' %}" class="btn btn-secondary">Ver Registros</a>
+                </div>
+            </div>
+        </div> 
+                 
+    </div>
+          
+</div>
+
+{% endblock %}

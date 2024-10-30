@@ -1,7 +1,7 @@
 from django.urls import path
 #from django.contrib import admin
 from . import views
-from .views import registrar_estudiante, listar_estudiantes, editar_estudiante, asignarMaterias, agregar_horario, lista_horarios, ver_horarios, eliminar_horario, editar_horario, lista_docentes, ver_horarios_docente, horario_docente, horario_estudiante
+from .views import registrar_estudiante, listar_estudiantes, editar_estudiante, registrar_asistencia, gestionar_asistencia,generar_reporte_asistencia, reporte_asistencia, asignarMaterias, agregar_horario, lista_horarios, ver_horarios, eliminar_horario, editar_horario, lista_docentes, ver_horarios_docente, horario_docente, horario_estudiante
 urlpatterns = [
     #Codio Login - Codigo Chritian
     path('accounts/login/', views.login_view, name='login'),
@@ -32,22 +32,15 @@ urlpatterns = [
     path('eliminarasignacion/<int:id>/', views.eliminarasignacion, name='eliminarasignacion'),
     path('editarasignacion/<int:id>/', views.editarasignacion, name='editarasignacion'),
     path('visualizarasignaciondocente/', views.visualizarasignaciondocente, name='visualizarasignaciondocente'),
-
-
-    # #Codigo Segundo Sprint - Daniel
-    path('agregar-horario/', agregar_horario, name='agregar_horario'),
-    path('lista-horarios/', lista_horarios, name='lista_horarios'),
-    path('ver-horarios/<int:docente_materia_id>/', ver_horarios, name='ver_horarios'),
-
-
-    path('eliminar_horario/<int:horario_id>/', views.eliminar_horario, name='eliminar_horario'),
-    path('editar_horario/<int:horario_id>/', editar_horario, name='editar_horario'),
     
-    path('docentes/', lista_docentes, name='lista_docentes'),
-    path('horarios-docente/<str:docente_dui>/', ver_horarios_docente, name='ver_horarios_docente'),
-    
-    path('mi-horario/', horario_docente, name='mi_horario'),
-    path('mi-horario-estudiante/', horario_estudiante, name='horario_estudiante'),
+    #Codigo Registro de Asistencia - Ricardo
+    path('asistencia/gestionar_asistencia/', gestionar_asistencia, name='gestionar_asistencia'),
+    path('asistencia/registrar_asistencia/<int:grado_seccion_id>/<str:fecha>/', registrar_asistencia, name='registrar_asistencia'),
+    path('asistencia/ver_asistencias/', views.ver_asistencias, name='ver_asistencias'),
+    path('asistencia/editar/<int:id_asistencia>/', views.editar_asistencia, name='editar_asistencia'),
+    path('asistencia/eliminar/<int:id_asistencia>/', views.eliminar_asistencia, name='eliminar_asistencia'),
+    path('asistencia/generar_reporte_asistencia/', views.generar_reporte_asistencia, name='generar_reporte_asistencia'),
+    path('asistencia/reporte_asistencia/', views.reporte_asistencia, name='reporte_asistencia'),
 
 
 ]

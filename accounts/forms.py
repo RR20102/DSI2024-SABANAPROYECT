@@ -1,7 +1,10 @@
 from django import forms
+from django.forms.models import modelformset_factory
+import calendar
+
 
 #Codigo Daniel 
-from .models import Asignacion, Docente, GradoSeccion, Estudiante, MateriaGradoSeccion, DocenteMateriaGrado, TipoActividad, ActividadAcademica
+from .models import Asignacion, Docente, GradoSeccion, Estudiante, Asistencia, MateriaGradoSeccion, DocenteMateriaGrado, TipoActividad, ActividadAcademica
 from django.contrib.auth.models import User
 
 #Codigo Christian 
@@ -162,6 +165,160 @@ class DocenteForm(forms.ModelForm):
             raise ValidationError('Este correo electrónico ya está registrado. Por favor, ingrese otro.')
         return correo
     
+
+#Registro de asistencia
+ASISTENCIA_CHOICES = [
+    ('P', 'Presente'),
+    ('A', 'Ausente'),
+]
+
+class AsistenciaForm(forms.ModelForm):
+    asistio = forms.ChoiceField(choices=ASISTENCIA_CHOICES, widget=forms.RadioSelect)
+
+    class Meta:
+        model = Asistencia
+        fields = ['id_alumno', 'asistio']
+
+    def clean_id_alumno(self):
+        id_alumno = self.cleaned_data.get('id_alumno')
+        if not id_alumno:
+            raise forms.ValidationError("El campo 'id_alumno' es obligatorio.")
+        return id_alumno
+
+
+AsistenciaFormSet = modelformset_factory(Asistencia, form=AsistenciaForm, extra=0)
+
+
+class GradoSeccionForm(forms.Form):
+    grado_seccion = forms.ModelChoiceField(
+        queryset=GradoSeccion.objects.none(),  
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    fecha = forms.DateField(
+        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+        label="Fecha de asistencia"
+    )
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        super(GradoSeccionForm, self).__init__(*args, **kwargs)
+        
+        if user and hasattr(user, 'docente'):
+            docente = user.docente
+            grados_secciones_asignados = Asignacion.objects.filter(docente=docente).values_list('grado_seccion__id_gradoseccion', flat=True)
+            self.fields['grado_seccion'].queryset = GradoSeccion.objects.filter(id_gradoseccion__in=grados_secciones_asignados)
+
+MESES = [
+    ('1', 'Enero'), ('2', 'Febrero'), ('3', 'Marzo'), ('4', 'Abril'), 
+    ('5', 'Mayo'), ('6', 'Junio'), ('7', 'Julio'), ('8', 'Agosto'), 
+    ('9', 'Septiembre'), ('10', 'Octubre'), ('11', 'Noviembre'), ('12', 'Diciembre')
+]
+
+YEARS = [(str(year), str(year)) for year in range(2020, 2031)]
+
+class ReporteAsistenciaForm(forms.Form):
+    grado_seccion = forms.ModelChoiceField(
+        queryset=GradoSeccion.objects.none(),  # Inicialmente vacío
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    mes = forms.ChoiceField(
+        choices=MESES,
+        widget=forms.Select(attrs={'class': 'form-control'}),
+        label="Mes"
+    )
+    año = forms.ChoiceField(
+        choices=YEARS,
+        widget=forms.Select(attrs={'class': 'form-control'}),
+        label="Año"
+    )
+
+    def __init__(self, *args, **kwargs):
+        # Obtener el usuario del contexto
+        user = kwargs.pop('user', None)
+        super(ReporteAsistenciaForm, self).__init__(*args, **kwargs)
+        
+        # Filtrar el queryset de grado_seccion si el usuario es válido y tiene un docente asociado
+        if user and hasattr(user, 'docente'):
+            docente = user.docente
+            grados_secciones_asignados = Asignacion.objects.filter(docente=docente).values_list('grado_seccion__id_gradoseccion', flat=True)
+            self.fields['grado_seccion'].queryset = GradoSeccion.objects.filter(id_gradoseccion__in=grados_secciones_asignados)
+
+#Registro de asistencia
+ASISTENCIA_CHOICES = [
+    ('P', 'Presente'),
+    ('A', 'Ausente'),
+]
+
+class AsistenciaForm(forms.ModelForm):
+    asistio = forms.ChoiceField(choices=ASISTENCIA_CHOICES, widget=forms.RadioSelect)
+
+    class Meta:
+        model = Asistencia
+        fields = ['id_alumno', 'asistio']
+
+    def clean_id_alumno(self):
+        id_alumno = self.cleaned_data.get('id_alumno')
+        if not id_alumno:
+            raise forms.ValidationError("El campo 'id_alumno' es obligatorio.")
+        return id_alumno
+
+
+AsistenciaFormSet = modelformset_factory(Asistencia, form=AsistenciaForm, extra=0)
+
+
+class GradoSeccionForm(forms.Form):
+    grado_seccion = forms.ModelChoiceField(
+        queryset=GradoSeccion.objects.none(),  
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    fecha = forms.DateField(
+        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+        label="Fecha de asistencia"
+    )
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        super(GradoSeccionForm, self).__init__(*args, **kwargs)
+        
+        if user and hasattr(user, 'docente'):
+            docente = user.docente
+            grados_secciones_asignados = Asignacion.objects.filter(docente=docente).values_list('grado_seccion__id_gradoseccion', flat=True)
+            self.fields['grado_seccion'].queryset = GradoSeccion.objects.filter(id_gradoseccion__in=grados_secciones_asignados)
+
+MESES = [
+    ('1', 'Enero'), ('2', 'Febrero'), ('3', 'Marzo'), ('4', 'Abril'), 
+    ('5', 'Mayo'), ('6', 'Junio'), ('7', 'Julio'), ('8', 'Agosto'), 
+    ('9', 'Septiembre'), ('10', 'Octubre'), ('11', 'Noviembre'), ('12', 'Diciembre')
+]
+
+YEARS = [(str(year), str(year)) for year in range(2020, 2031)]
+
+class ReporteAsistenciaForm(forms.Form):
+    grado_seccion = forms.ModelChoiceField(
+        queryset=GradoSeccion.objects.none(),  # Inicialmente vacío
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    mes = forms.ChoiceField(
+        choices=MESES,
+        widget=forms.Select(attrs={'class': 'form-control'}),
+        label="Mes"
+    )
+    año = forms.ChoiceField(
+        choices=YEARS,
+        widget=forms.Select(attrs={'class': 'form-control'}),
+        label="Año"
+    )
+
+    def __init__(self, *args, **kwargs):
+        # Obtener el usuario del contexto
+        user = kwargs.pop('user', None)
+        super(ReporteAsistenciaForm, self).__init__(*args, **kwargs)
+        
+        # Filtrar el queryset de grado_seccion si el usuario es válido y tiene un docente asociado
+        if user and hasattr(user, 'docente'):
+            docente = user.docente
+            grados_secciones_asignados = Asignacion.objects.filter(docente=docente).values_list('grado_seccion__id_gradoseccion', flat=True)
+            self.fields['grado_seccion'].queryset = GradoSeccion.objects.filter(id_gradoseccion__in=grados_secciones_asignados)
 
 #Codigo Daniel SP2 Asignacion de Horarios de Clases 
 from .models import HorarioClase, DocenteMateriaGrado
