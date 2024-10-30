@@ -31,14 +31,11 @@ urlpatterns = [
     #Codigo Registro de Asistencia - Ricardo
     path('asistencia/gestionar_asistencia/', gestionar_asistencia, name='gestionar_asistencia'),
     path('asistencia/registrar_asistencia/<int:grado_seccion_id>/<str:fecha>/', registrar_asistencia, name='registrar_asistencia'),
-
     path('asistencia/ver_asistencias/', views.ver_asistencias, name='ver_asistencias'),
     path('asistencia/editar/<int:id_asistencia>/', views.editar_asistencia, name='editar_asistencia'),
     path('asistencia/eliminar/<int:id_asistencia>/', views.eliminar_asistencia, name='eliminar_asistencia'),
-    
     path('asistencia/generar_reporte_asistencia/', views.generar_reporte_asistencia, name='generar_reporte_asistencia'),
     path('asistencia/reporte_asistencia/', views.reporte_asistencia, name='reporte_asistencia'),
-
 
 
 ]

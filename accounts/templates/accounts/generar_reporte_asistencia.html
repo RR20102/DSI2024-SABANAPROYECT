@@ -3,7 +3,7 @@
 {% block content %}
 {% load tags %}
 <div class="container mt-4">
-    <h3>Generar Reporte Mensual de Asistencia</h3>
+    <h3>Resumen Mensual de Asistencia</h3>
     {% if messages %}
     <div class="alert alert-success mt-2">
         {% for message in messages %}
@@ -38,7 +38,7 @@
                     </div>
                 </div>
                         
-                <button type="submit" class="btn btn-primary mt-4">Generar Reporte</button>
+                <button type="submit" class="btn btn-primary mt-4">Generar</button>
                 <a href="{% url 'ver_asistencias' %}" class="btn btn-secondary mt-4">Cancelar</a>
             </form>
         </div>

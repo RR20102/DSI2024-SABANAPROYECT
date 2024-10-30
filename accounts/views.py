@@ -484,13 +484,13 @@ def eliminar_estudiante(request, id):
 @login_required
 def gestionar_asistencia(request):
     if request.method == "POST":
-        form = GradoSeccionForm(request.POST)
+        form = GradoSeccionForm(request.POST, user=request.user)
         if form.is_valid():
             grado_seccion_id = form.cleaned_data['grado_seccion'].id_gradoseccion
             fecha = form.cleaned_data['fecha']
             return redirect('registrar_asistencia', grado_seccion_id=grado_seccion_id, fecha=fecha)
     else:
-        form = GradoSeccionForm()
+        form = GradoSeccionForm(user=request.user)
     return render(request, 'accounts/gestionar_asistencia.html', {'form': form})
 
 @login_required
@@ -529,7 +529,9 @@ def registrar_asistencia(request, grado_seccion_id, fecha):
 
 @login_required
 def ver_asistencias(request):
-    asistencias = Asistencia.objects.all().order_by('-fechaasistencia')
+    docente = request.user.docente
+    grados_secciones_asignados = Asignacion.objects.filter(docente=docente).values_list('grado_seccion', flat=True)
+    asistencias = Asistencia.objects.filter(idgradoseccion__in=grados_secciones_asignados).order_by('-fechaasistencia')
     return render(request, 'accounts/ver_asistencias.html', {'asistencias': asistencias})
 
 
@@ -567,7 +569,7 @@ def eliminar_asistencia(request, id_asistencia):
 
 @login_required
 def generar_reporte_asistencia(request):
-    form = ReporteAsistenciaForm()
+    form = ReporteAsistenciaForm(user=request.user)
     return render(request, 'accounts/generar_reporte_asistencia.html', {'form': form})
 
 

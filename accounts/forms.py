@@ -180,12 +180,23 @@ AsistenciaFormSet = modelformset_factory(Asistencia, form=AsistenciaForm, extra=
 
 
 class GradoSeccionForm(forms.Form):
-    grado_seccion = forms.ModelChoiceField(queryset=GradoSeccion.objects.all(), widget=forms.Select(attrs={'class': 'form-control'}))
+    grado_seccion = forms.ModelChoiceField(
+        queryset=GradoSeccion.objects.none(),  
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
     fecha = forms.DateField(
-        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),  # Estilo Bootstrap
+        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
         label="Fecha de asistencia"
     )
 
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        super(GradoSeccionForm, self).__init__(*args, **kwargs)
+        
+        if user and hasattr(user, 'docente'):
+            docente = user.docente
+            grados_secciones_asignados = Asignacion.objects.filter(docente=docente).values_list('grado_seccion__id_gradoseccion', flat=True)
+            self.fields['grado_seccion'].queryset = GradoSeccion.objects.filter(id_gradoseccion__in=grados_secciones_asignados)
 
 MESES = [
     ('1', 'Enero'), ('2', 'Febrero'), ('3', 'Marzo'), ('4', 'Abril'), 
@@ -196,7 +207,10 @@ MESES = [
 YEARS = [(str(year), str(year)) for year in range(2020, 2031)]
 
 class ReporteAsistenciaForm(forms.Form):
-    grado_seccion = forms.ModelChoiceField(queryset=GradoSeccion.objects.all(), widget=forms.Select(attrs={'class': 'form-control'}))
+    grado_seccion = forms.ModelChoiceField(
+        queryset=GradoSeccion.objects.none(),  # Inicialmente vacío
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
     mes = forms.ChoiceField(
         choices=MESES,
         widget=forms.Select(attrs={'class': 'form-control'}),
@@ -207,3 +221,14 @@ class ReporteAsistenciaForm(forms.Form):
         widget=forms.Select(attrs={'class': 'form-control'}),
         label="Año"
     )
+
+    def __init__(self, *args, **kwargs):
+        # Obtener el usuario del contexto
+        user = kwargs.pop('user', None)
+        super(ReporteAsistenciaForm, self).__init__(*args, **kwargs)
+        
+        # Filtrar el queryset de grado_seccion si el usuario es válido y tiene un docente asociado
+        if user and hasattr(user, 'docente'):
+            docente = user.docente
+            grados_secciones_asignados = Asignacion.objects.filter(docente=docente).values_list('grado_seccion__id_gradoseccion', flat=True)
+            self.fields['grado_seccion'].queryset = GradoSeccion.objects.filter(id_gradoseccion__in=grados_secciones_asignados)
