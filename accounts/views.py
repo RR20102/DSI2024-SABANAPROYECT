@@ -598,7 +598,7 @@ def eliminar_asistencia(request, id_asistencia):
 
 @login_required
 def generar_reporte_asistencia(request):
-    form = ReporteAsistenciaForm(user=request.user)
+    form = ReporteAsistenciaForm()
     return render(request, 'accounts/generar_reporte_asistencia.html', {'form': form})
 
 

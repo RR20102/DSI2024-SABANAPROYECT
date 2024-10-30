@@ -217,10 +217,7 @@ MESES = [
 YEARS = [(str(year), str(year)) for year in range(2020, 2031)]
 
 class ReporteAsistenciaForm(forms.Form):
-    grado_seccion = forms.ModelChoiceField(
-        queryset=GradoSeccion.objects.none(),  # Inicialmente vacío
-        widget=forms.Select(attrs={'class': 'form-control'})
-    )
+    grado_seccion = forms.ModelChoiceField(queryset=GradoSeccion.objects.all(), widget=forms.Select(attrs={'class': 'form-control'}))
     mes = forms.ChoiceField(
         choices=MESES,
         widget=forms.Select(attrs={'class': 'form-control'}),
@@ -232,93 +229,9 @@ class ReporteAsistenciaForm(forms.Form):
         label="Año"
     )
 
-    def __init__(self, *args, **kwargs):
-        # Obtener el usuario del contexto
-        user = kwargs.pop('user', None)
-        super(ReporteAsistenciaForm, self).__init__(*args, **kwargs)
-        
-        # Filtrar el queryset de grado_seccion si el usuario es válido y tiene un docente asociado
-        if user and hasattr(user, 'docente'):
-            docente = user.docente
-            grados_secciones_asignados = Asignacion.objects.filter(docente=docente).values_list('grado_seccion__id_gradoseccion', flat=True)
-            self.fields['grado_seccion'].queryset = GradoSeccion.objects.filter(id_gradoseccion__in=grados_secciones_asignados)
-
-#Registro de asistencia
-ASISTENCIA_CHOICES = [
-    ('P', 'Presente'),
-    ('A', 'Ausente'),
-]
-
-class AsistenciaForm(forms.ModelForm):
-    asistio = forms.ChoiceField(choices=ASISTENCIA_CHOICES, widget=forms.RadioSelect)
-
-    class Meta:
-        model = Asistencia
-        fields = ['id_alumno', 'asistio']
-
-    def clean_id_alumno(self):
-        id_alumno = self.cleaned_data.get('id_alumno')
-        if not id_alumno:
-            raise forms.ValidationError("El campo 'id_alumno' es obligatorio.")
-        return id_alumno
 
 
-AsistenciaFormSet = modelformset_factory(Asistencia, form=AsistenciaForm, extra=0)
 
-
-class GradoSeccionForm(forms.Form):
-    grado_seccion = forms.ModelChoiceField(
-        queryset=GradoSeccion.objects.none(),  
-        widget=forms.Select(attrs={'class': 'form-control'})
-    )
-    fecha = forms.DateField(
-        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
-        label="Fecha de asistencia"
-    )
-
-    def __init__(self, *args, **kwargs):
-        user = kwargs.pop('user', None)
-        super(GradoSeccionForm, self).__init__(*args, **kwargs)
-        
-        if user and hasattr(user, 'docente'):
-            docente = user.docente
-            grados_secciones_asignados = Asignacion.objects.filter(docente=docente).values_list('grado_seccion__id_gradoseccion', flat=True)
-            self.fields['grado_seccion'].queryset = GradoSeccion.objects.filter(id_gradoseccion__in=grados_secciones_asignados)
-
-MESES = [
-    ('1', 'Enero'), ('2', 'Febrero'), ('3', 'Marzo'), ('4', 'Abril'), 
-    ('5', 'Mayo'), ('6', 'Junio'), ('7', 'Julio'), ('8', 'Agosto'), 
-    ('9', 'Septiembre'), ('10', 'Octubre'), ('11', 'Noviembre'), ('12', 'Diciembre')
-]
-
-YEARS = [(str(year), str(year)) for year in range(2020, 2031)]
-
-class ReporteAsistenciaForm(forms.Form):
-    grado_seccion = forms.ModelChoiceField(
-        queryset=GradoSeccion.objects.none(),  # Inicialmente vacío
-        widget=forms.Select(attrs={'class': 'form-control'})
-    )
-    mes = forms.ChoiceField(
-        choices=MESES,
-        widget=forms.Select(attrs={'class': 'form-control'}),
-        label="Mes"
-    )
-    año = forms.ChoiceField(
-        choices=YEARS,
-        widget=forms.Select(attrs={'class': 'form-control'}),
-        label="Año"
-    )
-
-    def __init__(self, *args, **kwargs):
-        # Obtener el usuario del contexto
-        user = kwargs.pop('user', None)
-        super(ReporteAsistenciaForm, self).__init__(*args, **kwargs)
-        
-        # Filtrar el queryset de grado_seccion si el usuario es válido y tiene un docente asociado
-        if user and hasattr(user, 'docente'):
-            docente = user.docente
-            grados_secciones_asignados = Asignacion.objects.filter(docente=docente).values_list('grado_seccion__id_gradoseccion', flat=True)
-            self.fields['grado_seccion'].queryset = GradoSeccion.objects.filter(id_gradoseccion__in=grados_secciones_asignados)
 
 #Codigo Daniel SP2 Asignacion de Horarios de Clases 
 from .models import HorarioClase, DocenteMateriaGrado
@@ -373,58 +286,6 @@ class HorarioClaseForm(forms.ModelForm):
 
         return cleaned_data
 
-#Codigo Daniel SP2 Asignacion de Horarios de Clases 
-from .models import HorarioClase, DocenteMateriaGrado
-
-class HorarioClaseForm(forms.ModelForm):
-    class Meta:
-        model = HorarioClase
-        fields = ['docente_materia_grado', 'dia_semana', 'hora_inicio', 'hora_fin']
-        widgets = {
-            'hora_inicio': forms.TimeInput(attrs={'type': 'time', 'class': 'form-control'}),
-            'hora_fin': forms.TimeInput(attrs={'type': 'time', 'class': 'form-control'}),
-        }
-        
-    def __init__(self, *args, **kwargs):
-        super(HorarioClaseForm, self).__init__(*args, **kwargs)
-        self.fields['docente_materia_grado'].queryset = DocenteMateriaGrado.objects.all()
-        self.fields['docente_materia_grado'].label_from_instance = lambda obj: f"{obj.dui} - {obj.id_matrgrasec.id_materia.nombre_materia} - {obj.id_matrgrasec.id_gradoseccion.grado.nombreGrado} - {obj.id_matrgrasec.id_gradoseccion.seccion.nombreSeccion}"
-
-    # Validación para evitar conflictos de horarios
-    def clean(self):
-        cleaned_data = super().clean()
-        docente_materia_grado = cleaned_data.get("docente_materia_grado")
-        dia_semana = cleaned_data.get("dia_semana")
-        hora_inicio = cleaned_data.get("hora_inicio")
-        hora_fin = cleaned_data.get("hora_fin")
-        
-
-        if hora_inicio and hora_fin and hora_inicio >= hora_fin:
-             raise forms.ValidationError("La hora de fin debe ser mayor que la hora de inicio.")
-
-         # Verificar si el horario se está editando
-        if self.instance and self.instance.id:  # Verifica si es una instancia existente
-            # Excluir el horario actual de la verificación
-            horarios_conflictivos = HorarioClase.objects.filter(
-                docente_materia_grado=docente_materia_grado,
-                dia_semana=dia_semana,
-                hora_inicio__lt=hora_fin,
-                hora_fin__gt=hora_inicio
-            ).exclude(id=self.instance.id)  # Excluir el horario que se está editando
-            
-            if horarios_conflictivos.exists():
-                raise forms.ValidationError("Ya existe un horario conflictivo para este docente y materia.")
-        else:
-            # Si no es una instancia existente, solo verificar si hay conflictos
-            if HorarioClase.objects.filter(
-                docente_materia_grado=docente_materia_grado,
-                dia_semana=dia_semana,
-                hora_inicio__lt=hora_fin,
-                hora_fin__gt=hora_inicio
-            ).exists():
-                raise forms.ValidationError("Ya existe un horario conflictivo para este docente y materia.")
-
-        return cleaned_data
 
 class DocenteMateriaGradoForm(forms.ModelForm):
     # Reemplazamos el campo id_matrgrasec por un multiselect

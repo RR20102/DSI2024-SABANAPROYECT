@@ -33,6 +33,20 @@ urlpatterns = [
     path('editarasignacion/<int:id>/', views.editarasignacion, name='editarasignacion'),
     path('visualizarasignaciondocente/', views.visualizarasignaciondocente, name='visualizarasignaciondocente'),
     
+
+     # #Codigo Segundo Sprint - Daniel
+    path('agregar-horario/', agregar_horario, name='agregar_horario'),
+    path('lista-horarios/', lista_horarios, name='lista_horarios'),
+    path('ver-horarios/<int:docente_materia_id>/', ver_horarios, name='ver_horarios'),
+    path('eliminar_horario/<int:horario_id>/', views.eliminar_horario, name='eliminar_horario'),
+    path('editar_horario/<int:horario_id>/', editar_horario, name='editar_horario'),
+    
+    path('docentes/', lista_docentes, name='lista_docentes'),
+    path('horarios-docente/<str:docente_dui>/', ver_horarios_docente, name='ver_horarios_docente'),
+    
+    path('mi-horario/', horario_docente, name='mi_horario'),
+    path('mi-horario-estudiante/', horario_estudiante, name='horario_estudiante'),
+
     #Codigo Registro de Asistencia - Ricardo
     path('asistencia/gestionar_asistencia/', gestionar_asistencia, name='gestionar_asistencia'),
     path('asistencia/registrar_asistencia/<int:grado_seccion_id>/<str:fecha>/', registrar_asistencia, name='registrar_asistencia'),
