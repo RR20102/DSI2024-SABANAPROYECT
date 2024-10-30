@@ -183,6 +183,13 @@ class ActividadAcademicaForm(forms.ModelForm):
         widgets = {
             'fecha_actividad': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),  # Aseguramos que el widget sea tipo "date"
         }
+        labels = {
+            'id_tipoactividad': 'Tipo de Actividad', 
+            'id_matrgrasec' : 'Materia Asignada',
+            'nombre_actividad' : 'Nombre de la Actividad',
+            'descripcion_actividad' : 'Descripción de la Actividad',
+            'fecha_actividad' : 'Fecha de la Actividad'
+        }
     def __init__(self, *args, **kwargs):
         # Obtenemos el docente (docente actual) del contexto que pasaremos en la vista
         docente = kwargs.pop('docente', None)

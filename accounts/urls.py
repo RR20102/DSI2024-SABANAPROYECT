@@ -17,7 +17,8 @@ urlpatterns = [
     path('asinar-materias/', views.asignarMaterias, name='asignar_materias'),
     path('calendario/', views.calendario, name= 'calendario'),
     path('api/actividades/', views.obtener_actividades, name='obtener_actividades'),
-     path('editar/actividad/<int:id>/', views.editar_actividad, name='editar_actividad'),
+    path('editar/actividad/<int:id>/', views.editar_actividad, name='editar_actividad'),
+    path('notas/',views.notas_estudiantes, name = 'notas_estudiantes'),
    
     path('listar-docentes/',views.listar_docentes,name='listardocentes'),
     #Codigo Menu administrador - Agregado por Daniel 

@@ -582,9 +582,29 @@ def editar_actividad(request, id):
             form.save()
             return JsonResponse({'success': True})  # Respuesta exitosa para el AJAX
         else:
-            # Respuesta con errores del formulario
-            return JsonResponse({'success': False, 'errors': form.errors}, status=400)
+            # Extraer etiquetas de los campos con errores
+            field_errors = form.errors # Ahora usaremos 'field_errors'
+            field_labels = {field: form.fields[field].label for field in form.fields}
+            # Responder con JSON que incluye errores y etiquetas
+            return JsonResponse({
+                'success': False,
+                'errors': field_errors,  # Usamos field_errors aquí
+                'labels': field_labels
+            }, status=400)
     else:
         form = ActividadAcademicaForm(instance=actividad, docente=docente)
 
     return render(request, 'accounts/editar_actividad_form.html', {'form': form, 'actividad': actividad})
+
+def notas_estudiantes(request):
+    docente = Docente.objects.get(user = request.user)
+    grados_doc =Asignacion.objects.filter(docente = docente)
+
+    estudiantes = []
+
+    for grado in grados_doc:
+        est = Estudiante.objects.filter(grado)
+        estudiantes[grado]=est
+
+
+    return render(request, 'accounts/estudiantes_notas.html')

@@ -10,7 +10,7 @@
   
     #calendar {
       max-width: 1100px;
-      margin: 0 auto;
+      margin: 0 0;
     }
 
 
@@ -117,6 +117,7 @@
 
 {% block extrajs %}
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
     var calendarEl = document.getElementById('calendar');
@@ -222,9 +223,23 @@
       } else {
         // Mostrar errores si los hay
         let errorMessages = '';
-        for (const [field, errors] of Object.entries(data.errors)) {
-          errorMessages += `<p><strong>${field}:</strong> ${errors.join(', ')}</p>`;
+
+        // Obtener las etiquetas de los campos desde la respuesta JSON
+        const labels = data.labels || {};  
+
+        for (const [field, errorList] of Object.entries(data.errors)) {
+          // Usar la etiqueta del campo si existe; si no, usar el nombre del campo
+          const fieldLabel = labels[field] ;
+         
+
+          // Unir los errores en una cadena legible
+          const errorMessagesForField = errorList.join(', ');
+
+          // Agregar el mensaje al conjunto de mensajes de error
+          errorMessages += `<p><strong>${fieldLabel}:</strong> ${errorMessagesForField}</p>`;
         }
+
+        // Mostrar todos los mensajes de error en el modal
         document.getElementById('edit-modal-body').innerHTML += `<div class="alert alert-danger">${errorMessages}</div>`;
       }
     })

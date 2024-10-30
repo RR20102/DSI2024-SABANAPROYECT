@@ -1,0 +1,147 @@
+{% extends "accounts/templates/accounts/base.html" %}
+{% block title %}SABANA - Estudiantes {% endblock %}
+
+{% block content %}
+{% load tags %}
+{% load static %}
+{% load widget_tweaks %}
+
+<div class="container my-5">
+    <h1 class="text-center mb-4">Lista de Estudiantes</h1>
+
+    <!-- Filtros -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <label for="filter-materia" class="form-label">Materia</label>
+            <select id="filter-materia" class="form-select">
+                <option value="Todos">Todos</option>
+                <option value="Matemáticas">Matemáticas</option>
+                <option value="Historia">Historia</option>
+                <option value="Ciencia">Ciencia</option>
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label for="filter-grado" class="form-label">Grado</label>
+            <select id="filter-grado" class="form-select">
+                <option value="Todos">Todos</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+            </select>
+        </div>
+        <div class="col-md-4 d-flex align-items-end">
+            <button id="filter-button" class="btn btn-primary w-100">Filtrar</button>
+        </div>
+    </div>
+
+    <!-- Tabla de Estudiantes -->
+    <table class="table table-bordered table-striped">
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Materia</th>
+                <th>Grado</th>
+                <th>Nota</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody id="table-body">
+            <!-- Filas generadas dinámicamente con JavaScript -->
+        </tbody>
+    </table>
+</div>
+
+<!-- Modal para Editar Nota -->
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editModalLabel">Editar Nota</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="edit-id">
+                <div class="mb-3">
+                    <label for="edit-nota" class="form-label">Nueva Nota</label>
+                    <input type="number" class="form-control" id="edit-nota" min="0" max="100">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="save-button">Guardar Cambios</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extrajs %}
+<script>
+    // Datos de ejemplo
+    const students = [
+        { id: 1, nombre: 'Juan', materia: 'Matemáticas', grado: '10', nota: 85 },
+        { id: 2, nombre: 'Ana', materia: 'Historia', grado: '10', nota: 92 },
+        { id: 3, nombre: 'Luis', materia: 'Ciencia', grado: '9', nota: 78 },
+        { id: 4, nombre: 'Sofía', materia: 'Matemáticas', grado: '9', nota: 88 },
+        { id: 5, nombre: 'Pedro', materia: 'Historia', grado: '10', nota: 76 }
+    ];
+
+    // Función para mostrar estudiantes en la tabla
+    function displayStudents(data) {
+        const tableBody = $('#table-body');
+        tableBody.empty();
+        data.forEach(student => {
+            tableBody.append(`
+                <tr>
+                    <td>${student.id}</td>
+                    <td>${student.nombre}</td>
+                    <td>${student.materia}</td>
+                    <td>${student.grado}</td>
+                    <td>${student.nota}</td>
+                    <td><button class="btn btn-warning btn-sm edit-button" data-id="${student.id}" data-bs-toggle="modal" data-bs-target="#editModal">Editar Nota</button></td>
+                </tr>
+            `);
+        });
+    }
+
+    // Filtrar estudiantes por materia y grado
+    function filterStudents() {
+        const materia = $('#filter-materia').val();
+        const grado = $('#filter-grado').val();
+        const filtered = students.filter(student =>
+            (materia === 'Todos' || student.materia === materia) &&
+            (grado === 'Todos' || student.grado === grado)
+        );
+        displayStudents(filtered);
+    }
+
+    // Evento para abrir el modal de edición y cargar la nota actual
+    $(document).on('click', '.edit-button', function () {
+        const id = $(this).data('id');
+        const student = students.find(s => s.id === id);
+        $('#edit-id').val(student.id);
+        $('#edit-nota').val(student.nota);
+    });
+
+    // Guardar cambios en la nota
+    $('#save-button').on('click', function () {
+        const id = parseInt($('#edit-id').val());
+        const newNota = parseInt($('#edit-nota').val());
+        const student = students.find(s => s.id === id);
+        if (student && !isNaN(newNota)) {
+            student.nota = newNota;
+            filterStudents(); // Actualizar la tabla
+            $('#editModal').modal('hide'); // Cerrar el modal
+        }
+    });
+
+    // Eventos de filtro
+    $('#filter-button').on('click', filterStudents);
+
+    // Mostrar todos los estudiantes al cargar la página
+    $(document).ready(function () {
+        displayStudents(students);
+    });
+</script>
+
+{% endblock %}
+{% endblock %}

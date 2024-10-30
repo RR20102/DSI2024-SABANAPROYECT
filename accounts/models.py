@@ -92,7 +92,7 @@ class Estudiante(models.Model):
 class Asignacion(models.Model):
     docente = models.ForeignKey(Docente, on_delete=models.CASCADE, related_name='asignaciones')
     grado_seccion = models.ForeignKey(GradoSeccion, on_delete=models.CASCADE, related_name='asignaciones')
-
+    
     def __str__(self):
         return f"{self.docente.nombreDocente} - {self.grado_seccion.grado.nombreGrado} - {self.grado_seccion.seccion.nombreSeccion}"
 
