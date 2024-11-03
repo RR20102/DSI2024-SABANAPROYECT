@@ -1,0 +1,49 @@
+{% extends "accounts/templates/accounts/base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">Listar Conductas de Estudiantes</h1>
+
+    <form method="post" class="mb-4">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="grado">Selecciona un Grado:</label>
+            <select name="grado" id="grado" class="form-control" required>
+                <option value="">-- Selecciona un Grado --</option>
+                {% for grado in grados %}
+                    <option value="{{ grado.idGrado }}">{{ grado.nombreGrado }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Ver Conductas</button>
+    </form>
+
+    {% if conductas %}
+        <h2>Conductas Registradas</h2>
+        <table class="table table-bordered">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Estudiante</th>
+                    <th>Fecha de Conducta</th>
+                    <th>Observación</th>
+                    <th>Nota</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for conducta in conductas %}
+                    <tr>
+                        <td>{{ conducta.id_alumno.nombreAlumno }} {{ conducta.id_alumno.apellidoAlumno }}</td>
+                        <td>{{ conducta.fecha_conducta }}</td>
+                        <td>{{ conducta.obsevacion_conducta }}</td>
+                        <td>{{ conducta.nota_conducta }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="alert alert-info" role="alert">
+            No hay conductas registradas para este grado.
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

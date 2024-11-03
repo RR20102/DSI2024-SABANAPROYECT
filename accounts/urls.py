@@ -1,6 +1,7 @@
 from django.urls import path
 #from django.contrib import admin
-from . import views
+from . import views 
+from .views import registrar_conducta, registrar_conducta_detalle, listar_conductas
 from .views import registrar_estudiante, listar_estudiantes, editar_estudiante, registrar_asistencia, gestionar_asistencia,generar_reporte_asistencia, reporte_asistencia, asignarMaterias, agregar_horario, lista_horarios, ver_horarios, eliminar_horario, editar_horario, lista_docentes, ver_horarios_docente, horario_docente, horario_estudiante
 urlpatterns = [
     #Codio Login - Codigo Chritian
@@ -62,6 +63,10 @@ urlpatterns = [
     path('asistencia/eliminar/<int:id_asistencia>/', views.eliminar_asistencia, name='eliminar_asistencia'),
     path('asistencia/generar_reporte_asistencia/', views.generar_reporte_asistencia, name='generar_reporte_asistencia'),
     path('asistencia/reporte_asistencia/', views.reporte_asistencia, name='reporte_asistencia'),
-
-
+    
+    
+    #Registro de Conducta 
+    path('registrar_conducta/', registrar_conducta, name='registrar_conducta'),
+    path('registrar_conducta/<int:estudiante_id>/', registrar_conducta_detalle, name='registrar_conducta_detalle'),
+    path('listar-conductas/', listar_conductas, name='listar_conductas'),
 ]

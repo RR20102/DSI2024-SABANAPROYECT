@@ -4,7 +4,7 @@ import calendar
 
 
 #Codigo Daniel 
-from .models import Asignacion, Docente, GradoSeccion, Estudiante, Asistencia, MateriaGradoSeccion, DocenteMateriaGrado, TipoActividad, ActividadAcademica, NotaActividad
+from .models import Asignacion, Docente, GradoSeccion, Estudiante, Asistencia, MateriaGradoSeccion, DocenteMateriaGrado, TipoActividad, ActividadAcademica, NotaActividad, Conducta
 from django.contrib.auth.models import User
 
 #Codigo Christian 
@@ -384,3 +384,47 @@ class NotaActividadForm(forms.ModelForm):
         return nota
 
 
+
+#Registro de Conducta 
+class ConductaForm(forms.ModelForm):
+    class Meta:
+        model = Conducta
+        fields = ['fecha_conducta', 'obsevacion_conducta', 'nota_conducta']
+        widgets = {
+            'fecha_conducta': forms.DateInput(attrs={'type': 'date'}),
+            'obsevacion_conducta': forms.Textarea(attrs={'rows': 3, 'placeholder': 'Observación de la conducta...'}),
+            'nota_conducta': forms.NumberInput(attrs={'step': '0.1', 'placeholder': 'Ingrese la nota'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(ConductaForm, self).__init__(*args, **kwargs)
+        self.fields['fecha_conducta'].label = "Fecha de Conducta"
+        self.fields['obsevacion_conducta'].label = "Observación"
+        self.fields['nota_conducta'].label = "Nota"
+# class ConductaForm(forms.ModelForm):
+#     class Meta:
+#         model = Conducta
+#         fields = ['descripcion', 'fecha', 'observacion']
+#         labels = {
+#             'descripcion': 'Descripción de la Conducta',
+#             'fecha': 'Fecha',
+#             'observacion': 'Observación Adicional'
+#         }
+#         widgets = {
+#             'fecha': forms.DateInput(attrs={'type': 'date'})
+#         }
+
+# class ConductaForm(forms.ModelForm):
+#     class Meta:
+#         model = Conducta
+#         fields = ['id_alumno', 'fecha_conducta', 'obsevacion_conducta', 'nota_conducta']
+#         labels = {
+#             'id_alumno': 'Estudiante',
+#             'fecha_conducta': 'Fecha',
+#             'obsevacion_conducta': 'Observación',
+#             'nota_conducta': 'Nota de Conducta',
+#         }
+         
+#         widgets = {
+#             'fecha_conducta': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+#         }

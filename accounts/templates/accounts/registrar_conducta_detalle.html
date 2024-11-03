@@ -1,0 +1,28 @@
+{% extends "accounts/templates/accounts/base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2 class="mb-4 text-center">Registrar Conducta para {{ estudiante.nombreAlumno }} {{ estudiante.apellidoAlumno }}</h2>
+
+    <form method="POST" class="mb-4">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label for="fecha_conducta">Fecha de Conducta:</label>
+            <input type="date" name="fecha_conducta" class="form-control" required>
+        </div>
+
+        <div class="form-group">
+            <label for="observacion_conducta">Observación:</label>
+            <textarea name="observacion_conducta" class="form-control" required></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="nota_conducta">Nota:</label>
+            <input type="number" name="nota_conducta" step="0.1" class="form-control" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Registrar Conducta</button>
+    </form>
+</div>
+{% endblock %}

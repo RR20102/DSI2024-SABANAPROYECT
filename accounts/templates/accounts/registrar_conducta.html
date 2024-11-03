@@ -1,0 +1,42 @@
+{% extends "accounts/templates/accounts/base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2 class="mb-4 text-center">Seleccionar Sección</h2>
+
+    <form method="POST" class="mb-4">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="grado_seccion">Selecciona la Sección:</label>
+            <select name="grado_seccion" id="grado_seccion" class="form-control" onchange="this.form.submit()">
+                <option value="">--- Selecciona una sección ---</option>
+                {% for asignacion in asignaciones %}
+                    <option value="{{ asignacion.grado_seccion.id_gradoseccion }}"
+                        {% if grado_seccion_id == asignacion.grado_seccion.id_gradoseccion %}selected{% endif %}>
+                        {{ asignacion.grado_seccion }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+    </form>
+
+    {% if estudiantes %}
+        <h3 class="text-center">Estudiantes en la sección seleccionada:</h3>
+        <ul class="list-group mb-4">
+            {% for estudiante in estudiantes %}
+                <li class="list-group-item">
+                    {{ estudiante.nombreAlumno }} {{ estudiante.apellidoAlumno }}
+                    <a href="{% url 'registrar_conducta_detalle' estudiante.id_alumno %}" class="btn btn-link">Registrar Conducta</a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p class="text-center">No hay estudiantes en esta sección.</p>
+    {% endif %}
+
+    <!-- Botón para ir a listar conductas -->
+    <div class="text-center">
+        <a href="{% url 'listar_conductas' %}" class="btn btn-primary">Listar Conductas de Estudiantes</a>
+    </div>
+</div>
+{% endblock %}

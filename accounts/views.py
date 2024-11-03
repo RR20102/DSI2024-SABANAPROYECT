@@ -2,8 +2,8 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.core.paginator import Paginator
 from django.forms import modelformset_factory
 #Importacion de modelos de la base de datos - Codigo Daniel 
-from .models import Docente, Grado, Seccion, Asignacion, Estudiante, GradoSeccion, Asistencia, MateriaGradoSeccion, DocenteMateriaGrado, ActividadAcademica, NotaActividad, HorarioClase
-from .forms import AsignacionForm, EstudianteForm, AsistenciaForm, GradoSeccionForm, ReporteAsistenciaForm, MESES, DocenteMateriaGradoForm, ActividadAcademicaForm, NotaActividadForm, HorarioClaseForm
+from .models import Docente, Grado, Seccion, Asignacion, Estudiante, GradoSeccion, Asistencia, MateriaGradoSeccion, DocenteMateriaGrado, ActividadAcademica, NotaActividad, HorarioClase, Conducta
+from .forms import AsignacionForm, EstudianteForm, AsistenciaForm, GradoSeccionForm, ReporteAsistenciaForm, MESES, DocenteMateriaGradoForm, ActividadAcademicaForm, NotaActividadForm, HorarioClaseForm, ConductaForm
 from django.contrib import messages  # Importa messages
 from django.http import JsonResponse
 import json
@@ -1369,3 +1369,67 @@ def load_activities(request):
         })
     
     return JsonResponse(events, safe=False)
+
+
+
+#Registro de Conducta
+def registrar_conducta(request):
+    docente = request.user.docente  # Obtener el docente autenticado
+    asignaciones = Asignacion.objects.filter(docente=docente)
+
+    if request.method == 'POST':
+        grado_seccion_id = request.POST.get('grado_seccion')
+        estudiantes = Estudiante.objects.filter(id_gradoseccion_id=grado_seccion_id)
+    else:
+        grado_seccion_id = None
+        estudiantes = []
+
+    return render(request, 'accounts/registrar_conducta.html', {
+        'asignaciones': asignaciones,
+        'grado_seccion_id': grado_seccion_id,
+        'estudiantes': estudiantes,
+    })
+
+
+def registrar_conducta_detalle(request, estudiante_id):
+    estudiante = Estudiante.objects.get(id_alumno=estudiante_id)
+
+    if request.method == 'POST':
+        # Aquí debes manejar el registro de conducta, por ejemplo:
+        fecha_conducta = request.POST.get('fecha_conducta')
+        observacion_conducta = request.POST.get('observacion_conducta')
+        nota_conducta = request.POST.get('nota_conducta')
+
+        # Crea un nuevo registro de conducta
+        Conducta.objects.create(
+            id_alumno=estudiante,
+            fecha_conducta=fecha_conducta,
+            obsevacion_conducta=observacion_conducta,
+            nota_conducta=nota_conducta
+        )
+        return redirect('registrar_conducta')  # Redirige a la vista anterior
+
+    return render(request, 'accounts/registrar_conducta_detalle.html', {
+        'estudiante': estudiante,
+    })
+ 
+def listar_conductas(request):
+    conductas = None
+    grados = Grado.objects.all()  # Obtén todos los grados
+
+    if request.method == 'POST':
+        grado_id = request.POST.get('grado')  # Obtiene el grado seleccionado
+        if grado_id:
+            # Obtén las secciones asociadas al grado
+            secciones = GradoSeccion.objects.filter(grado_id=grado_id)
+            # Obtén los estudiantes asociados a las secciones del grado
+            estudiantes = Estudiante.objects.filter(id_gradoseccion__grado=grado_id)
+            # Obtén las conductas de los estudiantes
+            conductas = Conducta.objects.filter(id_alumno__in=estudiantes)
+
+    context = {
+        'grados': grados,
+        
+        'conductas': conductas,
+    }
+    return render(request, 'accounts/listar_conductas.html', context)
