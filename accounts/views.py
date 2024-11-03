@@ -123,7 +123,7 @@ def get_grupos(request):
     else:
         roles['es_est']=False
     return roles
-
+@login_required
 def profile(request):
     usuario = request.user
     contexto = get_grupos(request)
@@ -244,7 +244,7 @@ def registrar_docente(nombre, apellidos, correo_electronico, dui, genero, direcc
         return {'success': False, 'message': str(e)}
     except ValidationError as e:
         return {'success': False, 'message': str(e)}
-    
+
 def registrar_alumno(nombreAlumno, apellidoAlumno, gradoAlumno, edadAlumno, telefonoAlumno, nombreTutor, apellidoTutor, telTutor, duiTutor, dirTutor, edadTutor):
     
     try:
@@ -311,7 +311,7 @@ def registrar_alumno(nombreAlumno, apellidoAlumno, gradoAlumno, edadAlumno, tele
 
 
 #Codigo Menu administrador - Agregado por Daniel 
-
+@login_required
 def registrodocente(request):
     resultado = None
     
@@ -343,7 +343,7 @@ def registrodocente(request):
     return render(request, 'accounts/registrodocente.html',{'form': form})
 
 
-
+@login_required
 def visualizarasignaciondocente(request):
     asignaciones = Asignacion.objects.all()
     return render(request, 'accounts/visualizarasignaciondocente.html', {
@@ -423,7 +423,7 @@ def visualizarasignaciondocente(request):
     asignaciones = Asignacion.objects.all()
     return render(request, 'accounts/visualizarasignaciondocente.html', {'asignaciones': asignaciones})
 
-@login_required 
+ 
 @login_required
 def editarasignacion(request, id):
     asignacion = get_object_or_404(Asignacion, id=id)
@@ -680,7 +680,7 @@ def reporte_asistencia(request):
 # Vista para asignar Horarios de Clases Docentes y Estudiantes - Daniel SP2
 
 #from django.db.models import Q  # Para hacer búsquedas con múltiples campos
-
+@login_required
 def agregar_horario(request):
     if request.method == 'POST':
         form = HorarioClaseForm(request.POST)
@@ -724,7 +724,7 @@ def agregar_horario(request):
     
     return render(request, 'accounts/agregar_horario.html', {'form': form})
  
-
+@login_required
 def lista_horarios(request):
     # Obtener todos los DocenteMateriaGrado ordenados por grado
     docente_materias = DocenteMateriaGrado.objects.all().order_by('id_matrgrasec__id_gradoseccion__grado__nombreGrado')
@@ -748,7 +748,7 @@ def lista_horarios(request):
     })
 
      
-
+@login_required
 def ver_horarios(request, docente_materia_id):
     # Obtener el objeto DocenteMateriaGrado
     docente_materia = get_object_or_404(DocenteMateriaGrado, id_doc_mat_grado=docente_materia_id)
@@ -774,13 +774,13 @@ def ver_horarios(request, docente_materia_id):
         'horarios': horarios
     })
  
-
+@login_required
 def eliminar_horario(request, horario_id):
     horario = get_object_or_404(HorarioClase, id=horario_id)
     horario.delete()
     messages.success(request, "Horario eliminado con éxito.")
     return redirect('ver_horarios', docente_materia_id=horario.docente_materia_grado.id_doc_mat_grado)
-
+@login_required
 def editar_horario(request, horario_id):
     horario = get_object_or_404(HorarioClase, id=horario_id)
 
@@ -800,7 +800,7 @@ def editar_horario(request, horario_id):
         form = HorarioClaseForm(instance=horario)
 
     return render(request, 'accounts/editar_horario.html', {'form': form})
-
+@login_required
 def lista_docentes(request):
     # Obtener todos los docentes de la base de datos
     docentes = Docente.objects.all()
@@ -810,7 +810,7 @@ def lista_docentes(request):
     })
 
 
-
+@login_required
 def ver_horarios_docente(request, docente_dui):
     # Obtener el docente a través de su DUI
     docente = get_object_or_404(Docente, dui=docente_dui)
@@ -840,6 +840,7 @@ def ver_horarios_docente(request, docente_dui):
     
     
 #Vista para docente especficamnente 
+@login_required
 def horario_docente(request):
     # Obtener el docente asociado al usuario autenticado
     docente = get_object_or_404(Docente, user=request.user)
@@ -866,6 +867,7 @@ def horario_docente(request):
     })
     
 #Vista para estudiantes especificamente 
+@login_required
 def horario_estudiante(request):
     # Obtener el estudiante que está autenticado
     estudiante = get_object_or_404(Estudiante, user=request.user)
@@ -881,7 +883,7 @@ def horario_estudiante(request):
         'horarios': horarios
     })
 
-
+@login_required
 def listar_materias(request):
     grado_id = request.GET.get('grado', 'todos')
     page_number = request.GET.get('page', 1)  # Manejo de paginación
@@ -897,7 +899,7 @@ def listar_materias(request):
     grados = GradoSeccion.objects.all().order_by('grado')  # Asegúrate de tener tu modelo correcto
 
     return render(request, 'accounts/listar_materias.html', {'page_materia' : page_materia, 'grados': grados, 'selected_grado': grado_id})
-
+@login_required
 def asignarMaterias(request):
     formd = DocenteMateriaGradoForm()
     if request.method == 'POST':
@@ -922,7 +924,7 @@ def asignarMaterias(request):
             messages.error(request, f"La Asignación de las Materias: {mat_no_asig} ya exite")
          
     return render(request, 'accounts/asignar_materias.html', {'formd' : formd})
-
+@login_required
 def calendario(request):
      # Suponiendo que el docente se obtiene del usuario autenticado
     docente = Docente.objects.get(user=request.user)
@@ -951,7 +953,7 @@ def obtener_actividades(request):
         })
     
     return JsonResponse(eventos, safe=False)
-
+@login_required
 def editar_actividad(request, id):
     actividad = get_object_or_404(ActividadAcademica, id_actividad=id)
     docente = Docente.objects.get(user=request.user)
