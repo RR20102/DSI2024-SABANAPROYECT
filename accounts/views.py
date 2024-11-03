@@ -1162,7 +1162,7 @@ def reporte_notas(request):
                 notas = [datos['promedio_tarea'], datos['nota_examen'], datos['nota_tarea_integradora']]
                 notas = [nota for nota in notas if nota is not None]
                 if notas:
-                    datos['promedio_final'] = sum(notas) / len(notas)
+                    datos['promedio_final'] = round(sum(notas) / len(notas),2)
 
     return render(request, 'accounts/reporte_notas.html', {
         'actividades_por_año_mes_y_materia': actividades_por_año_mes_y_materia,
