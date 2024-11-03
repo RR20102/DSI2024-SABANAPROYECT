@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django import template
-from django.core.validators import RegexValidator
+from django.core.validators import RegexValidator, MinValueValidator, MaxValueValidator
 
 # Create your models here.
 register = template.Library()
@@ -144,7 +144,7 @@ class Conducta(models.Model):
 
 class ActividadAcademica(models.Model):
     id_actividad = models.AutoField(primary_key=True, unique=True, null=False)
-    id_tipoactividad = models.ForeignKey(TipoActividad, on_delete=models.RESTRICT, unique=True, null=False)
+    id_tipoactividad = models.ForeignKey(TipoActividad, on_delete=models.RESTRICT, null=False)
     id_matrgrasec = models.ForeignKey(MateriaGradoSeccion, on_delete=models.RESTRICT)
     nombre_actividad = models.CharField(max_length=25)
     descripcion_actividad = models.CharField(max_length=50)

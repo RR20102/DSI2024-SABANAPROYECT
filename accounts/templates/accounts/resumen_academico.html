@@ -1,0 +1,103 @@
+{% extends "accounts/templates/accounts/base.html" %}
+{% block title %}SABANA - Resumen Academico {% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+
+
+{% endblock %}
+{% block content %}
+{% load tags %}
+{% load static %}
+{% load widget_tweaks %}
+
+<div class="container my-5">
+    <h1 class="title has-text-centered">Resumen Academico</h1>
+
+    <h3 class="subtitle ">Nombre de la Escuela: <strong>Centro Escolar Jardines de La Sabana</strong></h3>
+    <h4 class="subtitle">Estudiante: <strong>{{ request.user.estudiante.nombreAlumno }} {{ request.user.estudiante.apellidoAlumno }}</strong></h4>
+    <h4 class="subtitle">Grado: <strong>{{ request.user.estudiante.id_gradoseccion }}</strong></h4>
+    <h4 class="subtitle">Docente: <strong>{{ docente.nombreDocente }} {{ docente.apellidoDocente }}</strong></h4>
+
+    <table class="table is-striped is-bordered is-hoverable">
+        <thead>
+            <tr>
+                <th>Materia</th>
+                {% for mes in meses_nombres %}
+                    <th>{{ mes }}</th>
+                {% endfor %}
+                <th>Promedio Final</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for materia_id, datos in resumen.items %}
+                <tr>
+                    <td>{{ datos.nombre }}</td>
+                    {% for mes_num in meses_numeros %}
+                        <td class="has-text-centered">
+                            {% if datos.promedios|dict_key:mes_num %}
+                                {{ datos.promedios|dict_get:mes_num|floatformat:2 }}
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        </td>
+                    {% endfor %}
+                    <td class="has-text-centered">
+                        {% if datos.promedio_final %}
+                            {{ datos.promedio_final|floatformat:2 }}
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    
+    <form id="pdfForm" action="{% url 'boleta_pdf' %}" method="get">
+        {% csrf_token %}
+        <button type="submit" id="generar-pdf" class="btn btn-primary">Descargar Boleta en PDF</button>
+        <a href="{% url 'home' %}" class="btn btn-secondary">Regresar</a>
+    </form>
+
+    
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    $(document).ready(function() {
+        $('#pdfForm').on('submit', function(e) {
+            e.preventDefault(); // Prevenir el envío normal del formulario
+
+            // Enviar el formulario usando AJAX
+            $.ajax({
+                type: 'GET',
+                url: $(this).attr('action'),
+                data: $(this).serialize(),
+                success: function(response) {
+                    // Mostrar alerta de éxito
+                    Swal.fire({
+                        title: 'Éxito',
+                        text: 'Boleta generada con éxito.',
+                        icon: 'success'
+                    });
+
+                    // Redirigir a la descarga del PDF
+                    window.location.href = "{% url 'boleta_pdf' %}"; // Asegúrate de tener esta URL
+                },
+                error: function(xhr) {
+                    // Manejo de errores
+                    swal("Error", "Ocurrió un error al generar el PDF.", "error");
+                }
+            });
+        });
+    });
+   
+</script>
+
+
+
+
+
+
+{% endblock %}

@@ -131,7 +131,7 @@
                         <div class="card-body">
                             <h5 class="card-title">Ver Notas Académicas</h5>
                             <p class="card-text">Consulta tus calificaciones y desempeño académico.</p>
-                            <a href="#" class="btn btn-primary">Ir a Notas Académicas</a>
+                            <a href="{% url 'reporte_notas' %}" class="btn btn-primary">Ir a Notas Académicas</a>
                         </div>
                     </div>
                 </div>
@@ -140,7 +140,7 @@
                         <div class="card-body">
                             <h5 class="card-title">Resumen Académico</h5>
                             <p class="card-text">Obtén un resumen detallado de tu progreso académico.</p>
-                            <a href="#" class="btn btn-secondary">Ir a Resumen Académico</a>
+                            <a href="{% url 'resumen_academico' %}" class="btn btn-secondary">Ir a Resumen Académico</a>
                         </div>
                     </div>
                 </div>
@@ -149,7 +149,7 @@
                         <div class="card-body">
                             <h5 class="card-title">Calendario Académico</h5>
                             <p class="card-text">Consulta las fechas importantes del calendario académico.</p>
-                            <a href="#" class="btn btn-success">Ir a Calendario Académico</a>
+                            <a href="{% url 'calendar_est' %}" class="btn btn-success">Ir a Calendario Académico</a>
                         </div>
                     </div>
                 </div>
@@ -183,58 +183,63 @@
 <div class="container my-4">
   
     <!-- Fila para mostrar los acordeones en paralelo -->
-    <div class="row">
+    <div class="container my-4">
+  
+        <!-- Fila para mostrar los acordeones en paralelo -->
+        <div class="row">
+          
+          <!-- Columna para el acordeón de Materias -->
+          <div class="col-md-6">
+            <div class="accordion mb-4" id="accordionMaterias">
+              <div class="accordion-item">
+                <h2 class="accordion-header" id="headingMaterias">
+                  <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseMaterias" aria-expanded="true" aria-controls="collapseMaterias">
+                    Materias Asignadas
+                  </button>
+                </h2>
+                <div id="collapseMaterias" class="accordion-collapse collapse show" aria-labelledby="headingMaterias" data-bs-parent="#accordionMaterias">
+                  <div class="accordion-body">
+                    <ul class="list-group list-group-flush mb-3">
+                      {% for materia in materias_asignadas %}
+                        <li class="list-group-item">{{ materia.id_matrgrasec }}</li>  <!-- Revisa que este campo sea correcto -->
+                      {% empty %}
+                        <li class="list-group-item">No hay materias asignadas</li>
+                      {% endfor %}
+                    </ul>
+                    <button class="btn btn-outline-primary">Ver menos</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
       
-      <!-- Columna para el acordeón de Materias -->
-      <div class="col-md-6">
-        <div class="accordion mb-4" id="accordionMaterias">
-          <div class="accordion-item">
-            <h2 class="accordion-header" id="headingMaterias">
-              <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseMaterias" aria-expanded="true" aria-controls="collapseMaterias">
-                Materias Asignadas
-              </button>
-            </h2>
-            <div id="collapseMaterias" class="accordion-collapse collapse show" aria-labelledby="headingMaterias" data-bs-parent="#accordionMaterias">
-              <div class="accordion-body">
-                <ul class="list-group list-group-flush mb-3">
-                  <li class="list-group-item">Matemáticas</li>
-                  <li class="list-group-item">Ciencias Naturales</li>
-                  <li class="list-group-item">Historia</li>
-                  <li class="list-group-item">Educación Física</li>
-                </ul>
-                <button class="btn btn-outline-primary">Ver menos</button>
+          <!-- Columna para el acordeón de Grados -->
+          <div class="col-md-6">
+            <div class="accordion mb-4" id="accordionGrados">
+              <div class="accordion-item">
+                <h2 class="accordion-header" id="headingGrados">
+                  <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseGrados" aria-expanded="true" aria-controls="collapseGrados">
+                    Grados Asignados
+                  </button>
+                </h2>
+                <div id="collapseGrados" class="accordion-collapse collapse show" aria-labelledby="headingGrados" data-bs-parent="#accordionGrados">
+                  <div class="accordion-body">
+                    <ul class="list-group list-group-flush mb-3">
+                      {% for grado_seccion in grados_seccion_asignados %}
+                        <li class="list-group-item">{{ grado_seccion }}</li>  <!-- Esto mostrará el formato definido en __str__ -->
+                      {% empty %}
+                        <li class="list-group-item">No hay grados asignados</li>
+                      {% endfor %}
+                    </ul>
+                    <button class="btn btn-outline-primary">Ver menos</button>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
+      
         </div>
-      </div>
-  
-      <!-- Columna para el acordeón de Grados -->
-      <div class="col-md-6">
-        <div class="accordion mb-4" id="accordionGrados">
-          <div class="accordion-item">
-            <h2 class="accordion-header" id="headingGrados">
-              <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseGrados" aria-expanded="true" aria-controls="collapseGrados">
-                Grados Asignados
-              </button>
-            </h2>
-            <div id="collapseGrados" class="accordion-collapse collapse show" aria-labelledby="headingGrados" data-bs-parent="#accordionGrados">
-              <div class="accordion-body">
-                <ul class="list-group list-group-flush mb-3">
-                  <li class="list-group-item">Primero de Secundaria</li>
-                  <li class="list-group-item">Segundo de Secundaria</li>
-                  <li class="list-group-item">Tercero de Secundaria</li>
-                  <li class="list-group-item">Cuarto de Secundaria</li>
-                </ul>
-                <button class="btn btn-outline-primary">Ver menos</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-  
     </div>
-  </div>
   
     <div class="container">
         <div class="container">
@@ -244,7 +249,7 @@
                         <div class="card-body">
                             <h5 class="card-title">Notas Actividades Académicas</h5>
                             <p class="card-text">Consulta y registra las calificaciones de las actividades académicas.</p>
-                            <a href="#" class="btn btn-primary">Ir a Notas Actividades Académicas</a>
+                            <a href="{% url 'notas_estudiantes' %}" class="btn btn-primary">Ir a Notas Actividades Académicas</a>
                         </div>
                     </div>
                 </div>
