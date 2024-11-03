@@ -1,0 +1,91 @@
+{% extends "accounts/templates/accounts/base.html" %}
+{% block title %}SABANA - Reporte de Notas {% endblock %}
+
+{% block content %}
+{% load tags %}
+{% load static %}
+{% load widget_tweaks %}
+
+<div class="container mt-4">
+    <h1>Reporte de Notas por Materia</h1>
+
+    <form method="get" class="mb-4">
+        <div class="row">
+            <div class="col">
+                <label for="mes">Selecciona el Mes:</label>
+                <select name="mes" id="mes" class="form-select">
+                    <option value="">Todos los Meses</option>
+                    {% for mes in meses_disponibles %}
+                        <option value="{{ mes.0 }}" {% if mes.0 == mes_seleccionado %}selected{% endif %}>
+                            {{ mes.1 }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col">
+                <label for="year">Selecciona el Año:</label>
+                <select name="year" id="year" class="form-select">
+                    <option value="">Todos los Años</option>
+                    {% for año in años_disponibles %}
+                        <option value="{{ año }}" {% if año == year_seleccionado %}selected{% endif %}>
+                            {{ año }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-auto align-self-end">
+                <button type="submit" class="btn btn-primary">Filtrar</button>
+            </div>
+        </div>
+    </form>
+
+    {% if actividades_por_año_mes_y_materia %}
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Año</th>
+                <th>Mes</th>
+                <th>Materia</th>
+                <th>Notas</th>
+                <th>Promedio de Tareas</th>
+                <th>Nota del Examen</th>
+                <th>Nota de Tarea Integradora</th>
+                <th>Promedio Final</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for año, meses in actividades_por_año_mes_y_materia.items %}
+                {% for mes, materias in meses.items %}
+                    {% for materia, datos in materias.items %}
+                        <tr>
+                            <td>{{ año }}</td>
+                            <td>{{ mes|get_mes }}</td>
+                            <td>{{ materia }}</td>
+                            <td>
+                                <ul>
+                                    {% for nota in datos.notas %}
+                                        <li>Actividad: {{ nota.id_actividad.nombre_actividad }} - Nota: {{ nota.nota }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </td>
+                            <td>{{ datos.promedio_tarea|default:"N/A" }}</td>
+                            <td>{{ datos.nota_examen|default:"N/A" }}</td>
+                            <td>{{ datos.nota_tarea_integradora|default:"N/A" }}</td>
+                            <td>{{ datos.promedio_final|default:"N/A" }}</td>
+                        </tr>
+                    {% endfor %}
+                {% endfor %}
+            {% endfor %}
+        </tbody>
+    </table>
+    <div class="btn-group">
+        <a href="{% url 'home' %}" class="btn btn-secondary">Regresar</a>
+    </div>
+    {% else %}
+        <div class="alert alert-info" role="alert">
+            No hay notas disponibles para el periodo seleccionado.
+        </div>
+    {% endif %}
+</div>
+
+{% endblock %}

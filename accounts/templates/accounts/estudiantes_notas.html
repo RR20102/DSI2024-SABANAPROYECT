@@ -1,0 +1,94 @@
+{% extends "accounts/templates/accounts/base.html" %}
+{% block title %}SABANA - Estudiantes {% endblock %}
+
+{% block content %}
+{% load tags %}
+{% load static %}
+{% load widget_tweaks %}
+
+<div class="container-fluid">
+    <div class="row">
+        <!-- Barra lateral -->
+        <div class="col-md-3 bg-light sidebar">
+            <h4 class="pt-3">Materias Asignadas</h4>
+            <ul class="list-group">
+                {% for asignacion in asignaciones %}
+                    
+                        <a href="?materia_id={{ asignacion.id }}" class="list-group-item list-group-item-action {% if materia_seleccionada_id == asignacion.id %}active{% endif %}">
+                            {{ asignacion.nombre_materia }}
+                        </a>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <!-- Contenido principal -->
+        <div class="col-md-9">
+            <h3 class="mt-3">Lista de Estudiantes</h3>
+            <table class="table table-bordered mt-3">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Apellido</th>
+                        <th>Edad</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for estudiante in estudiantes %}
+                    <tr>
+                        <td>{{ estudiante.id_alumno }}</td>
+                        <td>{{ estudiante.nombreAlumno }}</td>
+                        <td>{{ estudiante.apellidoAlumno }}</td>
+                        <td>{{ estudiante.edadAlumno }}</td>
+                        <td>
+                            <form method="get" action="{% url 'editar_nota' estudiante.id_alumno materia_seleccionada_id %}" onchange="updateYear()">
+                                <select id="mes" name="mes" class="form-select-sm">
+                                    {% for mes in meses_con_actividades %}
+                                        <option value="{{ mes.numero }}"  data-year="{{ mes.year }}" {% if forloop.first %}selected {% endif %}>{{ mes.nombre }} - {{ mes.year }}</option>
+                                    {% endfor %}
+                                </select>
+                            
+                                <input type="hidden" name="year" id= "year" value="{{ meses_con_actividades.0.year }}">
+                                <button type="submit" class="btn btn-warning btn-sm">Editar Notas</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center">Seleccione una materia para ver los estudiantes.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function updateYear() {
+        const select = document.getElementById('mes');
+        const selectedOption = select.options[select.selectedIndex];
+        document.getElementById('year').value = selectedOption.getAttribute('data-year');
+    }
+
+    window.onload = function() {
+    updateYear();
+};
+
+    document.addEventListener('DOMContentLoaded', function () {
+        {% if messages %}
+            {% for message in messages %}
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Éxito',
+                    text: '{{ message }}',
+                    confirmButtonText: 'OK'
+                });
+            {% endfor %}
+        {% endif %}
+    });
+
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+{% endblock %}

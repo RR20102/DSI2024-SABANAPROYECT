@@ -1,8 +1,9 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.core.paginator import Paginator
+from django.forms import modelformset_factory
 #Importacion de modelos de la base de datos - Codigo Daniel 
-from .models import Docente, Grado, Seccion, Asignacion, Estudiante, GradoSeccion, Asistencia, MateriaGradoSeccion, DocenteMateriaGrado, ActividadAcademica, HorarioClase
-from .forms import AsignacionForm, EstudianteForm, AsistenciaForm, GradoSeccionForm, ReporteAsistenciaForm, MESES, DocenteMateriaGradoForm, ActividadAcademicaForm, HorarioClaseForm
+from .models import Docente, Grado, Seccion, Asignacion, Estudiante, GradoSeccion, Asistencia, MateriaGradoSeccion, DocenteMateriaGrado, ActividadAcademica, NotaActividad, HorarioClase
+from .forms import AsignacionForm, EstudianteForm, AsistenciaForm, GradoSeccionForm, ReporteAsistenciaForm, MESES, DocenteMateriaGradoForm, ActividadAcademicaForm, NotaActividadForm, HorarioClaseForm
 from django.contrib import messages  # Importa messages
 from django.http import JsonResponse
 import json
@@ -13,6 +14,7 @@ from datetime import datetime
 
 #Codigo Christian 
 from django.contrib.auth import authenticate, login, logout
+from django.template.loader import render_to_string
 from django.contrib.auth.models import User, Group
 from django.http import HttpResponse
 from django.contrib import messages
@@ -23,9 +25,24 @@ from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.db import IntegrityError
 from django.core.exceptions import ValidationError
+from django.db.models import Avg , F
 from smtplib import SMTPException
 import random
 import string
+from django.db.models.functions import ExtractMonth, ExtractYear
+from django.utils import timezone
+import calendar
+from datetime import datetime
+
+from reportlab.lib.pagesizes import letter, landscape
+from reportlab.pdfgen import canvas
+from reportlab.lib import colors
+from reportlab.platypus import Table, TableStyle
+
+from .formsets import NotaActividadFormSet
+
+
+
 
 #Login Codigo Christian 
 def login_view(request):
@@ -63,6 +80,15 @@ def home(request):
     
     if 'Docente' in group_names:
         contexto['es_docente'] =True
+        docente = request.user.docente  
+
+        materias_asignadas = DocenteMateriaGrado.objects.filter(dui=docente).select_related('id_matrgrasec')
+        asignaciones = Asignacion.objects.filter(docente=docente)
+        # Obtener grados y secciones asignados
+        grados_seccion_asignados = [asignacion.grado_seccion for asignacion in asignaciones]
+        
+        contexto['materias_asignadas']=materias_asignadas
+        contexto['grados_seccion_asignados']=grados_seccion_asignados
     else:
         contexto['es_docente']=False
 
@@ -905,6 +931,7 @@ def calendario(request):
         form = ActividadAcademicaForm(request.POST, docente=docente)
         if form.is_valid():
             form.save()
+            print('formulario saved')
             return redirect('calendario')  # Redirigir a la lista de actividades
     else:
         form = ActividadAcademicaForm(docente=docente)
@@ -934,9 +961,411 @@ def editar_actividad(request, id):
             form.save()
             return JsonResponse({'success': True})  # Respuesta exitosa para el AJAX
         else:
-            # Respuesta con errores del formulario
-            return JsonResponse({'success': False, 'errors': form.errors}, status=400)
+            # Extraer etiquetas de los campos con errores
+            field_errors = form.errors # Ahora usaremos 'field_errors'
+            field_labels = {field: form.fields[field].label for field in form.fields}
+            # Responder con JSON que incluye errores y etiquetas
+            return JsonResponse({
+                'success': False,
+                'errors': field_errors,  # Usamos field_errors aquí
+                'labels': field_labels
+            }, status=400)
     else:
         form = ActividadAcademicaForm(instance=actividad, docente=docente)
 
     return render(request, 'accounts/editar_actividad_form.html', {'form': form, 'actividad': actividad})
+@login_required
+def notas_estudiantes(request):
+    # Obtener las materias asignadas al docente autenticado
+    asignaciones = DocenteMateriaGrado.objects.filter(dui=request.user.docente.dui).select_related(
+        'id_matrgrasec__id_materia', 'id_matrgrasec__id_gradoseccion'
+    )
+
+    # Construir una lista de asignaciones con el ID de `id_matrgrasec` incluido
+    asignaciones_con_id = [
+        {
+            'id': asignacion.id_matrgrasec.id_matrgrasec,
+            'nombre_materia': f"{asignacion.id_matrgrasec.id_materia.nombre_materia} - "
+                              f"{asignacion.id_matrgrasec.id_gradoseccion.grado.nombreGrado} - "
+                              f"{asignacion.id_matrgrasec.id_gradoseccion.seccion.nombreSeccion}"
+        }
+        for asignacion in asignaciones
+    ]
+
+    # Obtener estudiantes y preparar el contexto
+    materia_seleccionada_id = request.GET.get('materia_id')
+    if materia_seleccionada_id:
+        materia_seleccionada_id = int(materia_seleccionada_id)
+    estudiantes = []
+    meses_con_actividades = []
+    if materia_seleccionada_id:
+        materia_grado_seccion = get_object_or_404(MateriaGradoSeccion, id_matrgrasec=materia_seleccionada_id)
+        gradoseccion = materia_grado_seccion.id_gradoseccion
+        estudiantes = Estudiante.objects.filter(id_gradoseccion=gradoseccion)
+
+        actividades = ActividadAcademica.objects.filter(id_matrgrasec=materia_grado_seccion) \
+               .annotate(
+                   month=ExtractMonth('fecha_actividad'),
+                   year=ExtractYear('fecha_actividad')
+               ) \
+               .values('month', 'year') \
+               .distinct()
+        meses_con_actividades = []
+        for actividad in actividades:
+            month = actividad['month']
+            year = actividad['year']
+            # Comprobar si el mes ya está en la lista de meses_con_actividades
+            if month and month not in [m['numero'] for m in meses_con_actividades]:
+                meses_con_actividades.append({
+                    'numero': month,
+                    'nombre': calendar.month_name[month].capitalize(),
+                    'year': year
+                })
+
+        # Resultado de meses_con_actividades
+       
+    # Obtener el año actual
+    año_actual = timezone.now().year
+
+    # Convertir los meses en una lista ordenada
+
+    return render(request, 'accounts/estudiantes_notas.html', {
+        'asignaciones': asignaciones_con_id,
+        'estudiantes': estudiantes,
+        'materia_seleccionada_id': materia_seleccionada_id,
+        'meses_con_actividades': meses_con_actividades,
+        'año_actual': año_actual,
+    })
+    
+@login_required
+def editar_nota(request, estudiante_id, materia_id):
+    # Cargar estudiante y materia_grado_seccion
+    estudiante = get_object_or_404(Estudiante, id_alumno=estudiante_id)
+    materia_grado_seccion = get_object_or_404(MateriaGradoSeccion, id_matrgrasec=materia_id)
+
+    mes = request.GET.get('mes')
+    year = request.GET.get('year')
+
+    actividades = ActividadAcademica.objects.filter(
+        id_matrgrasec=materia_grado_seccion,
+    ).annotate(
+        month=ExtractMonth('fecha_actividad'),
+        year=ExtractYear('fecha_actividad')
+    ).filter(
+        month=mes,
+        year=year
+    )
+
+    for actividad in actividades:
+        NotaActividad.objects.get_or_create(id_alumno=estudiante, id_actividad=actividad, defaults={'nota': 0})
+
+    # Asegúrate de que esto devuelva un QuerySet
+    notas = NotaActividad.objects.filter(id_alumno=estudiante, id_actividad__in=actividades)
+
+    # Crear el FormSet con el queryset de notas
+    formset = NotaActividadFormSet(queryset=notas)
+
+    # Si es un POST, procesamos los datos enviados
+    if request.method == 'POST':
+        formset = NotaActividadFormSet(request.POST, queryset=notas)
+
+        if formset.is_valid():
+            formset.save()
+            messages.success(request, 'Notas guardadas con éxito.')
+            return redirect('notas_estudiantes')
+        else:
+            print(formset.errors)  # Para depuración, muestra los errores de validación en consola
+
+    # Enviar el FormSet completo a la plantilla
+    return render(request, 'accounts/editar_notas.html', {
+        'estudiante': estudiante,
+        'materia': materia_grado_seccion,
+        'formset': formset,
+        'mes': calendar.month_name[int(mes)],
+        'year': year
+    })
+@login_required
+def reporte_notas(request):
+    estudiante = request.user.estudiante  # Obtiene el estudiante del usuario logueado
+
+    # Obtener el mes y el año seleccionados en la consulta GET
+    mes_seleccionado = request.GET.get('mes')
+    año_seleccionado = request.GET.get('year')
+
+    # Filtrar las actividades y notas del estudiante
+    actividades_notas = NotaActividad.objects.filter(
+        id_alumno=estudiante
+    ).annotate(
+        mes=ExtractMonth('id_actividad__fecha_actividad'),
+        año=ExtractYear('id_actividad__fecha_actividad')
+    )
+
+    # Filtrar por el mes y el año seleccionados, si se especificó
+    if mes_seleccionado and año_seleccionado:
+        actividades_notas = actividades_notas.filter(mes=mes_seleccionado, año=año_seleccionado)
+
+    # Obtener los meses y años disponibles
+    meses_disponibles = actividades_notas.values_list('mes', flat=True).distinct()
+    años_disponibles = actividades_notas.values_list('año', flat=True).distinct()
+
+    # Calcular promedios por materia, mes y año
+    actividades_por_año_mes_y_materia = {}
+
+    # Filtrar las actividades de tipo "Tarea"
+    actividades_tarea = actividades_notas.filter(id_actividad__id_tipoactividad_id=101)
+
+    # Agrupar notas por materia
+    for actividad in actividades_notas:
+        materia = actividad.id_actividad.id_matrgrasec.id_materia
+        mes = actividad.mes
+        año = actividad.año
+
+        if año not in actividades_por_año_mes_y_materia:
+            actividades_por_año_mes_y_materia[año] = {}
+
+        if mes not in actividades_por_año_mes_y_materia[año]:
+            actividades_por_año_mes_y_materia[año][mes] = {}
+
+        if materia not in actividades_por_año_mes_y_materia[año][mes]:
+            actividades_por_año_mes_y_materia[año][mes][materia] = {
+                'notas': [],
+                'promedio_tarea': None,
+                'nota_examen': None,
+                'nota_tarea_integradora': None,
+                'promedio_final': None,
+            }
+
+        actividades_por_año_mes_y_materia[año][mes][materia]['notas'].append(actividad)
+
+    # Calcular promedios
+    for año, meses in actividades_por_año_mes_y_materia.items():
+        for mes, materias in meses.items():
+            for materia, datos in materias.items():
+                # Calcular promedio de actividades tipo Tarea
+                tareas = actividades_tarea.filter(id_actividad__id_matrgrasec__id_materia=materia, mes=mes, año=año)
+                if tareas.exists():
+                    promedio_tarea = tareas.aggregate(promedio=Avg('nota'))['promedio']
+                    datos['promedio_tarea'] = promedio_tarea
+
+                # Obtener notas del examen y tarea integradora
+                examen = actividades_notas.filter(id_actividad__id_tipoactividad_id=1, id_actividad__id_matrgrasec__id_materia=materia, mes=mes, año=año).first()
+                tarea_integradora = actividades_notas.filter(id_actividad__id_tipoactividad_id=201, id_actividad__id_matrgrasec__id_materia=materia, mes=mes, año=año).first()
+
+                if examen:
+                    datos['nota_examen'] = examen.nota
+                if tarea_integradora:
+                    datos['nota_tarea_integradora'] = tarea_integradora.nota
+
+                # Calcular promedio final
+                notas = [datos['promedio_tarea'], datos['nota_examen'], datos['nota_tarea_integradora']]
+                notas = [nota for nota in notas if nota is not None]
+                if notas:
+                    datos['promedio_final'] = sum(notas) / len(notas)
+
+    return render(request, 'accounts/reporte_notas.html', {
+        'actividades_por_año_mes_y_materia': actividades_por_año_mes_y_materia,
+        'meses_disponibles': [(mes, calendar.month_name[mes]) for mes in sorted(meses_disponibles)],
+        'años_disponibles': sorted(años_disponibles),
+        'mes_seleccionado': int(mes_seleccionado) if mes_seleccionado else None,
+        'year_seleccionado': int(año_seleccionado) if año_seleccionado else None,
+    })
+
+@login_required
+def resumen_academico(request):
+    estudiante = request.user.estudiante  # Suponiendo que tenemos el estudiante desde el usuario logueado
+    año_actual = datetime.now().year
+    asignaciones = Asignacion.objects.filter(grado_seccion=estudiante.id_gradoseccion)
+    docente= asignaciones.first().docente if asignaciones.exists() else None
+
+    resumen = {}  # Estructura: {materia_id: {'nombre': str, 'promedios': {1: float, 2: float, ...}, 'promedio_final': float}}
+    
+    for materia in MateriaGradoSeccion.objects.filter(id_gradoseccion=estudiante.id_gradoseccion):
+        # Inicializa la estructura de la materia en el resumen
+        resumen[materia.id_matrgrasec] = {
+            'nombre': materia.id_materia.nombre_materia,  # Nombre de la materia
+            'promedios': {mes: None for mes in range(1, 13)},  # Espacio para cada mes
+            'promedio_final': None
+        }
+        
+        # Calcular los promedios de cada mes
+        for mes in range(1, 13):
+            # Filtrar notas del estudiante, materia, año y mes actual
+            notas_mes = NotaActividad.objects.filter(
+                id_alumno=estudiante,
+                id_actividad__id_matrgrasec=materia,
+                id_actividad__fecha_actividad__year=año_actual,
+                id_actividad__fecha_actividad__month=mes
+            )
+            
+            # Calcular el promedio de las tareas
+            promedio_tareas = notas_mes.filter(id_actividad__id_tipoactividad=101).aggregate(promedio=Avg('nota'))['promedio']
+            
+            # Obtener las notas de "Examen" y "Tarea Integradora" si existen
+            nota_examen = notas_mes.filter(id_actividad__id_tipoactividad=1).first()
+            nota_integradora = notas_mes.filter(id_actividad__id_tipoactividad=201).first()
+            
+            # Sumar el promedio de tareas y las notas de Examen e Integradora
+            notas_sumadas = [promedio_tareas if promedio_tareas else 0]
+            if nota_examen:
+                notas_sumadas.append(nota_examen.nota)
+            if nota_integradora:
+                notas_sumadas.append(nota_integradora.nota)
+
+            # Calcular el promedio mensual solo si hay notas disponibles
+            if notas_sumadas:
+                promedio_mes = sum(notas_sumadas) / len(notas_sumadas)
+                resumen[materia.id_matrgrasec]['promedios'][mes] = promedio_mes
+        
+        # Calcular el promedio anual de la materia
+        promedios_validos = [
+            promedio for promedio in resumen[materia.id_matrgrasec]['promedios'].values() if promedio is not None
+        ]
+        resumen[materia.id_matrgrasec]['promedio_final'] = sum(promedios_validos) / len(promedios_validos) if promedios_validos else None
+
+    # Pasar los nombres de los meses para el template
+    meses_nombres = [calendar.month_name[i] for i in range(1, 13)]
+    meses_numeros = list(range(1, 13))  # Generar lista de números de 1 a 12
+    return render(request, 'accounts/resumen_academico.html', {
+        'resumen': resumen,
+        'meses_nombres': meses_nombres,
+        'meses_numeros': meses_numeros,
+        'estudiante': estudiante,
+        'docente': docente
+    })
+
+@login_required
+def boleta_pdf(request):
+    # Obtener el estudiante y el docente desde el usuario logueado
+    estudiante = request.user.estudiante
+    año_actual = datetime.now().year
+    asignaciones = Asignacion.objects.filter(grado_seccion=estudiante.id_gradoseccion)
+    docente = asignaciones.first().docente if asignaciones.exists() else None
+
+    # Calcular el resumen académico (reutilizamos la lógica de la función resumen_academico)
+    resumen = {}
+    for materia in MateriaGradoSeccion.objects.filter(id_gradoseccion=estudiante.id_gradoseccion):
+        resumen[materia.id_matrgrasec] = {
+            'nombre': materia.id_materia.nombre_materia,
+            'promedios': {mes: None for mes in range(1, 13)},
+            'promedio_final': None
+        }
+        
+        for mes in range(1, 13):
+            notas_mes = NotaActividad.objects.filter(
+                id_alumno=estudiante,
+                id_actividad__id_matrgrasec=materia,
+                id_actividad__fecha_actividad__year=año_actual,
+                id_actividad__fecha_actividad__month=mes
+            )
+            promedio_tareas = notas_mes.filter(id_actividad__id_tipoactividad=101).aggregate(promedio=Avg('nota'))['promedio']
+            nota_examen = notas_mes.filter(id_actividad__id_tipoactividad=1).first()
+            nota_integradora = notas_mes.filter(id_actividad__id_tipoactividad=201).first()
+            
+            notas_sumadas = [promedio_tareas if promedio_tareas else 0]
+            if nota_examen:
+                notas_sumadas.append(nota_examen.nota)
+            if nota_integradora:
+                notas_sumadas.append(nota_integradora.nota)
+
+            if notas_sumadas:
+                promedio_mes = sum(notas_sumadas) / len(notas_sumadas)
+                resumen[materia.id_matrgrasec]['promedios'][mes] = promedio_mes
+        
+        promedios_validos = [
+            promedio for promedio in resumen[materia.id_matrgrasec]['promedios'].values() if promedio is not None
+        ]
+        resumen[materia.id_matrgrasec]['promedio_final'] = sum(promedios_validos) / len(promedios_validos) if promedios_validos else None
+
+    # Configuración del PDF
+     # Configuración del PDF con orientación horizontal
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="boleta_{estudiante.nombreAlumno}.pdf"'
+    pdf = canvas.Canvas(response, pagesize=landscape(letter))
+    pdf.setTitle("Boleta de Notas")
+
+    # Encabezado
+     # Obtener el ancho y alto de la página
+    width, height = landscape(letter)
+
+     # Encabezado centrado
+    pdf.setFont("Helvetica-Bold", 16)
+    pdf.drawCentredString(width / 2, height - 50, "Centro Escolar Jardines de la Sabana")
+    pdf.setFont("Helvetica", 12)
+    pdf.drawCentredString(width / 2, height - 80, f"Nombre del Estudiante: {estudiante.nombreAlumno} {estudiante.apellidoAlumno}")
+    pdf.drawCentredString(width / 2, height - 100, f"Grado: {estudiante.id_gradoseccion}")
+    if docente:
+        pdf.drawCentredString(width / 2, height - 120, f"Docente: {docente.nombreDocente} {docente.apellidoDocente}")
+
+    # Preparar datos para la tabla
+    encabezado = ["Materia"] + [calendar.month_abbr[i] for i in range(1, 13)] + ["Promedio Final"]
+    datos_tabla = [encabezado]
+
+    for materia_id, datos in resumen.items():
+        fila = [datos['nombre']]
+        for mes_num in range(1, 13):
+            promedio_mes = datos['promedios'].get(mes_num)
+            fila.append(f"{promedio_mes:.2f}" if promedio_mes is not None else "N/A")
+        promedio_final = datos['promedio_final']
+        fila.append(f"{promedio_final:.2f}" if promedio_final is not None else "N/A")
+        datos_tabla.append(fila)
+
+    # Crear y configurar la tabla
+    table = Table(datos_tabla, colWidths=[80] + [40]*12 + [80])
+    table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('FONTSIZE', (0, 0), (-1, -1), 8),
+        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+        ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+        ('GRID', (0, 0), (-1, -1), 0.5, colors.black),
+    ]))
+
+    # Colocar la tabla en el PDF
+    table.wrapOn(pdf, width, height)
+    table.drawOn(pdf, 40, height - 300)  # Ajusta la posición vertical de la tabla según sea necesario
+
+    # Espacio para las firmas
+    pdf.setFont("Helvetica", 12)
+
+     # Línea para la firma del docente (izquierda)
+    firma_docente_x1 = 120  # Mueve la línea aún más a la izquierda
+    firma_docente_x2 = 260  # Mueve la línea aún más a la izquierda
+    firma_docente_y = height - 402
+    pdf.line(firma_docente_x1, firma_docente_y, firma_docente_x2, firma_docente_y)  # Línea para la firma del docente
+    # Dibujar etiqueta centrada
+    pdf.drawCentredString((firma_docente_x1 + firma_docente_x2) / 2, height - 415, "Firma del Docente:")
+
+    # Línea para la firma del director (derecha)
+    firma_director_x1 = width - 220  # Mueve la línea aún más a la izquierda
+    firma_director_x2 = width - 60    # Mueve la línea aún más a la izquierda
+    firma_director_y = height - 402
+    pdf.line(firma_director_x1, firma_director_y, firma_director_x2, firma_director_y)  # Línea para la firma del director
+    # Dibujar etiqueta centrada
+    pdf.drawCentredString((firma_director_x1 + firma_director_x2) / 2, height - 415, "Firma del Director:")
+
+
+    pdf.showPage()
+    pdf.save()
+    return response
+
+@login_required
+def calendar_est(request):
+    return render(request, 'accounts/calendar_est.html')
+
+@login_required
+def load_activities(request):
+    estudiante = request.user.estudiante
+    actividades = ActividadAcademica.objects.filter(id_matrgrasec__id_gradoseccion=estudiante.id_gradoseccion)
+
+    events = []
+    for actividad in actividades:
+        events.append({
+            'id': actividad.id_actividad,
+            'title': actividad.nombre_actividad,
+            'start': actividad.fecha_actividad.isoformat(),  # Usar ISO format para FullCalendar
+            'description': actividad.descripcion_actividad,
+        })
+    
+    return JsonResponse(events, safe=False)

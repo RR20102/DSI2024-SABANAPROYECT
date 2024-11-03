@@ -19,9 +19,16 @@ urlpatterns = [
     path('asinar-materias/', views.asignarMaterias, name='asignar_materias'),
     path('calendario/', views.calendario, name= 'calendario'),
     path('api/actividades/', views.obtener_actividades, name='obtener_actividades'),
-     path('editar/actividad/<int:id>/', views.editar_actividad, name='editar_actividad'),
-   
+    path('editar/actividad/<int:id>/', views.editar_actividad, name='editar_actividad'),
+    path('notas/',views.notas_estudiantes, name = 'notas_estudiantes'),
+    path('editar_nota/<int:estudiante_id>/<int:materia_id>/', views.editar_nota, name='editar_nota'),
+    path('ver_notas/<int:estudiante_id>/<int:materia_id>/', views.editar_nota, name='ver_nota'),
+    path('reporte_notas/', views.reporte_notas, name='reporte_notas'),
+    path('resumen-academico/', views.resumen_academico, name='resumen_academico'),
+    path('boleta_pdf/', views.boleta_pdf, name='boleta_pdf'),
     path('listar-docentes/',views.listar_docentes,name='listardocentes'),
+    path('calendar-est/', views.calendar_est, name='calendar_est'),
+    path('calendar/load/', views.load_activities, name='load_activities'),
     #Codigo Menu administrador - Agregado por Daniel
 
 

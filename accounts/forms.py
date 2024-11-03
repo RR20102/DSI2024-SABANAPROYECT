@@ -4,7 +4,7 @@ import calendar
 
 
 #Codigo Daniel 
-from .models import Asignacion, Docente, GradoSeccion, Estudiante, Asistencia, MateriaGradoSeccion, DocenteMateriaGrado, TipoActividad, ActividadAcademica
+from .models import Asignacion, Docente, GradoSeccion, Estudiante, Asistencia, MateriaGradoSeccion, DocenteMateriaGrado, TipoActividad, ActividadAcademica, NotaActividad
 from django.contrib.auth.models import User
 
 #Codigo Christian 
@@ -12,6 +12,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
 from django_select2.forms import Select2MultipleWidget
+from django.forms import modelformset_factory
 #Codigo Daniel 
 
 class AsignacionForm(forms.ModelForm):
@@ -307,6 +308,13 @@ class ActividadAcademicaForm(forms.ModelForm):
         widgets = {
             'fecha_actividad': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),  # Aseguramos que el widget sea tipo "date"
         }
+        labels = {
+            'id_tipoactividad': 'Tipo de Actividad', 
+            'id_matrgrasec' : 'Materia Asignada',
+            'nombre_actividad' : 'Nombre de la Actividad',
+            'descripcion_actividad' : 'Descripción de la Actividad',
+            'fecha_actividad' : 'Fecha de la Actividad'
+        }
     def __init__(self, *args, **kwargs):
         # Obtenemos el docente (docente actual) del contexto que pasaremos en la vista
         docente = kwargs.pop('docente', None)
@@ -326,3 +334,53 @@ class ActividadAcademicaForm(forms.ModelForm):
         self.fields['nombre_actividad'].widget.attrs.update({'class': 'form-control'})
         self.fields['descripcion_actividad'].widget.attrs.update({'class': 'form-control'})
         self.fields['fecha_actividad'].widget.attrs.update({'class': 'form-control', 'type': 'date'})
+
+    
+"""class NotaActividadForm(forms.ModelForm):
+
+   class Meta:
+        model = NotaActividad
+        fields = ['nota', 'id_actividad']  # Solo queremos editar la nota
+        # Personalizar el widget para que sea un campo de entrada numérico
+        widgets = {
+            'nota': forms.NumberInput(attrs={'min': 0, 'max': 10, 'class': 'form-control'} ),
+        'id_actividad': forms.HiddenInput()
+        }
+         
+        
+    def __init__(self, *args, **kwargs):
+        actividad_id = kwargs.pop('actividad_id', None)  # Extraemos actividad_id si se pasa
+        super().__init__(*args, **kwargs)
+        
+        # Aseguramos que se define un nombre específico si `actividad_id` está presente
+        if actividad_id:
+            self.fields['nota'].widget.attrs.update({
+                'id': f'nota_{actividad_id}',  # Nombre único por ID de actividad
+                'class': 'form-control',
+                'min': '0',
+                'max': '10',
+                'step': '0.1'
+            })
+
+            if actividad_id:
+                self.fields['actividad_id'] = forms.IntegerField(initial=actividad_id, widget=forms.HiddenInput())
+"""
+
+
+class NotaActividadForm(forms.ModelForm):
+    class Meta:
+        model = NotaActividad
+        fields = ['id_nota','nota']  # Solo incluimos el campo 'nota'
+        widgets = {
+            'id_nota': forms.HiddenInput(),
+            'id_actividad': forms.HiddenInput(),  # Lo configuramos como campo oculto
+            'nota': forms.NumberInput(attrs={'step': '0.01', 'min': 0, 'max': 10, 'required': 'true','class': 'form-control'})  # Suponiendo que las notas son de 0 a 10
+        }
+
+    def clean_nota(self):
+        nota = self.cleaned_data.get('nota')
+        if nota is not None and (nota < 0 or nota > 10):
+            raise forms.ValidationError("La nota debe estar entre 0 y 10.")
+        return nota
+
+

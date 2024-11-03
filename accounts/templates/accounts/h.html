@@ -1,0 +1,43 @@
+<!--    {% for actividad in actividades %}
+                <tr>
+                    <td>{{ actividad.nombre_actividad }}</td>
+                    <td>
+                        {% with forms|get_item:actividad.id_actividad as formulario %}
+                            {{ formulario.nota }}
+                            {{ formulario.actividad_id_|add:actividad.id_actividad }}
+                        {% endwith %}
+                    </td>
+                </tr>
+                {% endfor %}
+
+
+
+ Mostrar errores fuera de la tabla 
+<div class="error-messages">
+    <ul class="errorlist text-danger">
+        {% for actividad in actividades %}
+            {% with forms|get_item:actividad.id_actividad as formulario %}
+                 Mostrar errores del campo 'nota' 
+                {% if formulario.nota.errors %}
+                    <li>Error en {{ actividad.nombre_actividad }}:</li>
+                    <ul>
+                        {% for error in formulario.nota.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+                
+                 Mostrar errores generales del formulario 
+                {% if formulario.non_field_errors %}
+                    <li>Error en {{ actividad.nombre_actividad }}:</li>
+                    <ul>
+                        {% for error in formulario.non_field_errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            {% endwith %}
+        {% endfor %}
+    </ul>
+</div>
+            -->

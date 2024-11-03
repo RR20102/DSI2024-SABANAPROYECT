@@ -1,0 +1,54 @@
+{% extends "accounts/templates/accounts/base.html" %}
+{% block title %}SABANA - Editar Nota {% endblock %}
+
+{% block content %}
+{% load tags %}
+{% load static %}
+{% load widget_tweaks %}
+<h3 class="mt-4 mb-3 text-center">Editar Notas para {{ estudiante.nombreAlumno }} en {{ materia.id_materia.nombre_materia }}</h3>
+<p class="text-center">Mes: {{ mes }} - Año: {{ year }}</p>
+
+
+
+
+<div class="container mt-5">
+    <form method="post">
+        {% csrf_token %}
+        {{ formset.management_form }}  <!-- Renderizar el management_form aquí -->
+
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped">
+                <thead class="table-light">
+                    <tr>
+                        <th>Actividad</th>
+                        <th>Descripción</th>
+                        <th>Nota</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for form in formset %}
+                        <tr>
+                            <td>{{ form.instance.id_actividad.nombre_actividad }}</td>
+                            <td>{{ form.instance.id_actividad.descripcion_actividad }}</td>
+                            <td>
+                                {{ form.nota }} <!-- Agregamos la clase de Bootstrap -->
+                                {{ form.id_actividad }}  <!-- Campo oculto -->
+                                {{ form.id_nota }}       <!-- Renderiza el campo oculto aquí -->
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <button type="submit" class="btn btn-primary mt-3">Guardar Notas</button>
+        <a href="{% url 'notas_estudiantes' %}" class="btn btn-secondary mt-3">Cancelar </a>
+        
+    </form>
+</div>
+{% if formset.non_field_errors %}
+    <div class="alert alert-danger">
+        {{ formset.non_field_errors }}
+    </div>
+{% endif %}
+
+{% endblock %}
